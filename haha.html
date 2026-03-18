@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="760" viewBox="0 0 1080 760" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <style>
+      .box { fill:#ffffff; stroke:#444; stroke-width:1.5; rx:8; ry:8; }
+      .title { font-size:18px; font-weight:bold; fill:#222; }
+      .text { font-size:14px; fill:#333; }
+      .note { font-size:12px; fill:#555; }
+      .line { stroke:#555; stroke-width:1.5; marker-end:url(#arrow); }
+      .side { fill:#f5f7fb; stroke:#8aa2d3; stroke-width:1.5; rx:10; ry:10; }
+      .pill { fill:#eef7ee; stroke:#7fb77e; stroke-width:1.2; rx:8; ry:8; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- User -->
+  <rect x="60" y="40" width="200" height="70" class="box"/>
+  <text x="85" y="70" class="title">ユーザー</text>
+  <text x="80" y="95" class="text">質問 / プロンプト入力</text>
+
+  <!-- Query rewrite -->
+  <rect x="320" y="40" width="260" height="90" class="box"/>
+  <text x="335" y="70" class="title">クエリ処理・リライト</text>
+  <text x="335" y="95" class="text">表記ゆれ正規化 / クエリ拡張</text>
+
+  <!-- Vector search -->
+  <rect x="320" y="170" width="260" height="90" class="box"/>
+  <text x="335" y="200" class="title">ベクタ検索 (k近傍)</text>
+  <text x="335" y="225" class="text">メタデータフィルタ / 再ランキング</text>
+
+  <!-- Context builder -->
+  <rect x="320" y="300" width="260" height="90" class="box"/>
+  <text x="335" y="330" class="title">コンテキスト構築</text>
+  <text x="335" y="355" class="text">トークン上限管理 / 出典抽出</text>
+
+  <!-- LLM -->
+  <rect x="320" y="430" width="260" height="90" class="box"/>
+  <text x="335" y="460" class="title">LLM 生成</text>
+  <text x="335" y="485" class="text">テンプレ / 温度 / 長さ設定</text>
+
+  <!-- Output verify -->
+  <rect x="320" y="560" width="260" height="90" class="box"/>
+  <text x="335" y="590" class="title">出力検証・整形</text>
+  <text x="335" y="615" class="text">引用付与 / スキーマ検証 / 禁止語</text>
+
+  <!-- Logs -->
+  <rect x="320" y="690" width="260" height="50" class="box"/>
+  <text x="335" y="720" class="title">ログ / メトリクス / 監視</text>
+
+  <!-- Lines (main flow) -->
+  <line x1="260" y1="75" x2="320" y2="85" class="line"/>
+  <line x1="450" y1="130" x2="450" y2="170" class="line"/>
+  <line x1="450" y1="260" x2="450" y2="300" class="line"/>
+  <line x1="450" y1="390" x2="450" y2="430" class="line"/>
+  <line x1="450" y1="520" x2="450" y2="560" class="line"/>
+  <line x1="450" y1="650" x2="450" y2="690" class="line"/>
+
+  <!-- Vector DB -->
+  <rect x="640" y="160" width="300" height="110" class="box"/>
+  <text x="655" y="190" class="title">ベクターデータベース</text>
+  <text x="655" y="215" class="text">埋め込み + メタデータ / インデックス(HNSW等)</text>
+  <text x="655" y="237" class="note">権限フィルタ / バージョン / バックアップ</text>
+
+  <!-- Line from search to DB -->
+  <line x1="580" y1="215" x2="640" y2="215" class="line"/>
+
+  <!-- Governance side panel -->
+  <rect x="980" y="40" width="90" height="700" class="side"/>
+  <text x="990" y="70" class="title">ガバナンス</text>
+  <text x="990" y="95" class="text">PII検知</text>
+  <text x="990" y="120" class="text">マスキング</text>
+  <text x="990" y="145" class="text">スキーマ検証</text>
+  <text x="990" y="170" class="text">安全フィルタ</text>
+  <text x="990" y="195" class="text">監査ログ</text>
+  <text x="990" y="220" class="text">レート制限</text>
+  <text x="990" y="245" class="text">リリース管理</text>
+  <text x="990" y="270" class="text">A/Bテスト</text>
+  <text x="990" y="295" class="text">コスト監視</text>
+  <text x="990" y="320" class="text">権限管理</text>
+
+  <!-- Ingestion pipeline -->
+  <rect x="60" y="170" width="220" height="240" class="side"/>
+  <text x="75" y="200" class="title">取り込みパイプライン</text>
+  <rect x="80" y="220" width="180" height="36" class="pill"/>
+  <text x="90" y="244" class="text">抽出・クリーニング</text>
+  <rect x="80" y="264" width="180" height="36" class="pill"/>
+  <text x="90" y="288" class="text">チャンク化</text>
+  <rect x="80" y="308" width="180" height="36" class="pill"/>
+  <text x="90" y="332" class="text">エンベディング生成</text>
+  <rect x="80" y="352" width="180" height="36" class="pill"/>
+  <text x="90" y="376" class="text">メタデータ付与</text>
+  <line x1="280" y1="326" x2="320" y2="345" class="line"/>
+
+  <!-- Examples -->
+  <text x="70" y="470" class="title">適用例</text>
+  <text x="70" y="495" class="text">・社内ナレッジ検索＋要約</text>
+  <text x="70" y="520" class="text">・FAQ生成/更新</text>
+  <text x="70" y="545" class="text">・チケット分類→テンプレ返信</text>
+  <text x="70" y="570" class="text">・レポート自動生成</text>
+
+  <!-- Notes -->
+  <text x="60" y="720" class="note">ポイント: データ品質、メタデータ、評価/監視を最初から設計に組み込む。</text>
+</svg>

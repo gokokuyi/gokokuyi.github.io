@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <title>移動する繰り返し表示掲示板（色固定/ランダム対応）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --bg1: #eef7ff;
+            --bg2: #dff0ff;
+            --text: #0b2536;
+            --muted: #39617a;
+            --panel: #ffffff;
+            --panel-border: rgba(0, 90, 160, 0.15);
+            --accent: #0077ff;
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(900px 600px at 70% 20%, rgba(150, 210, 255, 0.5) 0%, rgba(150, 210, 255, 0) 60%),
+                radial-gradient(700px 500px at 25% 85%, rgba(150, 210, 255, 0.35) 0%, rgba(150, 210, 255, 0) 60%),
+                linear-gradient(180deg, var(--bg2), var(--bg1));
+            color: var(--text);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .panel {
+            width: min(96vw, 1100px);
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            padding: clamp(12px, 2.5vw, 24px);
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: clamp(18px, 2.4vw, 24px);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media(min-width:1080px) {
+            .controls {
+                grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+                align-items: end;
+            }
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="color"],
+        select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 90, 160, 0.2);
+            background: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 119, 255, 0.12);
+        }
+
+        .btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px
+        }
+
+        button {
+            background: linear-gradient(180deg, #ffffff 0%, #f1f7ff 100%);
+            color: var(--text);
+            border: 1px solid rgba(0, 90, 160, 0.25);
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 10px rgba(0, 102, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        button:hover {
+            border-color: rgba(0, 119, 255, 0.6);
+            box-shadow: 0 0 0 4px rgba(0, 119, 255, 0.18), 0 6px 18px rgba(0, 119, 255, 0.16);
+        }
+
+        .board {
+            width: min(96vw, 1100px);
+            height: 50vh;
+            min-height: 260px;
+            border-radius: 16px;
+            border: 1px dashed rgba(0, 90, 160, 0.25);
+            background: rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .msg {
+            position: absolute;
+            font-weight: 900;
+            white-space: nowrap;
+            line-height: 1.2;
+            text-shadow:
+                0 0 18px rgba(255, 255, 255, 0.85),
+                0 0 36px rgba(143, 211, 255, 0.6);
+            will-change: transform, filter, opacity, color;
+            user-select: none;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.10));
+        }
+
+        .trail-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .trail {
+            position: absolute;
+            will-change: transform, opacity, color;
+            opacity: 0;
+            filter: blur(2px);
+        }
+
+        .status {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="panel">
+        <h1>移動する繰り返し表示掲示板（色固定/ランダム対応）</h1>
+        <div class="controls" role="form" aria-label="設定">
+            <div>
+                <label for="textInput">表示する文字列（最大100文字）</label>
+                <input id="textInput" type="text" maxlength="100" placeholder="例: ただいま休憩中です。しばらくお待ちください。" />
+            </div>
+            <div>
+                <label for="minutesInput">表示時間（分）</label>
+                <input id="minutesInput" type="number" min="0.1" step="0.1" value="15" />
+            </div>
+            <div>
+                <label for="sizeInput">文字サイズ</label>
+                <select id="sizeInput">
+                    <option value="32">小</option>
+                    <option value="48" selected>中</option>
+                    <option value="72">大</option>
+                    <option value="96">特大</option>
+                    <option value="128">超特大</option>
+                </select>
+            </div>
+            <div>
+                <label for="colorMode">色モード</label>
+                <select id="colorMode">
+                    - <option value="fixed" selected>固定</option>
+                    - <option value="random">ランダムで変色</option>
+                </select>
+            </div>
+            <div>
+                <label for="colorInput">色（固定モード時）</label>
+                <input id="colorInput" type="color" value="#0b2536" />
+            </div>
+            <div>
+                <label for="directionInput">移動方向</label>
+                <select id="directionInput">
+                    <option value="lr">左 → 右</option>
+                    <option value="rl">右 → 左</option>
+                    <option value="tb">上 → 下</option>
+                    <option value="bt">下 → 上</option>
+                    <option value="lr-bounce" selected>左 ↔ 右（往復）</option>
+                    <option value="tb-bounce">上 ↔ 下（往復）</option>
+                    <option value="random">ランダム（ランダムな方向に移動）</option>
+                </select>
+            </div>
+            <div>
+                <label for="speedInput">速度（px/秒）</label>
+                <input id="speedInput" type="number" min="10" step="10" value="140" />
+            </div>
+            <div class="btns" aria-label="操作ボタン">
+                <button id="startBtn">開始</button>
+                <button id="pauseBtn">一時停止</button>
+                <button id="resetBtn">リセット</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="board" id="board" aria-live="polite" aria-atomic="true">
+        <div class="trail-layer" id="trailLayer"></div>
+        <div id="message" class="msg" style="font-size:48px; color:#0b2536;">ここにメッセージが表示されます</div>
+    </div>
+    <div class="status">
+        <span id="statusText">未開始</span>
+        <span id="timerText" style="margin-left:10px;"></span>
+    </div>
+
+    <script>
+        // 要素
+        const board = document.getElementById('board');
+        const trailLayer = document.getElementById('trailLayer');
+        const msgEl = document.getElementById('message');
+
+        const textInput = document.getElementById('textInput');
+        const minutesInput = document.getElementById('minutesInput');
+        const sizeInput = document.getElementById('sizeInput');
+        const colorMode = document.getElementById('colorMode');
+        const colorInput = document.getElementById('colorInput');
+        const directionInput = document.getElementById('directionInput');
+        const speedInput = document.getElementById('speedInput');
+
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const statusEl = document.getElementById('statusText');
+        const timerEl = document.getElementById('timerText');
+
+        // 状態
+        let animId = null;
+        let endTime = null;
+        let remainingMs = 0;
+        let running = false;
+        let paused = false;
+
+        // 位置と速度
+        let posX = 0, posY = 0;
+        let velX = 0, velY = 0; // px/s
+        let lastTs = 0;
+
+        // 残像管理
+        const TRAIL_MAX = 12;
+        const TRAIL_INTERVAL = 70;
+        let lastTrailAt = 0;
+
+        // ランダム色管理
+        const COLOR_INTERVAL = 350; // msごとに色変更（ランダムモード）
+        let lastColorAt = 0;
+
+        function hslToHex(h, s, l) {
+            // h:0-360, s:0-100, l:0-100
+            s /= 100; l /= 100;
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+            else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+            else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+            else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+            else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+            else { r = c; g = 0; b = x; }
+            const toHex = v => Math.round((v + m) * 255).toString(16).padStart(2, '0');
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        function randomColor() {
+            const h = Math.floor(Math.random() * 360);
+            const s = 70;   // 彩度
+            const l = 45;   // 輝度
+            return hslToHex(h, s, l);
+        }
+
+        function applyStyle(colorOverride) {
+            const px = parseInt(sizeInput.value, 10) || 48;
+            const fixedColor = colorInput.value || '#0b2536';
+            const mode = colorMode.value;
+            msgEl.style.fontSize = px + 'px';
+            msgEl.style.color = colorOverride || (mode === 'fixed' ? fixedColor : msgEl.style.color || fixedColor);
+        }
+
+        function centerVertically() {
+            const boardH = board.clientHeight;
+            const msgH = msgEl.clientHeight;
+            posY = (boardH - msgH) / 2;
+        }
+
+        function randomBetween(min, max) { return Math.random() * (max - min) + min; }
+
+        function randomizeVelocity(speed) {
+            const theta = Math.random() * Math.PI * 2;
+            velX = Math.cos(theta) * speed;
+            velY = Math.sin(theta) * speed;
+        }
+
+        function layoutAndInitPosition() {
+            const boardW = board.clientWidth;
+            const boardH = board.clientHeight;
+            const msgW = msgEl.clientWidth;
+            const msgH = msgEl.clientHeight;
+
+            const speed = Math.max(10, Number(speedInput.value) || 140);
+            const dir = directionInput.value;
+
+            velX = 0; velY = 0;
+
+            if (dir === 'lr') {
+                centerVertically(); posX = -msgW; velX = speed;
+            } else if (dir === 'rl') {
+                centerVertically(); posX = boardW; velX = -speed;
+            } else if (dir === 'tb') {
+                posX = (boardW - msgW) / 2; posY = -msgH; velY = speed;
+            } else if (dir === 'bt') {
+                posX = (boardW - msgW) / 2; posY = boardH; velY = -speed;
+            } else if (dir === 'lr-bounce') {
+                centerVertically(); posX = (boardW - msgW) / 2; velX = speed;
+            } else if (dir === 'tb-bounce') {
+                posX = (boardW - msgW) / 2; posY = (boardH - msgH) / 2; velY = speed;
+            } else if (dir === 'random') {
+                posX = randomBetween(0, Math.max(0, boardW - msgW));
+                posY = randomBetween(0, Math.max(0, boardH - msgH));
+                randomizeVelocity(speed);
+            }
+
+            placeMessage();
+        }
+
+        function placeMessage() {
+            msgEl.style.transform = `translate(${posX}px, ${posY}px)`;
+            const speedMag = Math.hypot(velX, velY);
+            const blur = Math.min(8, speedMag / 100 * 4);
+            msgEl.style.filter = `drop-shadow(0 2px 1px rgba(0,0,0,0.10)) blur(${blur.toFixed(1)}px)`;
+        }
+
+        function spawnTrail() {
+            const t = document.createElement('div');
+            t.className = 'trail';
+            t.textContent = msgEl.textContent;
+            t.style.left = '0';
+            t.style.top = '0';
+            t.style.transform = `translate(${posX}px, ${posY}px)`;
+            t.style.color = getComputedStyle(msgEl).color;
+            t.style.fontSize = getComputedStyle(msgEl).fontSize;
+            t.style.fontWeight = '900';
+            t.style.whiteSpace = 'nowrap';
+            t.style.textShadow = '0 0 12px rgba(255,255,255,0.8)';
+            t.style.opacity = '0.35';
+
+            trailLayer.appendChild(t);
+
+            const duration = 600;
+            const start = performance.now();
+            function fade(now) {
+                const p = Math.min(1, (now - start) / duration);
+                t.style.opacity = String(0.35 * (1 - p));
+                if (p < 1) requestAnimationFrame(fade); else t.remove();
+            }
+            requestAnimationFrame(fade);
+
+            while (trailLayer.children.length > TRAIL_MAX) {
+                trailLayer.removeChild(trailLayer.firstChild);
+            }
+        }
+
+        function formatMMSS(totalSec) {
+            const m = Math.floor(totalSec / 60);
+            const s = totalSec % 60;
+            return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        }
+
+        function tick(ts) {
+            if (!running) return;
+            if (!lastTs) lastTs = ts;
+            const dt = (ts - lastTs) / 1000;
+            lastTs = ts;
+
+            // 残り時間
+            const now = Date.now();
+            const left = Math.max(0, endTime - now);
+            timerEl.textContent = `残り ${formatMMSS(Math.ceil(left / 1000))}`;
+            if (left <= 0) {
+                stop();
+                statusEl.textContent = '終了しました';
+                timerEl.textContent = '';
+                return;
+            }
+
+            // 位置更新と反射
+            const boardW = board.clientWidth;
+            const boardH = board.clientHeight;
+            const msgW = msgEl.clientWidth;
+            const msgH = msgEl.clientHeight;
+            const dir = directionInput.value;
+
+            posX += velX * dt;
+            posY += velY * dt;
+
+            if (dir === 'lr' || dir === 'rl') {
+                centerVertically();
+                if (velX > 0 && posX > boardW) posX = -msgW;
+                if (velX < 0 && posX < -msgW) posX = boardW;
+            } else if (dir === 'tb' || dir === 'bt') {
+                posX = (boardW - msgW) / 2;
+                if (velY > 0 && posY > boardH) posY = -msgH;
+                if (velY < 0 && posY < -msgH) posY = boardH;
+            } else if (dir === 'lr-bounce') {
+                centerVertically();
+                if (posX <= 0) { posX = 0; velX = Math.abs(velX); }
+                if (posX + msgW >= boardW) { posX = boardW - msgW; velX = -Math.abs(velX); }
+            } else if (dir === 'tb-bounce') {
+                posX = (boardW - msgW) / 2;
+                if (posY <= 0) { posY = 0; velY = Math.abs(velY); }
+                if (posY + msgH >= boardH) { posY = boardH - msgH; velY = -Math.abs(velY); }
+            } else if (dir === 'random') {
+                if (posX <= 0) { posX = 0; velX = Math.abs(velX); }
+                if (posX + msgW >= boardW) { posX = boardW - msgW; velX = -Math.abs(velX); }
+                if (posY <= 0) { posY = 0; velY = Math.abs(velY); }
+                if (posY + msgH >= boardH) { posY = boardH - msgH; velY = -Math.abs(velY); }
+                // ふらつき
+                const jitter = 0.06;
+                const speed = Math.hypot(velX, velY);
+                const angle = Math.atan2(velY, velX) + (Math.random() - 0.5) * jitter;
+                velX = Math.cos(angle) * speed;
+                velY = Math.sin(angle) * speed;
+            }
+
+            // 残像
+            if (!lastTrailAt || (performance.now() - lastTrailAt) > TRAIL_INTERVAL) {
+                spawnTrail();
+                lastTrailAt = performance.now();
+            }
+
+            // ランダム色（必要時）
+            if (colorMode.value === 'random') {
+                if (!lastColorAt || (performance.now() - lastColorAt) > COLOR_INTERVAL) {
+                    const c = randomColor();
+                    applyStyle(c);
+                    lastColorAt = performance.now();
+                }
+            }
+
+            placeMessage();
+            animId = requestAnimationFrame(tick);
+        }
+
+        function start() {
+            const text = (textInput.value || '').trim();
+            if (!text) { alert('表示する文字列を入力してください（100文字以内）。'); return; }
+            if (text.length > 100) { alert('文字列は100文字以内で入力してください。'); return; }
+            const minutes = parseFloat(minutesInput.value);
+            if (!(minutes > 0)) { alert('表示時間（分）には0より大きい数値を指定してください。'); return; }
+
+            // 色適用（固定 or 初期ランダム）
+            if (colorMode.value === 'fixed') {
+                applyStyle(colorInput.value);
+            } else {
+                applyStyle(randomColor());
+                lastColorAt = performance.now();
+            }
+
+            msgEl.textContent = text;
+
+            const durationMs = (!running && remainingMs > 0 && paused) ? remainingMs : minutes * 60 * 1000;
+            endTime = Date.now() + durationMs;
+
+            requestAnimationFrame(() => {
+                layoutAndInitPosition();
+                running = true;
+                paused = false;
+                statusEl.textContent = '表示中';
+                lastTs = 0;
+                cancelAnimationFrame(animId);
+                animId = requestAnimationFrame(tick);
+            });
+        }
+
+        function pause() {
+            if (!running) return;
+            paused = true;
+            running = false;
+            cancelAnimationFrame(animId);
+            animId = null;
+            remainingMs = Math.max(0, endTime - Date.now());
+            statusEl.textContent = '一時停止中';
+        }
+
+        function stop() {
+            running = false;
+            paused = false;
+            cancelAnimationFrame(animId);
+            animId = null;
+            remainingMs = 0;
+            trailLayer.innerHTML = '';
+        }
+
+        function resetAll() {
+            stop();
+            statusEl.textContent = '未開始';
+            timerEl.textContent = '';
+            msgEl.textContent = 'ここにメッセージが表示されます';
+            // 固定モードの色を反映
+            if (colorMode.value === 'fixed') applyStyle(colorInput.value);
+            else applyStyle('#0b2536');
+            requestAnimationFrame(() => {
+                const bW = board.clientWidth, bH = board.clientHeight;
+                const mW = msgEl.clientWidth, mH = msgEl.clientHeight;
+                posX = (bW - mW) / 2;
+                posY = (bH - mH) / 2;
+                placeMessage();
+            });
+        }
+
+        // イベント
+        startBtn.addEventListener('click', start);
+        pauseBtn.addEventListener('click', pause);
+        resetBtn.addEventListener('click', resetAll);
+
+        sizeInput.addEventListener('change', () => {
+            applyStyle();
+            requestAnimationFrame(() => {
+                const dir = directionInput.value;
+                if (dir.startsWith('lr')) centerVertically();
+                placeMessage();
+            });
+        });
+        colorInput.addEventListener('input', () => {
+            if (colorMode.value === 'fixed') applyStyle(colorInput.value);
+        });
+        colorMode.addEventListener('change', () => {
+            if (colorMode.value === 'fixed') {
+                applyStyle(colorInput.value);
+            } else {
+                applyStyle(randomColor());
+                lastColorAt = performance.now();
+            }
+        });
+        directionInput.addEventListener('change', () => {
+            requestAnimationFrame(() => layoutAndInitPosition());
+        });
+
+        // 初期スタイル・位置
+        applyStyle();
+        window.addEventListener('load', () => {
+            const bW = board.clientWidth, bH = board.clientHeight;
+            const mW = msgEl.clientWidth, mH = msgEl.clientHeight;
+            posX = (bW - mW) / 2;
+            posY = (bH - mH) / 2;
+            placeMessage();
+        });
+        window.addEventListener('resize', () => {
+            const dir = directionInput.value;
+            const bW = board.clientWidth, bH = board.clientHeight;
+            const mW = msgEl.clientWidth, mH = msgEl.clientHeight;
+            if (dir.startsWith('lr')) posY = (bH - mH) / 2;
+            else if (dir.startsWith('tb')) posX = (bW - mW) / 2;
+            posX = Math.min(Math.max(posX, 0), Math.max(0, bW - mW));
+            posY = Math.min(Math.max(posY, 0), Math.max(0, bH - mH));
+            placeMessage();
+        });
+    </script>
+</body>
+
+</html>
