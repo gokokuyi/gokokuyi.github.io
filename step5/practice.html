@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 5 ハンズオン | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 920px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .py-status { padding: 8px 14px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }
+  .py-status.loading { background: #fff8e1; color: #795548; border: 1px solid #ffe082; }
+  .py-status.ready   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .py-status.idle    { background: #e8eaf6; color: #3f51b5; border: 1px solid #c5cae9; }
+  .ex-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 10px; padding: 22px 26px; margin: 28px 0; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .ex-label { display: inline-block; background: #3f51b5; color: #fff; border-radius: 4px; font-size: 0.78em; font-weight: bold; padding: 2px 10px; margin-bottom: 6px; letter-spacing: .05em; }
+  .ex-box h3 { margin: 4px 0 12px; color: #1a237e; font-size: 1.05em; }
+  .ex-box p  { margin: 0 0 14px; color: #444; font-size: 0.95em; }
+  textarea.code-editor {
+    width: 100%; box-sizing: border-box;
+    background: #1e272e; color: #ecf0f1;
+    font-family: 'Courier New', Consolas, monospace; font-size: 0.88em;
+    padding: 14px 16px; border: none; border-radius: 6px;
+    resize: vertical; min-height: 280px; outline: none;
+    tab-size: 4; line-height: 1.6;
+  }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .btn { border: none; border-radius: 6px; padding: 8px 20px; font-size: 0.9em; cursor: pointer; font-weight: bold; transition: background .15s; }
+  .btn-run      { background: #388e3c; color: #fff; }
+  .btn-run:hover{ background: #2e7d32; }
+  .btn-sol      { background: #fff; color: #3f51b5; border: 1.5px solid #3f51b5; }
+  .btn-sol:hover{ background: #e8eaf6; }
+  .btn-rst      { background: #fff; color: #888; border: 1.5px solid #ccc; }
+  .btn-rst:hover{ background: #f5f5f5; }
+  .output-area { background: #263238; color: #b2dfdb; font-family: 'Courier New', Consolas, monospace; font-size: 0.87em; padding: 12px 16px; border-radius: 6px; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-bottom: 10px; display: none; }
+  .output-area.show { display: block; }
+  .output-area.error { color: #ef9a9a; }
+  .solution-area { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; padding: 14px 16px; margin-top: 6px; }
+  .solution-area.show { display: block; }
+  .solution-area pre { background: #1e272e; color: #ecf0f1; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.86em; margin: 8px 0 0; }
+  .hint { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 10px 14px; border-radius: 4px; font-size: 0.9em; margin: 10px 0; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #c5cae9; color: #777; font-size: 0.9em; text-align: center; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 5 ハンズオン — チーム活用とベストプラクティス</h1>
+<div class="meta">Python をブラウザで実行 &nbsp;|&nbsp; 演習数: 2問 &nbsp;|&nbsp; 所要時間: 約25分</div>
+
+<p>「良いプロンプトの書き方」と「エラー情報の整理方法」を Python で実装して、Claude Code をより効果的に使うための考え方を体感しましょう。</p>
+
+<div id="py-status" class="py-status idle">初回「実行」時に Python 環境を自動ロードします（数秒かかります）</div>
+
+<!-- ===== Exercise 1 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 1</div>
+  <h3>プロンプトビルダー（良いプロンプトの構造化）</h3>
+  <p>効果的なプロンプトは「どのファイルの・どの関数で・何が問題か・どんな制約か・目的は何か」を含みます。コンテキスト辞書から構造化されたプロンプトを組み立てる関数を完成させてください。</p>
+  <div class="hint">ヒント: <code>context.get('key')</code> でキーの存在を確認しつつ値を取得できます。必須項目が欠けている場合は <code>ValueError</code> を raise します。</div>
+  <textarea class="code-editor" id="code1"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(1)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(1)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(1)">リセット</button>
+  </div>
+  <div class="output-area" id="out1"></div>
+  <div class="solution-area" id="sol1">
+    <strong>正解:</strong>
+    <pre id="sol1-code"></pre>
+  </div>
+</div>
+
+<!-- ===== Exercise 2 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 2</div>
+  <h3>エラー情報の構造化（Claude への伝え方）</h3>
+  <p>「エラーメッセージをそのまま貼り付ける」のがベストプラクティスですが、それに加えて「ファイル・行番号・エラー種別・コンテキスト」を整理して渡すとさらに効果的です。エラーログから情報を抽出して Claude へのプロンプトを組み立てる関数を完成させてください。</p>
+  <div class="hint">ヒント: <code>re.search(pattern, text)</code> でグループをキャプチャ、<code>match.group(1)</code> で取得。<code>traceback.split('\\n')</code> で行に分割して最終行を取得します。</div>
+  <textarea class="code-editor" id="code2"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(2)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(2)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(2)">リセット</button>
+  </div>
+  <div class="output-area" id="out2"></div>
+  <div class="solution-area" id="sol2">
+    <strong>正解:</strong>
+    <pre id="sol2-code"></pre>
+  </div>
+</div>
+
+<div class="step-links">
+  <a href="quiz.html">← Quiz に戻る</a>
+  <a href="../index.html">🏠 TOP へ</a>
+</div>
+
+<footer>🎉 お疲れ様でした！Step 5 まで完了です。</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script>
+const STARTER = {};
+const SOLUTION = {};
+
+STARTER[1] = `# === Exercise 1: プロンプトビルダー ===
+# 「良いプロンプト」の要素を辞書から組み立てます
+
+REQUIRED_KEYS = ['file', 'issue', 'goal']
+
+def build_prompt(context):
+    """
+    コンテキスト辞書から効果的なプロンプトを組み立てる
+
+    Keys:
+      file       (必須): 対象ファイルパス
+      function   (任意): 対象関数名
+      issue      (必須): 問題・症状の説明
+      error_msg  (任意): エラーメッセージ（あれば）
+      constraint (任意): 制約条件
+      goal       (必須): 達成したい目標
+
+    不足する必須キーがある場合は ValueError を raise する
+    """
+    # TODO 1: REQUIRED_KEYS のうち context に存在しないキーを missing に収集し、
+    #         missing が空でなければ ValueError を raise してください
+    #         例: raise ValueError(f"必須項目が不足しています: {missing}")
+    missing = []  # ← ここを完成させてください
+    if missing:
+        pass      # ← raise ValueError(...) を書いてください
+
+    # プロンプトを組み立てる
+    parts = []
+
+    # ファイル + 関数
+    location = context['file']
+    if context.get('function'):
+        location += f" の {context['function']} 関数"
+    parts.append(f"対象: {location}")
+
+    # 問題
+    # TODO 2: parts に f"問題: {context['issue']}" を追加してください
+    pass
+
+    # エラーメッセージ（任意）
+    if context.get('error_msg'):
+        parts.append(f"エラー:\\n{context['error_msg']}")
+
+    # 制約（任意）
+    if context.get('constraint'):
+        parts.append(f"制約: {context['constraint']}")
+
+    # 目標
+    # TODO 3: parts に f"目標: {context['goal']}" を追加してください
+    pass
+
+    return '\\n'.join(parts)
+
+
+# --- テスト実行 ---
+print("=== 良いプロンプトの例 ===")
+try:
+    prompt = build_prompt({
+        "file":       "src/auth/login.py",
+        "function":   "authenticate",
+        "issue":      "ユーザー名が空文字のとき 500 エラーが発生する",
+        "error_msg":  "ValueError: Invalid credentials",
+        "constraint": "既存のテスト（tests/test_auth.py）を壊さないこと",
+        "goal":       "空文字チェックを追加して 400 エラーを返すよう修正する",
+    })
+    print(prompt)
+except Exception as e:
+    print(f"エラー: {e}")
+
+print()
+print("=== 必須項目欠けの場合 ===")
+try:
+    build_prompt({"file": "main.py"})
+except ValueError as e:
+    print(f"✓ 期待通りのエラー: {e}")
+except Exception as e:
+    print(f"⚠ TODOを完成させてください: {e}")
+`;
+
+SOLUTION[1] = `def build_prompt(context):
+    # TODO 1: 必須キーチェック
+    missing = [k for k in REQUIRED_KEYS if k not in context]  # ← TODO 1
+    if missing:
+        raise ValueError(f"必須項目が不足しています: {missing}")  # ← TODO 1
+
+    parts = []
+    location = context['file']
+    if context.get('function'):
+        location += f" の {context['function']} 関数"
+    parts.append(f"対象: {location}")
+
+    parts.append(f"問題: {context['issue']}")  # ← TODO 2
+
+    if context.get('error_msg'):
+        parts.append(f"エラー:\\n{context['error_msg']}")
+    if context.get('constraint'):
+        parts.append(f"制約: {context['constraint']}")
+
+    parts.append(f"目標: {context['goal']}")   # ← TODO 3
+
+    return '\\n'.join(parts)`;
+
+STARTER[2] = `# === Exercise 2: エラー情報の構造化 ===
+# エラーログを解析して Claude への効果的なプロンプトを生成します
+import re
+
+# サンプルのエラートレースバック（実際のエラーをそのまま貼り付けたもの）
+SAMPLE_TRACEBACK = """Traceback (most recent call last):
+  File "src/api/handler.py", line 42, in handle_request
+    result = process_data(request.json)
+  File "src/utils/processor.py", line 18, in process_data
+    return transform(data['key'])
+  File "src/utils/processor.py", line 31, in transform
+    return data.upper()
+AttributeError: 'NoneType' object has no attribute 'upper'"""
+
+def parse_traceback(traceback_text):
+    """
+    トレースバックを解析して構造化された情報を返す
+
+    戻り値の辞書:
+      error_type: エラーの種別（例: "AttributeError"）
+      error_msg:  エラーメッセージ（例: "'NoneType' object has no attribute 'upper'"）
+      file:       最後に失敗したファイルパス
+      line:       最後に失敗した行番号（整数）
+      function:   最後に失敗した関数名
+    """
+    result = {}
+
+    lines = [l for l in traceback_text.strip().split('\\n') if l.strip()]
+
+    # 最後の行（エラーメッセージ）を解析
+    last_line = lines[-1]
+    # TODO 1: last_line から "エラー種別: メッセージ" を抽出してください
+    #         re.match(r'(\\w+Error|\\w+Exception): (.+)', last_line) を使います
+    error_match = None  # ← re.match(...) を書いてください
+    if error_match:
+        result['error_type'] = None  # ← error_match.group(1) を代入してください
+        result['error_msg']  = None  # ← error_match.group(2) を代入してください
+
+    # "File" 行を検索（最後にマッチしたものが失敗箇所）
+    # TODO 2: traceback_text 内の 'File "path", line N, in func_name' を全て検索し
+    #         最後のマッチから file / line / function を取得してください
+    file_matches = []  # ← re.findall(r'File "([^"]+)", line (\\d+), in (\\w+)', traceback_text) を代入
+    if file_matches:
+        last_file = file_matches[-1]  # 最後の File 行
+        result['file']     = None  # ← last_file[0] を代入
+        result['line']     = None  # ← int(last_file[1]) を代入
+        result['function'] = None  # ← last_file[2] を代入
+
+    return result
+
+def format_error_prompt(traceback_text):
+    """エラー情報を Claude へのプロンプト形式に整形する"""
+    info = parse_traceback(traceback_text)
+
+    parts = ["以下のエラーを修正してください。", ""]
+    parts.append("【エラー情報】")
+
+    if info.get('error_type'):
+        parts.append(f"種別: {info['error_type']}")
+    if info.get('error_msg'):
+        parts.append(f"内容: {info['error_msg']}")
+    if info.get('file'):
+        parts.append(f"場所: {info['file']} の {info['function']}() 関数 ({info['line']} 行目)")
+
+    parts.append("")
+    parts.append("【エラーの全文】")
+    parts.append(traceback_text.strip())
+
+    return '\\n'.join(parts)
+
+
+# --- 実行 ---
+print(format_error_prompt(SAMPLE_TRACEBACK))
+print()
+
+# 解析結果を確認
+info = parse_traceback(SAMPLE_TRACEBACK)
+print("=== 解析結果 ===")
+for key, val in info.items():
+    status = "✓" if val is not None else "⚠ TODO未完成"
+    print(f"  {key}: {val} {status}")
+`;
+
+SOLUTION[2] = `def parse_traceback(traceback_text):
+    result = {}
+    lines = [l for l in traceback_text.strip().split('\\n') if l.strip()]
+    last_line = lines[-1]
+
+    # TODO 1
+    error_match = re.match(r'(\\w+Error|\\w+Exception): (.+)', last_line)
+    if error_match:
+        result['error_type'] = error_match.group(1)  # ← TODO 1
+        result['error_msg']  = error_match.group(2)  # ← TODO 1
+
+    # TODO 2
+    file_matches = re.findall(r'File "([^"]+)", line (\\d+), in (\\w+)', traceback_text)
+    if file_matches:
+        last_file = file_matches[-1]
+        result['file']     = last_file[0]       # ← TODO 2
+        result['line']     = int(last_file[1])  # ← TODO 2
+        result['function'] = last_file[2]       # ← TODO 2
+
+    return result`;
+
+// ===== Pyodide runner =====
+let pyodideInstance = null;
+
+async function ensurePyodide() {
+  if (pyodideInstance) return pyodideInstance;
+  const status = document.getElementById('py-status');
+  status.textContent = '⏳ Python 実行環境を準備中（初回のみ数秒かかります）...';
+  status.className = 'py-status loading';
+  pyodideInstance = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/' });
+  status.textContent = '✓ Python 実行環境が準備できました';
+  status.className = 'py-status ready';
+  return pyodideInstance;
+}
+
+async function runCode(n) {
+  const out = document.getElementById('out' + n);
+  out.className = 'output-area show';
+  out.textContent = '⏳ 実行中...';
+  try {
+    const py = await ensurePyodide();
+    py.runPython('import sys, io; sys.stdout = io.StringIO()');
+    await py.runPythonAsync(document.getElementById('code' + n).value);
+    const result = py.runPython('sys.stdout.getvalue()');
+    out.textContent = result || '(出力なし)';
+    out.className = 'output-area show';
+  } catch (e) {
+    out.textContent = 'エラー:\n' + e.message;
+    out.className = 'output-area show error';
+  }
+}
+
+function toggleSolution(n) {
+  document.getElementById('sol' + n).classList.toggle('show');
+}
+
+function resetCode(n) {
+  document.getElementById('code' + n).value = STARTER[n];
+  const out = document.getElementById('out' + n);
+  out.textContent = '';
+  out.className = 'output-area';
+  document.getElementById('sol' + n).classList.remove('show');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('code' + i).value = STARTER[i];
+    document.getElementById('sol' + i + '-code').textContent = SOLUTION[i];
+  }
+});
+</script>
+</body>
+</html>

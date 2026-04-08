@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 2 ハンズオン | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 920px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .py-status { padding: 8px 14px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }
+  .py-status.loading { background: #fff8e1; color: #795548; border: 1px solid #ffe082; }
+  .py-status.ready   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .py-status.idle    { background: #e8eaf6; color: #3f51b5; border: 1px solid #c5cae9; }
+  .ex-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 10px; padding: 22px 26px; margin: 28px 0; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .ex-label { display: inline-block; background: #3f51b5; color: #fff; border-radius: 4px; font-size: 0.78em; font-weight: bold; padding: 2px 10px; margin-bottom: 6px; letter-spacing: .05em; }
+  .ex-box h3 { margin: 4px 0 12px; color: #1a237e; font-size: 1.05em; }
+  .ex-box p  { margin: 0 0 14px; color: #444; font-size: 0.95em; }
+  textarea.code-editor {
+    width: 100%; box-sizing: border-box;
+    background: #1e272e; color: #ecf0f1;
+    font-family: 'Courier New', Consolas, monospace; font-size: 0.88em;
+    padding: 14px 16px; border: none; border-radius: 6px;
+    resize: vertical; min-height: 260px; outline: none;
+    tab-size: 4; line-height: 1.6;
+  }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .btn { border: none; border-radius: 6px; padding: 8px 20px; font-size: 0.9em; cursor: pointer; font-weight: bold; transition: background .15s; }
+  .btn-run      { background: #388e3c; color: #fff; }
+  .btn-run:hover{ background: #2e7d32; }
+  .btn-sol      { background: #fff; color: #3f51b5; border: 1.5px solid #3f51b5; }
+  .btn-sol:hover{ background: #e8eaf6; }
+  .btn-rst      { background: #fff; color: #888; border: 1.5px solid #ccc; }
+  .btn-rst:hover{ background: #f5f5f5; }
+  .output-area { background: #263238; color: #b2dfdb; font-family: 'Courier New', Consolas, monospace; font-size: 0.87em; padding: 12px 16px; border-radius: 6px; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-bottom: 10px; display: none; }
+  .output-area.show { display: block; }
+  .output-area.error { color: #ef9a9a; }
+  .solution-area { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; padding: 14px 16px; margin-top: 6px; }
+  .solution-area.show { display: block; }
+  .solution-area pre { background: #1e272e; color: #ecf0f1; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.86em; margin: 8px 0 0; }
+  .hint { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 10px 14px; border-radius: 4px; font-size: 0.9em; margin: 10px 0; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 2 ハンズオン — ファイル操作と基本ツール</h1>
+<div class="meta">Python をブラウザで実行 &nbsp;|&nbsp; 演習数: 2問 &nbsp;|&nbsp; 所要時間: 約25分</div>
+
+<p>Claude Code の <strong>Glob</strong>・<strong>Grep</strong> ツールが内部でやっていることを Python で実装し、ファイル検索の仕組みを体感しましょう。</p>
+
+<div id="py-status" class="py-status idle">初回「実行」時に Python 環境を自動ロードします（数秒かかります）</div>
+
+<!-- ===== Exercise 1 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 1</div>
+  <h3>Glob パターンマッチング</h3>
+  <p>Claude Code の Glob ツールはファイルパスをパターンでフィルタリングします。<code>**/*.py</code> や <code>src/*.ts</code> などのパターンでマッチするファイルを返す関数を完成させてください。</p>
+  <div class="hint">ヒント: <code>**</code> は「任意のディレクトリ階層」= <code>(.*/)?</code>、<code>*</code> は「任意の文字列（<code>/</code>以外）」= <code>[^/]*</code> に変換します。<code>re.match(pattern, path)</code> でマッチ判定します。</div>
+  <textarea class="code-editor" id="code1"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(1)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(1)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(1)">リセット</button>
+  </div>
+  <div class="output-area" id="out1"></div>
+  <div class="solution-area" id="sol1">
+    <strong>正解:</strong>
+    <pre id="sol1-code"></pre>
+  </div>
+</div>
+
+<!-- ===== Exercise 2 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 2</div>
+  <h3>コード内テキスト検索（Grep シミュレーション）</h3>
+  <p>Claude Code の Grep ツールは正規表現でコード内を検索します。仮想ファイル辞書に対して検索を行い、マッチした行を <code>ファイル名:行番号: 内容</code> 形式で返す関数を完成させてください。</p>
+  <div class="hint">ヒント: <code>content.split('\\n')</code> で行に分割、<code>enumerate(lines, 1)</code> で行番号付きイテレーション、<code>re.search(pattern, line)</code> でマッチ判定します。</div>
+  <textarea class="code-editor" id="code2"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(2)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(2)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(2)">リセット</button>
+  </div>
+  <div class="output-area" id="out2"></div>
+  <div class="solution-area" id="sol2">
+    <strong>正解:</strong>
+    <pre id="sol2-code"></pre>
+  </div>
+</div>
+
+<div class="step-links">
+  <a href="quiz.html">← Quiz に戻る</a>
+  <a href="../step3/lesson.html">Step 3 へ →</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script>
+const STARTER = {};
+const SOLUTION = {};
+
+STARTER[1] = `# === Exercise 1: Glob パターンマッチング ===
+# Claude Code の Glob ツールが行うファイル絞り込みを実装します
+import re
+
+files = [
+    "src/main.py",
+    "src/utils.py",
+    "src/api/handler.py",
+    "src/api/models.py",
+    "tests/test_main.py",
+    "tests/test_utils.py",
+    "README.md",
+    "docs/guide.md",
+]
+
+def glob_filter(file_list, pattern):
+    """
+    glob パターンでファイルをフィルタリングする関数
+    ** = 任意のディレクトリ階層、* = 任意の文字列（/ 除く）
+    """
+    # パターンを正規表現に変換
+    regex = (pattern
+             .replace('.', r'\\.')      # . をエスケープ
+             .replace('**/', '(.*/)?') # **/ を任意階層に
+             .replace('*', '[^/]*'))   # * を任意文字列に
+    regex = f"^{regex}$"
+
+    # TODO: file_list の各パスを regex でマッチして、マッチしたものだけのリストを返してください
+    # (リスト内包表記を使うとシンプルです)
+    pass
+
+
+# --- テスト実行 ---
+patterns = [
+    ("**/*.py",      "全階層の .py ファイル"),
+    ("src/*.py",     "src 直下の .py ファイル"),
+    ("tests/*.py",   "tests 直下の .py ファイル"),
+    ("src/**/*.py",  "src 以下の全 .py ファイル"),
+    ("**/*.md",      "全階層の .md ファイル"),
+]
+
+for pattern, desc in patterns:
+    result = glob_filter(files, pattern)
+    if result is None:
+        print(f"[{pattern}] → ⚠ TODOを完成させてください")
+    else:
+        print(f"[{pattern}] ({desc})")
+        for f in result:
+            print(f"  {f}")
+        print()
+`;
+
+SOLUTION[1] = `def glob_filter(file_list, pattern):
+    regex = (pattern
+             .replace('.', r'\\.')
+             .replace('**/', '(.*/)?')
+             .replace('*', '[^/]*'))
+    regex = f"^{regex}$"
+    return [f for f in file_list if re.match(regex, f)]  # ← TODO`;
+
+STARTER[2] = `# === Exercise 2: Grep シミュレーション ===
+# Claude Code の Grep ツールが行うコード内検索を実装します
+import re
+
+# 仮想ファイルシステム（{ファイル名: 内容} の辞書）
+virtual_files = {
+    "main.py": """import anthropic
+import os
+
+def main():
+    # TODO: エラーハンドリングを追加する
+    client = anthropic.Anthropic()
+    response = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=100,
+        messages=[{"role": "user", "content": "Hello"}]
+    )
+    print(response.content[0].text)
+""",
+    "utils.py": """# ユーティリティ関数
+# TODO: テストを追加する
+
+def strip_html(text):
+    # FIXME: タグ内の属性が残る場合がある
+    return re.sub(r'<[^>]+>', '', text)
+
+def validate_email(email):
+    # TODO: RFC 5322 準拠に修正する
+    return '@' in email
+""",
+    "config.py": """# 設定ファイル
+# FIXME: API キーを環境変数に移動する
+API_KEY = "sk-ant-hardcoded"
+DATABASE_URL = "postgresql://user:pass@localhost/mydb"
+"""
+}
+
+def grep_files(files_dict, pattern):
+    """
+    仮想ファイルから正規表現パターンにマッチする行を検索する
+    戻り値: [(ファイル名, 行番号, 行内容), ...]
+    """
+    results = []
+    for filename, content in files_dict.items():
+        for lineno, line in enumerate(content.split('\\n'), 1):
+            # TODO: line が pattern にマッチしたら results に追加してください
+            # 追加形式: (filename, lineno, line.rstrip())
+            pass
+    return results
+
+
+# --- テスト実行 ---
+searches = [
+    (r'TODO|FIXME',   "TODO / FIXME コメントを検索"),
+    (r'def \\w+',      "関数定義を検索"),
+    (r'import \\w+',   "import 文を検索"),
+]
+
+for pattern, desc in searches:
+    print(f"=== {desc} (/{pattern}/) ===")
+    matches = grep_files(virtual_files, pattern)
+    if not matches:
+        print("  ⚠ TODOを完成させてください")
+    else:
+        for fname, lineno, line in matches:
+            print(f"  {fname}:{lineno}: {line.strip()}")
+    print()
+`;
+
+SOLUTION[2] = `def grep_files(files_dict, pattern):
+    results = []
+    for filename, content in files_dict.items():
+        for lineno, line in enumerate(content.split('\\n'), 1):
+            if re.search(pattern, line):              # ← TODO
+                results.append((filename, lineno, line.rstrip()))  # ← TODO
+    return results`;
+
+// ===== Pyodide runner =====
+let pyodideInstance = null;
+
+async function ensurePyodide() {
+  if (pyodideInstance) return pyodideInstance;
+  const status = document.getElementById('py-status');
+  status.textContent = '⏳ Python 実行環境を準備中（初回のみ数秒かかります）...';
+  status.className = 'py-status loading';
+  pyodideInstance = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/' });
+  status.textContent = '✓ Python 実行環境が準備できました';
+  status.className = 'py-status ready';
+  return pyodideInstance;
+}
+
+async function runCode(n) {
+  const out = document.getElementById('out' + n);
+  out.className = 'output-area show';
+  out.textContent = '⏳ 実行中...';
+  try {
+    const py = await ensurePyodide();
+    py.runPython('import sys, io; sys.stdout = io.StringIO()');
+    await py.runPythonAsync(document.getElementById('code' + n).value);
+    const result = py.runPython('sys.stdout.getvalue()');
+    out.textContent = result || '(出力なし)';
+    out.className = 'output-area show';
+  } catch (e) {
+    out.textContent = 'エラー:\n' + e.message;
+    out.className = 'output-area show error';
+  }
+}
+
+function toggleSolution(n) {
+  document.getElementById('sol' + n).classList.toggle('show');
+}
+
+function resetCode(n) {
+  document.getElementById('code' + n).value = STARTER[n];
+  const out = document.getElementById('out' + n);
+  out.textContent = '';
+  out.className = 'output-area';
+  document.getElementById('sol' + n).classList.remove('show');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('code' + i).value = STARTER[i];
+    document.getElementById('sol' + i + '-code').textContent = SOLUTION[i];
+  }
+});
+</script>
+</body>
+</html>

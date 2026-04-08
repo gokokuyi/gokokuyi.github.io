@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 3 ハンズオン | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 920px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .py-status { padding: 8px 14px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }
+  .py-status.loading { background: #fff8e1; color: #795548; border: 1px solid #ffe082; }
+  .py-status.ready   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .py-status.idle    { background: #e8eaf6; color: #3f51b5; border: 1px solid #c5cae9; }
+  .ex-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 10px; padding: 22px 26px; margin: 28px 0; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .ex-label { display: inline-block; background: #3f51b5; color: #fff; border-radius: 4px; font-size: 0.78em; font-weight: bold; padding: 2px 10px; margin-bottom: 6px; letter-spacing: .05em; }
+  .ex-box h3 { margin: 4px 0 12px; color: #1a237e; font-size: 1.05em; }
+  .ex-box p  { margin: 0 0 14px; color: #444; font-size: 0.95em; }
+  textarea.code-editor {
+    width: 100%; box-sizing: border-box;
+    background: #1e272e; color: #ecf0f1;
+    font-family: 'Courier New', Consolas, monospace; font-size: 0.88em;
+    padding: 14px 16px; border: none; border-radius: 6px;
+    resize: vertical; min-height: 280px; outline: none;
+    tab-size: 4; line-height: 1.6;
+  }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .btn { border: none; border-radius: 6px; padding: 8px 20px; font-size: 0.9em; cursor: pointer; font-weight: bold; transition: background .15s; }
+  .btn-run      { background: #388e3c; color: #fff; }
+  .btn-run:hover{ background: #2e7d32; }
+  .btn-sol      { background: #fff; color: #3f51b5; border: 1.5px solid #3f51b5; }
+  .btn-sol:hover{ background: #e8eaf6; }
+  .btn-rst      { background: #fff; color: #888; border: 1.5px solid #ccc; }
+  .btn-rst:hover{ background: #f5f5f5; }
+  .output-area { background: #263238; color: #b2dfdb; font-family: 'Courier New', Consolas, monospace; font-size: 0.87em; padding: 12px 16px; border-radius: 6px; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-bottom: 10px; display: none; }
+  .output-area.show { display: block; }
+  .output-area.error { color: #ef9a9a; }
+  .solution-area { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; padding: 14px 16px; margin-top: 6px; }
+  .solution-area.show { display: block; }
+  .solution-area pre { background: #1e272e; color: #ecf0f1; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.86em; margin: 8px 0 0; }
+  .hint { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 10px 14px; border-radius: 4px; font-size: 0.9em; margin: 10px 0; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 3 ハンズオン — エージェント機能と自動化</h1>
+<div class="meta">Python をブラウザで実行 &nbsp;|&nbsp; 演習数: 2問 &nbsp;|&nbsp; 所要時間: 約25分</div>
+
+<p>Claude Code のエージェントが内部で行っている「思考 → ツール実行 → 観察」のループと、タスク管理を Python で実装して体感しましょう。</p>
+
+<div id="py-status" class="py-status idle">初回「実行」時に Python 環境を自動ロードします（数秒かかります）</div>
+
+<!-- ===== Exercise 1 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 1</div>
+  <h3>エージェントループのシミュレーション</h3>
+  <p>Claude Code はタスクを「考える → ツールを呼ぶ → 結果を観察」というループで処理します。ツールを辞書で管理し、エージェントが順番にツールを呼び出す <code>run_agent()</code> を完成させてください。</p>
+  <div class="hint">ヒント: ツール名でツール関数を呼び出すには <code>TOOLS[name](**kwargs)</code>。結果を観察して次の行動につなげる様子を出力で確認しましょう。</div>
+  <textarea class="code-editor" id="code1"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(1)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(1)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(1)">リセット</button>
+  </div>
+  <div class="output-area" id="out1"></div>
+  <div class="solution-area" id="sol1">
+    <strong>正解:</strong>
+    <pre id="sol1-code"></pre>
+  </div>
+</div>
+
+<!-- ===== Exercise 2 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 2</div>
+  <h3>タスクリスト管理（TodoWrite シミュレーション）</h3>
+  <p>Claude Code の TodoWrite ツールはタスクを「未着手 → 実行中 → 完了」の状態で管理します。<code>start()</code>・<code>done()</code>・<code>summary()</code> メソッドを完成させてください。</p>
+  <div class="hint">ヒント: タスクのステータスは文字列で管理します。<code>start()</code> は <code>"in_progress"</code>、<code>done()</code> は <code>"done"</code> にします。</div>
+  <textarea class="code-editor" id="code2"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(2)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(2)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(2)">リセット</button>
+  </div>
+  <div class="output-area" id="out2"></div>
+  <div class="solution-area" id="sol2">
+    <strong>正解:</strong>
+    <pre id="sol2-code"></pre>
+  </div>
+</div>
+
+<div class="step-links">
+  <a href="quiz.html">← Quiz に戻る</a>
+  <a href="../step4/lesson.html">Step 4 へ →</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script>
+const STARTER = {};
+const SOLUTION = {};
+
+STARTER[1] = `# === Exercise 1: エージェントループ ===
+# Claude Code の Think → Act → Observe ループを再現します
+
+import re
+
+# ====== 仮想ファイルシステム（ツールが参照するデータ）======
+FILES = {
+    "README.md": "# My Project\\nPython 製の REST API サーバー\\n\\n## セットアップ\\npip install -r requirements.txt\\npython main.py",
+    "main.py":   "from flask import Flask\\napp = Flask(__name__)\\n\\n@app.route('/')\\ndef index():\\n    return 'Hello'\\n\\ndef run():\\n    app.run()",
+    "utils.py":  "def validate(data):\\n    # TODO: バリデーション実装\\n    pass\\n\\ndef format_response(data):\\n    return {'status': 'ok', 'data': data}",
+}
+
+# ====== ツール定義 ======
+def tool_read(filename):
+    return FILES.get(filename, f"ERROR: {filename} が見つかりません")
+
+def tool_search(pattern):
+    results = []
+    for fname, content in FILES.items():
+        for i, line in enumerate(content.split('\\n'), 1):
+            if re.search(pattern, line):
+                results.append(f"{fname}:{i}: {line}")
+    return '\\n'.join(results) if results else "マッチなし"
+
+TOOLS = {
+    "read":   tool_read,
+    "search": tool_search,
+}
+
+# ====== エージェントの実行ステップ定義 ======
+# 各ステップは ("think"|"act", データ) のタプル
+STEPS = [
+    ("think", "README.md を読んでプロジェクト全体を把握する"),
+    ("act",   ("read", {"filename": "README.md"})),
+    ("think", "関数定義を検索してコードの構造を確認する"),
+    ("act",   ("search", {"pattern": "^def "})),
+    ("think", "TODO コメントを検索して未実装箇所を特定する"),
+    ("act",   ("search", {"pattern": "TODO"})),
+]
+
+def run_agent(task, steps):
+    """エージェントループを実行する"""
+    print(f"タスク: {task}")
+    print("=" * 50)
+
+    for step_type, data in steps:
+        if step_type == "think":
+            # TODO: "[考] {data}" と表示してください
+            pass
+
+        elif step_type == "act":
+            tool_name, kwargs = data
+            args_str = ', '.join(f'{k}={v!r}' for k, v in kwargs.items())
+            print(f"[実] {tool_name}({args_str})")
+
+            # TODO: TOOLS[tool_name] を kwargs で呼び出し、結果を result に代入してください
+            result = None
+
+            if result is None:
+                print("  ⚠ TODOを完成させてください")
+            else:
+                for line in str(result).split('\\n')[:4]:  # 最大4行表示
+                    print(f"  → {line}")
+        print()
+
+run_agent("プロジェクトを調査して未実装箇所を特定する", STEPS)
+`;
+
+SOLUTION[1] = `def run_agent(task, steps):
+    print(f"タスク: {task}")
+    print("=" * 50)
+    for step_type, data in steps:
+        if step_type == "think":
+            print(f"[考] {data}")               # ← TODO 1
+        elif step_type == "act":
+            tool_name, kwargs = data
+            args_str = ', '.join(f'{k}={v!r}' for k, v in kwargs.items())
+            print(f"[実] {tool_name}({args_str})")
+            result = TOOLS[tool_name](**kwargs) # ← TODO 2
+            for line in str(result).split('\\n')[:4]:
+                print(f"  → {line}")
+        print()`;
+
+STARTER[2] = `# === Exercise 2: タスクリスト管理（TodoWrite シミュレーション）===
+# Claude Code の TodoWrite ツールが行うタスク管理を実装します
+
+STATUS_ICONS = {
+    "pending":     "○",
+    "in_progress": "→",
+    "done":        "✓",
+}
+
+class TaskList:
+    def __init__(self):
+        self.tasks = []
+
+    def add(self, title):
+        """タスクを追加する（初期状態: pending）"""
+        self.tasks.append({"title": title, "status": "pending"})
+
+    def start(self, title):
+        """タスクを実行中にする"""
+        for task in self.tasks:
+            if task["title"] == title:
+                # TODO: task["status"] を "in_progress" に更新してください
+                pass
+                return
+        print(f"⚠ タスク '{title}' が見つかりません")
+
+    def done(self, title):
+        """タスクを完了にする"""
+        for task in self.tasks:
+            if task["title"] == title:
+                # TODO: task["status"] を "done" に更新してください
+                pass
+                return
+        print(f"⚠ タスク '{title}' が見つかりません")
+
+    def show(self):
+        """タスク一覧を表示する"""
+        print("─" * 40)
+        for task in self.tasks:
+            icon = STATUS_ICONS.get(task["status"], "?")
+            print(f"  {icon} {task['title']}")
+        print("─" * 40)
+
+    def summary(self):
+        """完了・実行中・未着手の件数を返す"""
+        # TODO: 以下の件数を計算して表示してください
+        #       done / in_progress / pending それぞれの件数
+        total = len(self.tasks)
+        done_count = None        # ← ここを完成させてください
+        in_prog    = None        # ← ここを完成させてください
+        pending    = None        # ← ここを完成させてください
+
+        if done_count is None:
+            print("⚠ summary() のカウントを完成させてください")
+        else:
+            print(f"完了: {done_count} / 実行中: {in_prog} / 未着手: {pending} / 合計: {total}")
+
+
+# --- 実行例（Claude Code のエージェントが行うタスク管理を模倣）---
+todo = TaskList()
+todo.add("README.md を読んでプロジェクトを把握する")
+todo.add("src/ 以下を調査して関数一覧を作成する")
+todo.add("TODO コメントを検索して未実装箇所を特定する")
+todo.add("レポートをまとめる")
+
+print("=== 初期状態 ===")
+todo.show()
+
+todo.start("README.md を読んでプロジェクトを把握する")
+todo.start("src/ 以下を調査して関数一覧を作成する")
+print("=== 実行中 ===")
+todo.show()
+
+todo.done("README.md を読んでプロジェクトを把握する")
+todo.done("src/ 以下を調査して関数一覧を作成する")
+todo.start("TODO コメントを検索して未実装箇所を特定する")
+print("=== 進行中 ===")
+todo.show()
+
+todo.done("TODO コメントを検索して未実装箇所を特定する")
+todo.done("レポートをまとめる")
+print("=== 完了 ===")
+todo.show()
+todo.summary()
+`;
+
+SOLUTION[2] = `def start(self, title):
+    for task in self.tasks:
+        if task["title"] == title:
+            task["status"] = "in_progress"  # ← TODO
+            return
+
+def done(self, title):
+    for task in self.tasks:
+        if task["title"] == title:
+            task["status"] = "done"  # ← TODO
+            return
+
+def summary(self):
+    total      = len(self.tasks)
+    done_count = sum(1 for t in self.tasks if t["status"] == "done")        # ← TODO
+    in_prog    = sum(1 for t in self.tasks if t["status"] == "in_progress") # ← TODO
+    pending    = sum(1 for t in self.tasks if t["status"] == "pending")     # ← TODO
+    print(f"完了: {done_count} / 実行中: {in_prog} / 未着手: {pending} / 合計: {total}")`;
+
+// ===== Pyodide runner =====
+let pyodideInstance = null;
+
+async function ensurePyodide() {
+  if (pyodideInstance) return pyodideInstance;
+  const status = document.getElementById('py-status');
+  status.textContent = '⏳ Python 実行環境を準備中（初回のみ数秒かかります）...';
+  status.className = 'py-status loading';
+  pyodideInstance = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/' });
+  status.textContent = '✓ Python 実行環境が準備できました';
+  status.className = 'py-status ready';
+  return pyodideInstance;
+}
+
+async function runCode(n) {
+  const out = document.getElementById('out' + n);
+  out.className = 'output-area show';
+  out.textContent = '⏳ 実行中...';
+  try {
+    const py = await ensurePyodide();
+    py.runPython('import sys, io; sys.stdout = io.StringIO()');
+    await py.runPythonAsync(document.getElementById('code' + n).value);
+    const result = py.runPython('sys.stdout.getvalue()');
+    out.textContent = result || '(出力なし)';
+    out.className = 'output-area show';
+  } catch (e) {
+    out.textContent = 'エラー:\n' + e.message;
+    out.className = 'output-area show error';
+  }
+}
+
+function toggleSolution(n) {
+  document.getElementById('sol' + n).classList.toggle('show');
+}
+
+function resetCode(n) {
+  document.getElementById('code' + n).value = STARTER[n];
+  const out = document.getElementById('out' + n);
+  out.textContent = '';
+  out.className = 'output-area';
+  document.getElementById('sol' + n).classList.remove('show');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('code' + i).value = STARTER[i];
+    document.getElementById('sol' + i + '-code').textContent = SOLUTION[i];
+  }
+});
+</script>
+</body>
+</html>

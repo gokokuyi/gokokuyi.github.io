@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 2: ファイル操作と基本ツール | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  h3 { color: #1565c0; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #263238; color: #eceff1; padding: 16px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #3f51b5; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  th { background: #3f51b5; color: #fff; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  a { color: #3f51b5; }
+  blockquote { border-left: 4px solid #ff9800; background: #fff8e1; padding: 10px 16px; border-radius: 4px; margin: 16px 0; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .tool-card { display: flex; gap: 12px; background: #fff; border: 1.5px solid #c5cae9; border-radius: 8px; padding: 14px 18px; margin: 12px 0; align-items: flex-start; }
+  .tool-name { background: #3f51b5; color: #fff; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 0.9em; white-space: nowrap; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  .section-num { display: inline-block; background: #3f51b5; color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.85em; margin-right: 6px; }
+  ul li, ol li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 2: ファイル操作と基本ツール</h1>
+<div class="meta">対象: 全員 &nbsp;|&nbsp; 所要時間: 約60分</div>
+
+<h2>ラーニング目標</h2>
+<ul>
+  <li>Claude Code が使用する主要ツールを理解する</li>
+  <li>Read / Write / Edit / Glob / Grep / Bash の使い方を習得する</li>
+  <li>ツールの使い分けとベストプラクティスを身につける</li>
+  <li>安全なファイル操作の考え方を理解する</li>
+</ul>
+
+<h2><span class="section-num">1</span> Claude Code のツール概念</h2>
+<p>Claude Code は「ツール」を通じてファイル操作やシステム操作を行います。ユーザーが自然言語で依頼すると、Claude が適切なツールを選択して実行します。</p>
+
+<h3>主要ツール一覧</h3>
+<table>
+  <tr><th>ツール</th><th>用途</th></tr>
+  <tr><td><strong>Read</strong></td><td>ファイルの内容を読み込む</td></tr>
+  <tr><td><strong>Write</strong></td><td>ファイルを新規作成・上書き</td></tr>
+  <tr><td><strong>Edit</strong></td><td>ファイルの特定箇所を編集</td></tr>
+  <tr><td><strong>Glob</strong></td><td>パターンでファイルを検索</td></tr>
+  <tr><td><strong>Grep</strong></td><td>ファイル内のテキストを検索</td></tr>
+  <tr><td><strong>Bash</strong></td><td>シェルコマンドを実行</td></tr>
+  <tr><td><strong>WebSearch</strong></td><td>Web 検索</td></tr>
+  <tr><td><strong>WebFetch</strong></td><td>URL の内容を取得</td></tr>
+</table>
+
+<h2><span class="section-num">2</span> Read — ファイルを読む</h2>
+<p>ファイルの内容を読み込むツールです。Claude Code が作業を始める前に必ず使います。</p>
+<pre><code>You: config.yaml を読んで設定内容を説明して
+
+Claude: 設定ファイルには以下が含まれています：
+  - データベース: PostgreSQL（ポート 5432）
+  - キャッシュ: Redis（ポート 6379）</code></pre>
+
+<h3>Read ツールの特徴</h3>
+<ul>
+  <li><strong>行番号付き</strong>で表示されるため、正確な位置を参照できる</li>
+  <li><strong>大きなファイル</strong>は自動的に分割して読み込む</li>
+  <li><strong>画像ファイル</strong>（PNG, JPG 等）も読み込める</li>
+  <li><strong>PDF ファイル</strong>も対応（ページ指定可能）</li>
+  <li><strong>Jupyter Notebook</strong>（.ipynb）も読み込める</li>
+</ul>
+
+<h2><span class="section-num">3</span> Write — ファイルを作成・上書き</h2>
+<p>新しいファイルを作成するか、既存ファイルを完全に上書きします。</p>
+<pre><code>You: tests/test_utils.py という新しいテストファイルを作成して</code></pre>
+
+<h3>Write vs Edit の使い分け</h3>
+<table>
+  <tr><th>状況</th><th>使うツール</th></tr>
+  <tr><td>新しいファイルを作る</td><td><strong>Write</strong></td></tr>
+  <tr><td>ファイルを丸ごと書き直す</td><td><strong>Write</strong></td></tr>
+  <tr><td>ファイルの一部だけ変更する</td><td><strong>Edit</strong>（推奨）</td></tr>
+</table>
+<blockquote><strong>注意:</strong> Write は既存のファイルを完全に上書きします。一部だけ変更したい場合は Edit を使うのが安全です。</blockquote>
+
+<h2><span class="section-num">4</span> Edit — ファイルを部分編集</h2>
+<p>既存ファイルの特定箇所だけを変更するツールです。変更差分のみを送るため、大きなファイルでも効率的です。</p>
+<pre><code>You: src/auth.py の login 関数に None チェックを追加して
+
+# 変更前
+def login(username, password):
+    user = db.find_user(username)
+    return authenticate(user, password)
+
+# 変更後（Edit で追加）
+def login(username, password):
+    if not username:
+        raise ValueError("username is required")
+    if not password:
+        raise ValueError("password is required")
+    user = db.find_user(username)
+    return authenticate(user, password)</code></pre>
+
+<h2><span class="section-num">5</span> Glob — ファイルを検索</h2>
+<p>ファイル名のパターンでファイルを検索するツールです。</p>
+
+<h3>パターン記法</h3>
+<table>
+  <tr><th>パターン</th><th>意味</th><th>例</th></tr>
+  <tr><td><code>*</code></td><td>任意の文字列（同一ディレクトリ）</td><td><code>*.py</code></td></tr>
+  <tr><td><code>**</code></td><td>任意のディレクトリ階層</td><td><code>**/*.py</code></td></tr>
+  <tr><td><code>?</code></td><td>任意の1文字</td><td><code>test?.py</code></td></tr>
+  <tr><td><code>{a,b}</code></td><td>a または b</td><td><code>*.{js,ts}</code></td></tr>
+</table>
+
+<h3>よく使う指示例</h3>
+<table>
+  <tr><th>指示</th><th>パターン</th></tr>
+  <tr><td>全テストファイルを探す</td><td><code>**/*test*.py</code></td></tr>
+  <tr><td>設定ファイルを探す</td><td><code>**/*.{yaml,yml,json,toml}</code></td></tr>
+  <tr><td>src の TS ファイルを探す</td><td><code>src/**/*.ts</code></td></tr>
+</table>
+
+<h2><span class="section-num">6</span> Grep — ファイル内を検索</h2>
+<p>ファイルの内容を正規表現で検索するツールです。</p>
+<pre><code>You: "TODO" コメントがどこにあるか探して
+
+Claude: 以下の箇所に TODO コメントが見つかりました：
+  - src/utils.py:45 - TODO: エラーハンドリングを追加
+  - src/auth.py:23  - TODO: ログを追加</code></pre>
+
+<h3>Grep の検索モード</h3>
+<table>
+  <tr><th>モード</th><th>説明</th></tr>
+  <tr><td><code>files_with_matches</code></td><td>マッチしたファイルパスのみ表示（デフォルト）</td></tr>
+  <tr><td><code>content</code></td><td>マッチした行の内容を表示</td></tr>
+  <tr><td><code>count</code></td><td>マッチ数を表示</td></tr>
+</table>
+
+<h2><span class="section-num">7</span> Bash — コマンドを実行</h2>
+<p>シェルコマンドを実行するツールです。テスト実行、パッケージインストール、git 操作などに使います。</p>
+<pre><code>You: テストを実行して結果を教えて
+
+Claude: テスト結果：
+  - 通過: 45件
+  - 失敗: 2件
+  失敗の詳細: test_auth.py::test_login - AssertionError: ...</code></pre>
+
+<h3>Bash ツールの注意点</h3>
+<ul>
+  <li><strong>破壊的なコマンド</strong>（rm -rf, drop table 等）は確認を求められる</li>
+  <li><strong>長時間のコマンド</strong>はタイムアウトがある（最大10分）</li>
+  <li><strong>対話型コマンド</strong>（vim, less 等）は使えない</li>
+</ul>
+
+<h2><span class="section-num">8</span> ツールの使い分けガイド</h2>
+<table>
+  <tr><th>やりたいこと</th><th>使うツール</th></tr>
+  <tr><td>ファイル名で探す</td><td><strong>Glob</strong></td></tr>
+  <tr><td>内容で探す</td><td><strong>Grep</strong></td></tr>
+  <tr><td>ファイルを読む</td><td><strong>Read</strong></td></tr>
+  <tr><td>一部だけ変更する</td><td><strong>Edit</strong>（推奨）</td></tr>
+  <tr><td>全部書き直し / 新規作成</td><td><strong>Write</strong></td></tr>
+  <tr><td>コマンドを実行する</td><td><strong>Bash</strong></td></tr>
+</table>
+
+<h3>専用ツールを優先すべき理由</h3>
+<table>
+  <tr><th>Bash でやる場合</th><th>専用ツールを使う場合</th></tr>
+  <tr><td><code>cat file.py</code></td><td>Read ツール</td></tr>
+  <tr><td><code>find . -name "*.py"</code></td><td>Glob ツール</td></tr>
+  <tr><td><code>grep -r "TODO" .</code></td><td>Grep ツール</td></tr>
+  <tr><td><code>sed -i 's/foo/bar/' file.py</code></td><td>Edit ツール</td></tr>
+</table>
+<p>専用ツールの方がユーザーがレビューしやすく、エラーが起きにくく、意図が明確になります。</p>
+
+<h2>まとめ</h2>
+<table>
+  <tr><th>ツール</th><th>主な用途</th><th>注意点</th></tr>
+  <tr><td>Read</td><td>ファイル読み込み</td><td>編集前に必ず使う</td></tr>
+  <tr><td>Write</td><td>新規作成・全書き換え</td><td>上書きに注意</td></tr>
+  <tr><td>Edit</td><td>部分編集</td><td>Read 後に使う</td></tr>
+  <tr><td>Glob</td><td>ファイル名検索</td><td>パターン記法を覚える</td></tr>
+  <tr><td>Grep</td><td>内容検索</td><td>正規表現が使える</td></tr>
+  <tr><td>Bash</td><td>コマンド実行</td><td>破壊的操作は確認</td></tr>
+</table>
+
+<div class="step-links">
+  <a href="../step1/lesson.html">← Step 1</a>
+  <div>
+    <a href="quiz.html">✅ Quiz へ</a>
+    &nbsp;
+    <a href="../step3/lesson.html">Step 3 →</a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 2 Quiz | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .q-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 8px; padding: 20px 24px; margin: 20px 0; box-shadow: 0 1px 4px rgba(0,0,0,.06); transition: border-color .3s; }
+  .q-box h3 { margin-top: 0; color: #1a237e; font-size: 1em; }
+  .q-box.correct-q { border-color: #66bb6a; }
+  .q-box.wrong-q { border-color: #ef9a9a; }
+  .options { list-style: none; padding: 0; margin: 10px 0 0 0; }
+  .options li { margin-bottom: 8px; }
+  .options label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 9px 14px; border-radius: 6px; border: 1.5px solid #e8eaf6; transition: background .15s; }
+  .options label:hover { background: #f0f4ff; }
+  .options input[type="radio"] { margin-top: 3px; flex-shrink: 0; }
+  .opt-letter { font-weight: bold; color: #283593; min-width: 18px; }
+  .options label.correct-answer { background: #e8f5e9 !important; border-color: #66bb6a !important; color: #1b5e20; font-weight: bold; }
+  .options label.correct-answer .opt-letter { color: #1b5e20; }
+  .options label.wrong-answer { background: #ffebee !important; border-color: #ef9a9a !important; color: #b71c1c; }
+  .options label.wrong-answer .opt-letter { color: #b71c1c; }
+  .options label.show-correct { background: #e8f5e9 !important; border-color: #66bb6a !important; color: #1b5e20; }
+  .options label.show-correct .opt-letter { color: #1b5e20; }
+  .explanation { background: #fff8e1; border-left: 4px solid #ffc107; border-radius: 4px; padding: 8px 14px; margin-top: 12px; font-size: 0.92em; display: none; }
+  .explanation.show { display: block; }
+  .submit-area { text-align: center; margin: 40px 0 24px; }
+  .btn-submit { background: #3f51b5; color: #fff; border: none; border-radius: 8px; padding: 14px 52px; font-size: 1.1em; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(63,81,181,.4); }
+  .btn-submit:hover { background: #283593; }
+  .score-box { background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); border: 2px solid #3f51b5; border-radius: 12px; padding: 28px; text-align: center; margin-top: 32px; display: none; }
+  .score-box.show { display: block; }
+  .score-fraction { font-size: 3em; font-weight: bold; color: #1a237e; line-height: 1; }
+  .score-pct { font-size: 1.4em; color: #3f51b5; margin-top: 6px; }
+  .score-msg { color: #283593; font-size: 1.1em; margin-top: 10px; font-weight: bold; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 2 確認テスト — ファイル操作と基本ツール</h1>
+<div class="meta">所要時間: 約10分 &nbsp;|&nbsp; 問題数: 10問</div>
+
+<h2>選択問題</h2>
+
+<div class="q-box" id="q1">
+  <h3>Q1. ファイルの内容を読み込むために使うツールはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q1" value="a"><span class="opt-letter">a.</span> Fetch</label></li>
+    <li><label><input type="radio" name="q1" value="b"><span class="opt-letter">b.</span> Read</label></li>
+    <li><label><input type="radio" name="q1" value="c"><span class="opt-letter">c.</span> Load</label></li>
+    <li><label><input type="radio" name="q1" value="d"><span class="opt-letter">d.</span> Open</label></li>
+  </ul>
+  <div class="explanation">正解: b — <strong>Read</strong> ツールでファイルの内容を読み込みます。<code>cat</code> や <code>head</code> などの Bash コマンドより Read ツールを優先して使います。</div>
+</div>
+
+<div class="q-box" id="q2">
+  <h3>Q2. ファイルを<u>部分的に</u>変更する際に推奨されるツールはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q2" value="a"><span class="opt-letter">a.</span> Write</label></li>
+    <li><label><input type="radio" name="q2" value="b"><span class="opt-letter">b.</span> Bash（sed コマンド）</label></li>
+    <li><label><input type="radio" name="q2" value="c"><span class="opt-letter">c.</span> Edit</label></li>
+    <li><label><input type="radio" name="q2" value="d"><span class="opt-letter">d.</span> Replace</label></li>
+  </ul>
+  <div class="explanation">正解: c — <strong>Edit</strong> ツールは特定箇所のみを差分として変更します。ファイル全体を送信しないため効率的です。</div>
+</div>
+
+<div class="q-box" id="q3">
+  <h3>Q3. Write ツールと Edit ツールの違いとして<u>正しい</u>ものはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q3" value="a"><span class="opt-letter">a.</span> Write は新規ファイルのみ、Edit は既存ファイルのみ</label></li>
+    <li><label><input type="radio" name="q3" value="b"><span class="opt-letter">b.</span> Write はファイル全体を上書き、Edit は特定箇所のみ変更する</label></li>
+    <li><label><input type="radio" name="q3" value="c"><span class="opt-letter">c.</span> Write はテキストのみ、Edit はバイナリも扱える</label></li>
+    <li><label><input type="radio" name="q3" value="d"><span class="opt-letter">d.</span> Write は高速で、Edit は低速</label></li>
+  </ul>
+  <div class="explanation">正解: b — Write はファイル全体を上書き（全コンテンツを渡す必要あり）、Edit は old_string → new_string の差分のみで変更します。</div>
+</div>
+
+<div class="q-box" id="q4">
+  <h3>Q4. Glob パターン <code>**/*.test.ts</code> が検索するファイルはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q4" value="a"><span class="opt-letter">a.</span> カレントディレクトリ直下の .test.ts ファイル</label></li>
+    <li><label><input type="radio" name="q4" value="b"><span class="opt-letter">b.</span> すべてのディレクトリ階層にある .test.ts ファイル</label></li>
+    <li><label><input type="radio" name="q4" value="c"><span class="opt-letter">c.</span> test ディレクトリ内の .ts ファイル</label></li>
+    <li><label><input type="radio" name="q4" value="d"><span class="opt-letter">d.</span> .test というファイル名の ts ファイル</label></li>
+  </ul>
+  <div class="explanation">正解: b — <code>**</code> はすべてのディレクトリ階層を意味します。どの深さにある .test.ts ファイルもマッチします。</div>
+</div>
+
+<div class="q-box" id="q5">
+  <h3>Q5. Grep ツールで「マッチしたファイルのパスのみ」表示するモードはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q5" value="a"><span class="opt-letter">a.</span> <code>path_only</code></label></li>
+    <li><label><input type="radio" name="q5" value="b"><span class="opt-letter">b.</span> <code>files_with_matches</code></label></li>
+    <li><label><input type="radio" name="q5" value="c"><span class="opt-letter">c.</span> <code>file_list</code></label></li>
+    <li><label><input type="radio" name="q5" value="d"><span class="opt-letter">d.</span> <code>compact</code></label></li>
+  </ul>
+  <div class="explanation">正解: b — <code>output_mode: "files_with_matches"</code> でマッチしたファイルパスのみを表示します（デフォルトモードでもあります）。</div>
+</div>
+
+<div class="q-box" id="q6">
+  <h3>Q6. Bash ツールを使わずに専用ツールを使うべき理由として<u>誤っているもの</u>はどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q6" value="a"><span class="opt-letter">a.</span> ユーザーがレビューしやすい</label></li>
+    <li><label><input type="radio" name="q6" value="b"><span class="opt-letter">b.</span> エラーが起きにくい</label></li>
+    <li><label><input type="radio" name="q6" value="c"><span class="opt-letter">c.</span> 専用ツールの方が必ず高速である</label></li>
+    <li><label><input type="radio" name="q6" value="d"><span class="opt-letter">d.</span> 意図が明確になる</label></li>
+  </ul>
+  <div class="explanation">正解: c — 速度が優れているとは限りません。専用ツールを使う主な理由は「ユーザーがレビューしやすい」「意図が明確になる」「エラーが起きにくい」点です。</div>
+</div>
+
+<div class="q-box" id="q7">
+  <h3>Q7. ファイルを編集する前に Read ツールで確認することが重要な理由はどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q7" value="a"><span class="opt-letter">a.</span> Read ツールを使わないと Edit ツールが動作しないから</label></li>
+    <li><label><input type="radio" name="q7" value="b"><span class="opt-letter">b.</span> 既存の内容を把握した上で正確な変更を行うため</label></li>
+    <li><label><input type="radio" name="q7" value="c"><span class="opt-letter">c.</span> ファイルの容量を確認するため</label></li>
+    <li><label><input type="radio" name="q7" value="d"><span class="opt-letter">d.</span> Read ツールを実行しないとエラーが発生するから</label></li>
+  </ul>
+  <div class="explanation">正解: b — 既存コードを把握せずに編集すると、意図しない変更や既存ロジックの破壊につながります。Read で内容を確認してから編集することが重要です。</div>
+</div>
+
+<div class="q-box" id="q8">
+  <h3>Q8. <code>src/**/*.{js,ts}</code> という Glob パターンはどのファイルにマッチしますか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q8" value="a"><span class="opt-letter">a.</span> src ディレクトリ直下の .js または .ts ファイル</label></li>
+    <li><label><input type="radio" name="q8" value="b"><span class="opt-letter">b.</span> src ディレクトリ以下の全階層にある .js または .ts ファイル</label></li>
+    <li><label><input type="radio" name="q8" value="c"><span class="opt-letter">c.</span> src ディレクトリ以下の .js または .ts（1階層のみ）</label></li>
+    <li><label><input type="radio" name="q8" value="d"><span class="opt-letter">d.</span> js または ts という名前のディレクトリ</label></li>
+  </ul>
+  <div class="explanation">正解: b — <code>src/**</code> で src 以下の全階層、<code>{js,ts}</code> で .js または .ts の両方にマッチします。</div>
+</div>
+
+<div class="q-box" id="q9">
+  <h3>Q9. Bash ツールで「対話型コマンド」が使えない主な理由はどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q9" value="a"><span class="opt-letter">a.</span> 対話型コマンドはセキュリティリスクがあるから</label></li>
+    <li><label><input type="radio" name="q9" value="b"><span class="opt-letter">b.</span> Claude Code の実行環境が対話型入力に対応していないから</label></li>
+    <li><label><input type="radio" name="q9" value="c"><span class="opt-letter">c.</span> 対話型コマンドは Bash ツールでは禁止されているから</label></li>
+    <li><label><input type="radio" name="q9" value="d"><span class="opt-letter">d.</span> 対話型コマンドは Glob ツールで代替できるから</label></li>
+  </ul>
+  <div class="explanation">正解: b — Claude Code は自動化環境で動作するため、<code>git rebase -i</code> のような対話型入力を待つコマンドは使用できません。</div>
+</div>
+
+<div class="q-box" id="q10">
+  <h3>Q10. 一部だけ変更したいときに Write ではなく Edit を使うべき理由はどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q10" value="a"><span class="opt-letter">a.</span> Edit の方が文字数制限が少ないから</label></li>
+    <li><label><input type="radio" name="q10" value="b"><span class="opt-letter">b.</span> Write はテキストファイルしか対応していないから</label></li>
+    <li><label><input type="radio" name="q10" value="c"><span class="opt-letter">c.</span> Write はファイル全体を上書きするため、変更以外の部分を失うリスクがあるから</label></li>
+    <li><label><input type="radio" name="q10" value="d"><span class="opt-letter">d.</span> Edit の方が処理が速いから</label></li>
+  </ul>
+  <div class="explanation">正解: c — Write を使うと Claude がファイル全体を再生成するため、他の箇所を誤って変更したり削除するリスクがあります。部分変更には Edit を使います。</div>
+</div>
+
+<div class="submit-area">
+  <button class="btn-submit" id="btn-submit" onclick="submitQuiz()">回答完了</button>
+</div>
+
+<div class="score-box" id="score-box">
+  <div class="score-fraction"><span id="score-num">0</span> <span style="font-size:.6em;color:#3f51b5">/ <span id="score-total">10</span></span></div>
+  <div class="score-pct" id="score-pct"></div>
+  <div class="score-msg" id="score-msg"></div>
+</div>
+
+<div class="step-links">
+  <a href="lesson.html">← Lesson に戻る</a>
+  <a href="practice.html">📝 宿題へ →</a>
+</div>
+
+<script>
+const answers = ['b','c','b','b','b','c','b','b','b','c'];
+const total = answers.length;
+
+function submitQuiz() {
+  let correct = 0;
+  for (let i = 0; i < total; i++) {
+    const q = i + 1;
+    const selected = document.querySelector(`input[name="q${q}"]:checked`);
+    const qBox = document.getElementById(`q${q}`);
+    const explanation = qBox.querySelector('.explanation');
+    const correctVal = answers[i];
+
+    explanation.classList.add('show');
+
+    if (selected && selected.value === correctVal) {
+      selected.closest('label').classList.add('correct-answer');
+      qBox.classList.add('correct-q');
+      correct++;
+    } else {
+      if (selected) selected.closest('label').classList.add('wrong-answer');
+      const correctInput = qBox.querySelector(`input[value="${correctVal}"]`);
+      if (correctInput) correctInput.closest('label').classList.add('show-correct');
+      qBox.classList.add('wrong-q');
+    }
+  }
+
+  document.querySelectorAll('.options input').forEach(r => r.disabled = true);
+
+  const pct = Math.round(correct / total * 100);
+  document.getElementById('score-num').textContent = correct;
+  document.getElementById('score-total').textContent = total;
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-msg').textContent =
+    pct === 100 ? '満点！素晴らしい！' :
+    pct >= 80  ? 'よくできました！' :
+    pct >= 60  ? '合格ラインです。復習しましょう。' :
+                 'もう一度レッスンを復習しましょう。';
+
+  document.getElementById('score-box').classList.add('show');
+  document.getElementById('btn-submit').style.display = 'none';
+  document.getElementById('score-box').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

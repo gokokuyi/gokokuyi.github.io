@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 5: チーム活用とベストプラクティス | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  h3 { color: #1565c0; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #263238; color: #eceff1; padding: 16px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #3f51b5; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  th { background: #3f51b5; color: #fff; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  a { color: #3f51b5; }
+  blockquote { border-left: 4px solid #43a047; background: #f1f8f4; padding: 10px 16px; border-radius: 4px; margin: 16px 0; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .phase-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 8px; padding: 14px 18px; margin: 12px 0; }
+  .phase-box .phase-label { display: inline-block; background: #3f51b5; color: #fff; padding: 2px 10px; border-radius: 4px; font-size: 0.85em; margin-bottom: 6px; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  .section-num { display: inline-block; background: #3f51b5; color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.85em; margin-right: 6px; }
+  ul li, ol li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 5: チーム活用とベストプラクティス</h1>
+<div class="meta">対象: 全員 &nbsp;|&nbsp; 所要時間: 約60分</div>
+
+<h2>ラーニング目標</h2>
+<ul>
+  <li>チームでの Claude Code 活用ルールを設計できる</li>
+  <li>セキュリティリスクを理解し、適切に対処できる</li>
+  <li>効果的なプロンプト設計の原則を習得する</li>
+  <li>CI/CD への統合方法を理解する</li>
+</ul>
+
+<h2><span class="section-num">1</span> チームでの運用設計</h2>
+
+<h3>段階的な導入アプローチ</h3>
+<div class="phase-box">
+  <span class="phase-label">Phase 1: 個人ラーニング（1〜2週間）</span>
+  <ul><li>各自が個人の作業で試す</li><li>便利な使い方を発見する</li><li>不安な点を洗い出す</li></ul>
+</div>
+<div class="phase-box">
+  <span class="phase-label">Phase 2: ルール整備（1週間）</span>
+  <ul><li>利用ガイドラインを作成</li><li>CLAUDE.md を整備</li><li>禁止事項を明確にする</li></ul>
+</div>
+<div class="phase-box">
+  <span class="phase-label">Phase 3: チーム展開（継続）</span>
+  <ul><li>全員に展開</li><li>定期的に活用事例を共有</li><li>ルールを継続的に改善</li></ul>
+</div>
+
+<h3>チームで合意すべき主なポイント</h3>
+<table>
+  <tr><th>カテゴリ</th><th>決めること</th></tr>
+  <tr><td>使って良い操作</td><td>自動承認できる操作の範囲</td></tr>
+  <tr><td>確認必須の操作</td><td>必ずレビューが必要な操作</td></tr>
+  <tr><td>禁止操作</td><td>絶対にやらない操作</td></tr>
+  <tr><td>コードレビュー</td><td>AI 生成コードのレビュー方針</td></tr>
+  <tr><td>機密情報</td><td>Claude Code に渡してよい情報の範囲</td></tr>
+  <tr><td>コスト管理</td><td>API 使用量の監視・上限</td></tr>
+</table>
+
+<h2><span class="section-num">2</span> セキュリティの考慮事項</h2>
+
+<h3>渡してはいけない情報</h3>
+<table>
+  <tr><th>NG（渡してはいけない）</th><th>OK（渡して良い）</th></tr>
+  <tr><td>本番環境の API キー・パスワード</td><td>開発環境のコード・設定</td></tr>
+  <tr><td>個人情報（氏名・メール・住所等）</td><td>匿名化されたサンプルデータ</td></tr>
+  <tr><td>社外秘の設計書・仕様書</td><td>公開情報・ドキュメント</td></tr>
+  <tr><td>顧客データ・財務情報</td><td>テストコード</td></tr>
+</table>
+
+<h3>git 操作のリスク管理</h3>
+<table>
+  <tr><th>高リスク（必ず確認）</th><th>低リスク（自動承認 OK）</th></tr>
+  <tr><td>git push --force</td><td>git status</td></tr>
+  <tr><td>git reset --hard</td><td>git log</td></tr>
+  <tr><td>git branch -D</td><td>git diff</td></tr>
+  <tr><td>main/master への直接コミット</td><td>feature ブランチへの commit</td></tr>
+</table>
+
+<h2><span class="section-num">3</span> 効果的なプロンプト設計</h2>
+
+<h3>良いプロンプトの5原則</h3>
+
+<h4>① 具体的に指示する</h4>
+<table>
+  <tr><th>NG</th><th>OK</th></tr>
+  <tr><td>「このコードを改善して」</td><td>「src/auth.py の login() 関数に、パスワード最小長チェック（8文字以上）を追加して」</td></tr>
+</table>
+
+<h4>② コンテキストを与える</h4>
+<table>
+  <tr><th>NG</th><th>OK</th></tr>
+  <tr><td>「エラーを修正して」</td><td>「以下のエラーが pytest 実行時に発生しています：<br>AttributeError: 'NoneType' object has no attribute 'email'<br>テストファイル: tests/test_user.py の test_create_user 関数」</td></tr>
+</table>
+
+<h4>③ 出力形式を指定する</h4>
+<pre><code>「セキュリティ上の問題点を以下の形式でまとめて：
+  - 重大度: 高/中/低
+  - 場所: ファイル名と行番号
+  - 問題: 問題の説明
+  - 対策: 推奨される修正方法」</code></pre>
+
+<h4>④ 制約を伝える</h4>
+<pre><code>「以下の制約でリファクタリングして：
+  - 既存のテストを壊さない
+  - 外部 API の仕様は変更しない（後方互換性を維持）
+  - Python 3.10 以前でも動作すること」</code></pre>
+
+<h4>⑤ 段階的に進める</h4>
+<pre><code>Step 1: 「まず現在の認証システムの問題点を分析して」
+Step 2: 「分析結果をもとに改善計画を立てて」
+Step 3: 「計画の優先度が高い部分から実装して」</code></pre>
+
+<h2><span class="section-num">4</span> CI/CD への統合</h2>
+
+<h3>GitHub Actions での活用例</h3>
+<pre><code># .github/workflows/claude-review.yml
+name: Claude Code Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Claude Code Review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude --no-interactive \
+            "この PR のコード変更をレビューして、問題点を指摘して"</code></pre>
+
+<h3>自動化に向く/向かないタスク</h3>
+<table>
+  <tr><th>自動化に向くタスク</th><th>注意が必要なタスク</th></tr>
+  <tr><td>読み取りのみの操作</td><td>本番環境への変更</td></tr>
+  <tr><td>繰り返し同じ作業をするもの</td><td>外部サービスへの書き込み</td></tr>
+  <tr><td>人間のチェックが後に入るもの</td><td>機密情報を扱う操作</td></tr>
+</table>
+
+<h2><span class="section-num">5</span> トラブルシューティング</h2>
+<table>
+  <tr><th>問題</th><th>対処</th></tr>
+  <tr><td>意図しない操作が実行された</td><td>git restore . でリセット → CLAUDE.md に禁止事項を追加</td></tr>
+  <tr><td>コンテキストが長くなりすぎる</td><td>/clear でリセット → タスクを小さく分割</td></tr>
+  <tr><td>繰り返し同じ間違いをする</td><td>CLAUDE.md に明示 → メモリに記録</td></tr>
+  <tr><td>生成されたコードが動かない</td><td>エラーメッセージをそのまま渡す → 環境情報を伝える</td></tr>
+  <tr><td>API コストが高い</td><td>/cost で確認 → /clear でリセット → 使用ポリシーを見直す</td></tr>
+</table>
+
+<h2><span class="section-num">6</span> AI と協働するマインドセット</h2>
+<blockquote>
+  ✓ AI の提案を必ず確認してから適用する<br>
+  ✓ 理解できないコードは「説明して」と聞く<br>
+  ✓ エラーが出たら丸ごとエラーメッセージを渡す<br>
+  ✓ 良い結果が出たら「その方針で続けて」と伝える<br>
+  ✓ git で安全網を張っておく
+</blockquote>
+
+<h2>まとめ</h2>
+<table>
+  <tr><th>テーマ</th><th>ポイント</th></tr>
+  <tr><td>チーム運用</td><td>CLAUDE.md を共有し、ルールを統一する</td></tr>
+  <tr><td>セキュリティ</td><td>機密情報を渡さない・禁止操作を設定する</td></tr>
+  <tr><td>プロンプト</td><td>具体的・コンテキスト付き・段階的に</td></tr>
+  <tr><td>CI/CD</td><td>読み取り系から自動化を始める</td></tr>
+  <tr><td>トラブル</td><td>git で安全網を張って、エラーはそのまま渡す</td></tr>
+</table>
+
+<div class="step-links">
+  <a href="../step4/lesson.html">← Step 4</a>
+  <div>
+    <a href="quiz.html">✅ Quiz へ</a>
+    &nbsp;
+    <a href="../index.html">🏠 TOP へ</a>
+  </div>
+</div>
+</body>
+</html>

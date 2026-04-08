@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 1: Claude Code 入門 | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  h3 { color: #1565c0; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #263238; color: #eceff1; padding: 16px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #3f51b5; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  th { background: #3f51b5; color: #fff; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  a { color: #3f51b5; }
+  blockquote { border-left: 4px solid #ff9800; background: #fff8e1; padding: 10px 16px; border-radius: 4px; margin: 16px 0; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  ul li, ol li { margin-bottom: 5px; }
+  .section-num { display: inline-block; background: #3f51b5; color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.85em; margin-right: 6px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 1: Claude Code 入門</h1>
+<div class="meta">対象: 全員 &nbsp;|&nbsp; 所要時間: 約60分</div>
+
+<h2>ラーニング目標</h2>
+<ul>
+  <li>Claude Code の概要と特徴を理解する</li>
+  <li>インストールと初期設定ができる</li>
+  <li>基本的な操作方法を習得する</li>
+  <li>権限モードとセキュリティの考え方を理解する</li>
+</ul>
+
+<h2><span class="section-num">1</span> Claude Code とは</h2>
+<p>Claude Code は Anthropic が提供する公式 AI CLI（コマンドラインインターフェース）ツールです。AI アシスタント Claude をターミナルや IDE から直接利用でき、ソフトウェアエンジニアリング作業を強力にサポートします。</p>
+
+<h3>主な特徴</h3>
+<table>
+  <tr><th>機能</th><th>説明</th></tr>
+  <tr><td>コード生成・修正</td><td>自然言語でコードを生成、バグを修正</td></tr>
+  <tr><td>ファイル操作</td><td>コードベースを読み込み、分析・編集</td></tr>
+  <tr><td>コマンド実行</td><td>テスト実行、ビルド、git 操作などを自動化</td></tr>
+  <tr><td>コードベース理解</td><td>プロジェクト全体の構造を把握して回答</td></tr>
+  <tr><td>Web 検索</td><td>最新情報を調べながら回答</td></tr>
+</table>
+
+<h3>利用できる環境</h3>
+<table>
+  <tr><th>環境</th><th>起動方法</th></tr>
+  <tr><td>CLI（ターミナル）</td><td><code>claude</code> コマンドで起動</td></tr>
+  <tr><td>デスクトップアプリ</td><td>Mac/Windows 向けアプリ</td></tr>
+  <tr><td>Web アプリ</td><td>claude.ai/code</td></tr>
+  <tr><td>VS Code 拡張</td><td>IDE 内で利用</td></tr>
+  <tr><td>JetBrains 拡張</td><td>IDE 内で利用</td></tr>
+</table>
+
+<h3>従来の AI チャットとの違い</h3>
+<pre><code>従来の AI チャット（ChatGPT 等）:
+  - ブラウザで会話
+  - コードを貼り付けて質問
+  - 修正案をコピーして手動で適用
+
+Claude Code:
+  - ターミナル・IDE で動作
+  - プロジェクト全体を自動で読み込み
+  - ファイルを直接編集・コマンドを実行</code></pre>
+
+<h2><span class="section-num">2</span> インストールと初期設定</h2>
+
+<h3>前提条件</h3>
+<ul>
+  <li>Node.js 18 以上がインストールされていること</li>
+  <li>Anthropic アカウント（claude.ai）を持っていること</li>
+  <li>基本的なターミナル操作ができること</li>
+</ul>
+
+<h3>インストール手順</h3>
+<pre><code># npm でグローバルインストール
+npm install -g @anthropic-ai/claude-code
+
+# インストール確認
+claude --version</code></pre>
+
+<h3>初回起動と認証</h3>
+<pre><code># 起動（初回はブラウザで認証画面が開く）
+claude</code></pre>
+<p>初回起動時の手順：</p>
+<ol>
+  <li>ターミナルで <code>claude</code> を実行</li>
+  <li>ブラウザが自動で開き、Anthropic アカウントでログイン</li>
+  <li>認証完了後、ターミナルに戻って会話開始</li>
+</ol>
+
+<h3>API キーを使う場合</h3>
+<pre><code># 環境変数で設定
+export ANTHROPIC_API_KEY="sk-ant-xxxxxxxxxxxx"
+
+# または .bashrc / .zshrc に追記して永続化
+echo 'export ANTHROPIC_API_KEY="sk-ant-xxxx"' >> ~/.zshrc</code></pre>
+
+<h2><span class="section-num">3</span> 基本コマンドと操作</h2>
+
+<h3>コマンドラインオプション</h3>
+<pre><code># 対話モードで起動（最もよく使う）
+claude
+
+# 一度だけ質問して終了
+claude "このプロジェクトの構造を説明して"
+
+# ヘルプ表示
+claude --help
+
+# バージョン確認
+claude --version</code></pre>
+
+<h3>対話モードの操作</h3>
+<table>
+  <tr><th>操作</th><th>キー / コマンド</th></tr>
+  <tr><td>メッセージ送信</td><td><code>Enter</code></td></tr>
+  <tr><td>改行入力</td><td><code>Shift + Enter</code></td></tr>
+  <tr><td>操作キャンセル</td><td><code>Ctrl + C</code></td></tr>
+  <tr><td>セッション終了</td><td><code>Ctrl + C</code> 2回 または <code>/exit</code></td></tr>
+  <tr><td>会話をクリア</td><td><code>/clear</code></td></tr>
+  <tr><td>ヘルプ表示</td><td><code>/help</code></td></tr>
+</table>
+
+<h3>スラッシュコマンド一覧</h3>
+<table>
+  <tr><th>コマンド</th><th>説明</th></tr>
+  <tr><td><code>/help</code></td><td>利用可能なコマンド一覧を表示</td></tr>
+  <tr><td><code>/clear</code></td><td>会話履歴をリセット</td></tr>
+  <tr><td><code>/exit</code></td><td>Claude Code を終了</td></tr>
+  <tr><td><code>/status</code></td><td>現在の設定状態を表示</td></tr>
+  <tr><td><code>/cost</code></td><td>現在のセッションのコスト確認</td></tr>
+</table>
+
+<h2><span class="section-num">4</span> はじめての会話</h2>
+
+<h3>プロジェクトディレクトリで起動</h3>
+<pre><code>cd my-project
+claude</code></pre>
+
+<h3>典型的な会話の流れ</h3>
+<pre><code>You: このプロジェクトの全体的な構造を教えて
+
+Claude: [ファイル構造を分析して説明します]
+  - src/ にメインのロジック
+  - tests/ にテストコード ...
+
+You: src/utils.py の中に潜在的なバグがあると思う。確認して
+
+Claude: 35行目に None チェックが欠けています。修正しますか？
+
+You: 修正して、テストも追加して
+
+Claude: 修正完了しました。テストを実行して確認します...</code></pre>
+
+<h3>効果的な指示の仕方</h3>
+<table>
+  <tr><th>NG</th><th>OK</th></tr>
+  <tr><td>「このコードを直して」</td><td>「src/auth.py の login 関数が None を返すことがある。エラーハンドリングを追加して」</td></tr>
+  <tr><td>「関数を追加して」</td><td>「メールアドレスを検証する関数を validators.py に追加して。RFC 5322 準拠で」</td></tr>
+</table>
+
+<h2><span class="section-num">5</span> 権限モードと安全性</h2>
+
+<h3>確認が求められる操作の例</h3>
+<table>
+  <tr><th>操作の種類</th><th>説明</th></tr>
+  <tr><td>ファイル削除</td><td>元に戻せない操作</td></tr>
+  <tr><td>git push</td><td>リモートへの影響</td></tr>
+  <tr><td>PR 作成・コメント</td><td>他者への影響</td></tr>
+  <tr><td>パッケージのアンインストール</td><td>環境変更</td></tr>
+  <tr><td>データベース操作</td><td>データへの影響</td></tr>
+</table>
+
+<h3>安全な使い方のポイント</h3>
+<ol>
+  <li><strong>確認メッセージをちゃんと読む</strong> — 何を実行しようとしているか必ず確認</li>
+  <li><strong>git で管理されたプロジェクトで使う</strong> — 変更をいつでも元に戻せる</li>
+  <li><strong>本番環境では慎重に</strong> — テスト環境で先に確認する</li>
+  <li><strong>CLAUDE.md で制約を設ける</strong> — 禁止操作を明示する</li>
+</ol>
+
+<h2><span class="section-num">6</span> CLAUDE.md ファイル（プロジェクト設定）</h2>
+<p>プロジェクトルートに <code>CLAUDE.md</code> ファイルを置くことで、Claude Code の動作をプロジェクト固有にカスタマイズできます。</p>
+
+<pre><code># CLAUDE.md の例
+
+## 概要
+Python で書かれた REST API サーバー（FastAPI）
+
+## コーディング規約
+- PEP 8 に準拠すること
+- 型ヒントを必ず付けること
+
+## テスト
+- テストフレームワーク: pytest
+- `pytest tests/` で実行
+
+## 禁止事項
+- main ブランチへの直接コミット禁止
+- .env ファイルのコミット禁止</code></pre>
+
+<h3>CLAUDE.md の読み込み順（優先度）</h3>
+<table>
+  <tr><th>場所</th><th>優先度</th></tr>
+  <tr><td>サブディレクトリ内の CLAUDE.md</td><td>高（最優先）</td></tr>
+  <tr><td>プロジェクトルートの CLAUDE.md</td><td>中</td></tr>
+  <tr><td>~/.claude/CLAUDE.md（グローバル）</td><td>低</td></tr>
+</table>
+
+<h2>まとめ</h2>
+<table>
+  <tr><th>項目</th><th>内容</th></tr>
+  <tr><td>Claude Code とは</td><td>Anthropic の公式 AI CLI ツール</td></tr>
+  <tr><td>インストール</td><td><code>npm install -g @anthropic-ai/claude-code</code></td></tr>
+  <tr><td>起動</td><td>プロジェクトディレクトリで <code>claude</code></td></tr>
+  <tr><td>設定ファイル</td><td>CLAUDE.md でプロジェクト固有の設定</td></tr>
+  <tr><td>安全性</td><td>重要な操作は確認を求める</td></tr>
+</table>
+
+<div class="step-links">
+  <span></span>
+  <div>
+    <a href="quiz.html">✅ Quiz へ</a>
+    &nbsp;
+    <a href="../step2/lesson.html">Step 2 →</a>
+  </div>
+</div>
+
+</body>
+</html>

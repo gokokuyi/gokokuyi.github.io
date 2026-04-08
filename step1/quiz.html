@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 1 Quiz | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .q-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 8px; padding: 20px 24px; margin: 20px 0; box-shadow: 0 1px 4px rgba(0,0,0,.06); transition: border-color .3s; }
+  .q-box h3 { margin-top: 0; color: #1a237e; font-size: 1em; }
+  .q-box.correct-q { border-color: #66bb6a; }
+  .q-box.wrong-q { border-color: #ef9a9a; }
+  .options { list-style: none; padding: 0; margin: 10px 0 0 0; }
+  .options li { margin-bottom: 8px; }
+  .options label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 9px 14px; border-radius: 6px; border: 1.5px solid #e8eaf6; transition: background .15s; }
+  .options label:hover { background: #f0f4ff; }
+  .options input[type="radio"] { margin-top: 3px; flex-shrink: 0; }
+  .opt-letter { font-weight: bold; color: #283593; min-width: 18px; }
+  .options label.correct-answer { background: #e8f5e9 !important; border-color: #66bb6a !important; color: #1b5e20; font-weight: bold; }
+  .options label.correct-answer .opt-letter { color: #1b5e20; }
+  .options label.wrong-answer { background: #ffebee !important; border-color: #ef9a9a !important; color: #b71c1c; }
+  .options label.wrong-answer .opt-letter { color: #b71c1c; }
+  .options label.show-correct { background: #e8f5e9 !important; border-color: #66bb6a !important; color: #1b5e20; }
+  .options label.show-correct .opt-letter { color: #1b5e20; }
+  .explanation { background: #fff8e1; border-left: 4px solid #ffc107; border-radius: 4px; padding: 8px 14px; margin-top: 12px; font-size: 0.92em; display: none; }
+  .explanation.show { display: block; }
+  .submit-area { text-align: center; margin: 40px 0 24px; }
+  .btn-submit { background: #3f51b5; color: #fff; border: none; border-radius: 8px; padding: 14px 52px; font-size: 1.1em; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(63,81,181,.4); }
+  .btn-submit:hover { background: #283593; }
+  .score-box { background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); border: 2px solid #3f51b5; border-radius: 12px; padding: 28px; text-align: center; margin-top: 32px; display: none; }
+  .score-box.show { display: block; }
+  .score-fraction { font-size: 3em; font-weight: bold; color: #1a237e; line-height: 1; }
+  .score-pct { font-size: 1.4em; color: #3f51b5; margin-top: 6px; }
+  .score-msg { color: #283593; font-size: 1.1em; margin-top: 10px; font-weight: bold; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 1 確認テスト — Claude Code 入門</h1>
+<div class="meta">所要時間: 約10分 &nbsp;|&nbsp; 問題数: 10問</div>
+
+<h2>選択問題</h2>
+
+<div class="q-box" id="q1">
+  <h3>Q1. Claude Code とは何ですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q1" value="a"><span class="opt-letter">a.</span> Anthropic が提供するブラウザベースの AI チャットツール</label></li>
+    <li><label><input type="radio" name="q1" value="b"><span class="opt-letter">b.</span> Anthropic が提供する公式 AI CLI ツール</label></li>
+    <li><label><input type="radio" name="q1" value="c"><span class="opt-letter">c.</span> OpenAI が提供するコーディング支援ツール</label></li>
+    <li><label><input type="radio" name="q1" value="d"><span class="opt-letter">d.</span> GitHub Copilot の別名</label></li>
+  </ul>
+  <div class="explanation">正解: b — Anthropic が提供する公式 AI CLI（コマンドラインインターフェース）ツールです。</div>
+</div>
+
+<div class="q-box" id="q2">
+  <h3>Q2. Claude Code をインストールするコマンドはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q2" value="a"><span class="opt-letter">a.</span> <code>pip install claude-code</code></label></li>
+    <li><label><input type="radio" name="q2" value="b"><span class="opt-letter">b.</span> <code>brew install claude</code></label></li>
+    <li><label><input type="radio" name="q2" value="c"><span class="opt-letter">c.</span> <code>npm install -g @anthropic-ai/claude-code</code></label></li>
+    <li><label><input type="radio" name="q2" value="d"><span class="opt-letter">d.</span> <code>apt-get install claude-code</code></label></li>
+  </ul>
+  <div class="explanation">正解: c — npm でグローバルインストールします。Node.js 18 以上が必要です。</div>
+</div>
+
+<div class="q-box" id="q3">
+  <h3>Q3. Claude Code を起動するコマンドはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q3" value="a"><span class="opt-letter">a.</span> <code>claude-code</code></label></li>
+    <li><label><input type="radio" name="q3" value="b"><span class="opt-letter">b.</span> <code>anthropic</code></label></li>
+    <li><label><input type="radio" name="q3" value="c"><span class="opt-letter">c.</span> <code>claude</code></label></li>
+    <li><label><input type="radio" name="q3" value="d"><span class="opt-letter">d.</span> <code>ai</code></label></li>
+  </ul>
+  <div class="explanation">正解: c — プロジェクトディレクトリで <code>claude</code> と入力して起動します。</div>
+</div>
+
+<div class="q-box" id="q4">
+  <h3>Q4. Claude Code が利用できる環境として<u>誤っている</u>ものはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q4" value="a"><span class="opt-letter">a.</span> ターミナル（CLI）</label></li>
+    <li><label><input type="radio" name="q4" value="b"><span class="opt-letter">b.</span> VS Code 拡張</label></li>
+    <li><label><input type="radio" name="q4" value="c"><span class="opt-letter">c.</span> Microsoft Word アドイン</label></li>
+    <li><label><input type="radio" name="q4" value="d"><span class="opt-letter">d.</span> JetBrains 拡張</label></li>
+  </ul>
+  <div class="explanation">正解: c — Microsoft Word アドインは存在しません。CLI、デスクトップアプリ、Web アプリ、VS Code 拡張、JetBrains 拡張で利用できます。</div>
+</div>
+
+<div class="q-box" id="q5">
+  <h3>Q5. プロジェクト固有の設定を Claude Code に伝えるためのファイルはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q5" value="a"><span class="opt-letter">a.</span> <code>.clauderc</code></label></li>
+    <li><label><input type="radio" name="q5" value="b"><span class="opt-letter">b.</span> <code>CLAUDE.md</code></label></li>
+    <li><label><input type="radio" name="q5" value="c"><span class="opt-letter">c.</span> <code>claude.config.json</code></label></li>
+    <li><label><input type="radio" name="q5" value="d"><span class="opt-letter">d.</span> <code>.claude</code></label></li>
+  </ul>
+  <div class="explanation">正解: b — プロジェクトルートに置く <code>CLAUDE.md</code> で、コーディング規約・禁止事項などをプロジェクト固有に設定できます。</div>
+</div>
+
+<div class="q-box" id="q6">
+  <h3>Q6. Claude Code の会話中に改行を入力するショートカットはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q6" value="a"><span class="opt-letter">a.</span> <code>Ctrl + Enter</code></label></li>
+    <li><label><input type="radio" name="q6" value="b"><span class="opt-letter">b.</span> <code>Alt + Enter</code></label></li>
+    <li><label><input type="radio" name="q6" value="c"><span class="opt-letter">c.</span> <code>Shift + Enter</code></label></li>
+    <li><label><input type="radio" name="q6" value="d"><span class="opt-letter">d.</span> <code>Tab + Enter</code></label></li>
+  </ul>
+  <div class="explanation">正解: c — <code>Shift + Enter</code> で改行、<code>Enter</code> 単独でメッセージ送信です。</div>
+</div>
+
+<div class="q-box" id="q7">
+  <h3>Q7. CLAUDE.md ファイルの読み込み優先順位として正しいものはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q7" value="a"><span class="opt-letter">a.</span> プロジェクトルート &gt; サブディレクトリ &gt; グローバル</label></li>
+    <li><label><input type="radio" name="q7" value="b"><span class="opt-letter">b.</span> グローバル &gt; プロジェクトルート &gt; サブディレクトリ</label></li>
+    <li><label><input type="radio" name="q7" value="c"><span class="opt-letter">c.</span> サブディレクトリ &gt; プロジェクトルート &gt; グローバル</label></li>
+    <li><label><input type="radio" name="q7" value="d"><span class="opt-letter">d.</span> すべて同じ優先度</label></li>
+  </ul>
+  <div class="explanation">正解: c — より具体的な場所にある CLAUDE.md が優先されます。サブディレクトリ（最高）→ プロジェクトルート → グローバル（最低）の順です。</div>
+</div>
+
+<div class="q-box" id="q8">
+  <h3>Q8. Claude Code で特に確認が重要な操作はどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q8" value="a"><span class="opt-letter">a.</span> ファイルを読み込む操作</label></li>
+    <li><label><input type="radio" name="q8" value="b"><span class="opt-letter">b.</span> コードの説明を求める操作</label></li>
+    <li><label><input type="radio" name="q8" value="c"><span class="opt-letter">c.</span> git push や PR 作成など、外部への影響がある操作</label></li>
+    <li><label><input type="radio" name="q8" value="d"><span class="opt-letter">d.</span> テストコードを生成する操作</label></li>
+  </ul>
+  <div class="explanation">正解: c — 外部への影響がある操作（git push、PR 作成、ファイル削除等）は元に戻しにくいため、特に確認が重要です。</div>
+</div>
+
+<div class="q-box" id="q9">
+  <h3>Q9. セッションをリセットするスラッシュコマンドはどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q9" value="a"><span class="opt-letter">a.</span> <code>/reset</code></label></li>
+    <li><label><input type="radio" name="q9" value="b"><span class="opt-letter">b.</span> <code>/new</code></label></li>
+    <li><label><input type="radio" name="q9" value="c"><span class="opt-letter">c.</span> <code>/clear</code></label></li>
+    <li><label><input type="radio" name="q9" value="d"><span class="opt-letter">d.</span> <code>/restart</code></label></li>
+  </ul>
+  <div class="explanation">正解: c — <code>/clear</code> で会話履歴をリセットします。コンテキストが長くなりすぎたときに使います。</div>
+</div>
+
+<div class="q-box" id="q10">
+  <h3>Q10. ベストプラクティスで<u>ないもの</u>はどれですか？</h3>
+  <ul class="options">
+    <li><label><input type="radio" name="q10" value="a"><span class="opt-letter">a.</span> git で管理されたプロジェクトで使う</label></li>
+    <li><label><input type="radio" name="q10" value="b"><span class="opt-letter">b.</span> 本番環境の API キーを CLAUDE.md に記載する</label></li>
+    <li><label><input type="radio" name="q10" value="c"><span class="opt-letter">c.</span> 具体的な指示を心がける</label></li>
+    <li><label><input type="radio" name="q10" value="d"><span class="opt-letter">d.</span> 重要な変更は確認してから適用する</label></li>
+  </ul>
+  <div class="explanation">正解: b — 本番 API キーを CLAUDE.md に記載してはいけません。CLAUDE.md は git リポジトリに含まれることが多く、機密情報の漏洩につながります。</div>
+</div>
+
+<div class="submit-area">
+  <button class="btn-submit" id="btn-submit" onclick="submitQuiz()">回答完了</button>
+</div>
+
+<div class="score-box" id="score-box">
+  <div class="score-fraction"><span id="score-num">0</span> <span style="font-size:.6em;color:#3f51b5">/ <span id="score-total">10</span></span></div>
+  <div class="score-pct" id="score-pct"></div>
+  <div class="score-msg" id="score-msg"></div>
+</div>
+
+<div class="step-links">
+  <a href="lesson.html">← Lesson に戻る</a>
+  <a href="practice.html">📝 宿題へ →</a>
+</div>
+
+<script>
+const answers = ['b','c','c','c','b','c','c','c','c','b'];
+const total = answers.length;
+
+function submitQuiz() {
+  let correct = 0;
+  for (let i = 0; i < total; i++) {
+    const q = i + 1;
+    const selected = document.querySelector(`input[name="q${q}"]:checked`);
+    const qBox = document.getElementById(`q${q}`);
+    const explanation = qBox.querySelector('.explanation');
+    const correctVal = answers[i];
+
+    explanation.classList.add('show');
+
+    if (selected && selected.value === correctVal) {
+      selected.closest('label').classList.add('correct-answer');
+      qBox.classList.add('correct-q');
+      correct++;
+    } else {
+      if (selected) selected.closest('label').classList.add('wrong-answer');
+      const correctInput = qBox.querySelector(`input[value="${correctVal}"]`);
+      if (correctInput) correctInput.closest('label').classList.add('show-correct');
+      qBox.classList.add('wrong-q');
+    }
+  }
+
+  document.querySelectorAll('.options input').forEach(r => r.disabled = true);
+
+  const pct = Math.round(correct / total * 100);
+  document.getElementById('score-num').textContent = correct;
+  document.getElementById('score-total').textContent = total;
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-msg').textContent =
+    pct === 100 ? '満点！素晴らしい！' :
+    pct >= 80  ? 'よくできました！' :
+    pct >= 60  ? '合格ラインです。復習しましょう。' :
+                 'もう一度レッスンを復習しましょう。';
+
+  document.getElementById('score-box').classList.add('show');
+  document.getElementById('btn-submit').style.display = 'none';
+  document.getElementById('score-box').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 4: カスタマイズと高度な設定 | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  h3 { color: #1565c0; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #263238; color: #eceff1; padding: 16px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #3f51b5; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  th { background: #3f51b5; color: #fff; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  blockquote { border-left: 4px solid #ff9800; background: #fff8e1; padding: 10px 16px; border-radius: 4px; margin: 16px 0; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  .section-num { display: inline-block; background: #3f51b5; color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.85em; margin-right: 6px; }
+  ul li, ol li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 4: カスタマイズと高度な設定</h1>
+<div class="meta">対象: 中〜上級 &nbsp;|&nbsp; 所要時間: 約60分</div>
+
+<h2>ラーニング目標</h2>
+<ul>
+  <li>CLAUDE.md でプロジェクトをカスタマイズする方法を習得する</li>
+  <li>settings.json で Claude Code の動作を設定する</li>
+  <li>Hooks で自動化されたワークフローを構築する</li>
+  <li>MCP でツールを拡張する方法を理解する</li>
+</ul>
+
+<h2><span class="section-num">1</span> CLAUDE.md の詳細活用</h2>
+<p>CLAUDE.md はプロジェクト固有の「指示書」です。Claude Code が作業を始める際に自動的に読み込まれ、動作をカスタマイズします。</p>
+
+<h3>読み込み順（優先度）</h3>
+<table>
+  <tr><th>場所</th><th>優先度</th></tr>
+  <tr><td>サブディレクトリ内の CLAUDE.md（例: src/CLAUDE.md）</td><td>高（最優先）</td></tr>
+  <tr><td>プロジェクトルートの CLAUDE.md</td><td>中</td></tr>
+  <tr><td>~/.claude/CLAUDE.md（グローバル設定）</td><td>低</td></tr>
+</table>
+
+<h3>実践的な CLAUDE.md の例</h3>
+<pre><code># 社内決済システム API
+
+## 概要
+Python (FastAPI) + PostgreSQL の決済処理 API
+
+## よく使うコマンド
+- テスト: `pytest tests/ -v`
+- 起動: `uvicorn main:app --reload`
+- マイグレーション: `alembic upgrade head`
+
+## コーディング規約
+- Python 3.11 以上の文法を使用
+- 型ヒントは必須（mypy strict モード準拠）
+- エラーハンドリングは HTTPException を使う
+
+## アーキテクチャ
+- `src/routers/`  : API エンドポイント定義
+- `src/services/` : ビジネスロジック
+- `src/models/`   : DB モデル（SQLAlchemy）
+
+## 禁止事項
+- 本番 DB への直接操作は絶対禁止
+- .env ファイルは絶対にコミットしない
+- main ブランチへの直接プッシュ禁止
+- 金額計算には Decimal 型を使うこと（float 禁止）</code></pre>
+
+<h2><span class="section-num">2</span> settings.json — 動作設定</h2>
+<p>Claude Code の動作を細かく設定するファイルです。</p>
+
+<h3>設定ファイルの場所</h3>
+<table>
+  <tr><th>種別</th><th>場所</th></tr>
+  <tr><td>グローバル設定</td><td><code>~/.claude/settings.json</code></td></tr>
+  <tr><td>プロジェクト設定</td><td><code>プロジェクトルート/.claude/settings.json</code></td></tr>
+</table>
+
+<h3>権限設定の例</h3>
+<pre><code>{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(pytest *)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(rm -rf *)"
+    ]
+  },
+  "env": {
+    "PYTHONPATH": "src",
+    "NODE_ENV": "development"
+  }
+}</code></pre>
+
+<h2><span class="section-num">3</span> Hooks — 自動化ワークフロー</h2>
+<p>Hooks は特定のイベントが発生したときに自動でシェルコマンドを実行する仕組みです。</p>
+
+<h3>Hooks の種類</h3>
+<table>
+  <tr><th>Hook</th><th>タイミング</th></tr>
+  <tr><td><code>PreToolUse</code></td><td>ツール実行前</td></tr>
+  <tr><td><code>PostToolUse</code></td><td>ツール実行後</td></tr>
+  <tr><td><code>Notification</code></td><td>通知発生時</td></tr>
+  <tr><td><code>Stop</code></td><td>Claude Code 停止時</td></tr>
+</table>
+
+<h3>実用的な Hooks の例</h3>
+<h4>① ファイル保存後に自動フォーマット</h4>
+<pre><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -m black $CLAUDE_TOOL_INPUT_FILE_PATH 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+<h4>② 操作ログの記録</h4>
+<pre><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$(date): $CLAUDE_TOOL_INPUT_COMMAND\" >> /tmp/claude_log.txt"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+<h2><span class="section-num">4</span> MCP (Model Context Protocol)</h2>
+<p>MCP は Claude Code のツールを拡張する仕組みです。外部サービスやカスタムツールを Claude Code に追加できます。</p>
+
+<h3>MCP で拡張した Claude Code のイメージ</h3>
+<pre><code>通常の Claude Code:
+  [Read][Write][Edit][Glob][Grep][Bash]...
+
+MCP で拡張後:
+  [Read][Write][Edit]...[Slack送信][Jira更新][DB操作][社内API呼び出し]</code></pre>
+
+<h3>MCP の設定（settings.json）</h3>
+<pre><code>{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxx"
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://user:pass@localhost/mydb"
+      }
+    }
+  }
+}</code></pre>
+
+<h3>よく使われる MCP サーバー</h3>
+<table>
+  <tr><th>MCP サーバー</th><th>提供される機能</th></tr>
+  <tr><td>GitHub MCP</td><td>PR 操作、Issue 管理、コードレビュー</td></tr>
+  <tr><td>PostgreSQL MCP</td><td>DB スキーマ確認、クエリ実行</td></tr>
+  <tr><td>Slack MCP</td><td>メッセージ送信、チャンネル管理</td></tr>
+  <tr><td>Filesystem MCP</td><td>拡張ファイルアクセス</td></tr>
+</table>
+
+<h2><span class="section-num">5</span> スキルとスラッシュコマンド</h2>
+<p>繰り返し使う処理をコマンドとして定型化できます。</p>
+<pre><code>// ~/.claude/settings.json
+{
+  "skills": {
+    "review": {
+      "description": "コードレビューを実施する",
+      "prompt": "このコードをレビューして。セキュリティ・パフォーマンス・可読性の観点で"
+    },
+    "commit": {
+      "description": "変更をコミットする",
+      "prompt": "git diff を確認して、適切なコミットメッセージを作成してコミットして"
+    }
+  }
+}</code></pre>
+
+<h2><span class="section-num">6</span> メモリシステム</h2>
+<table>
+  <tr><th>種類</th><th>内容</th></tr>
+  <tr><td>user</td><td>ユーザーの役割・好み</td></tr>
+  <tr><td>project</td><td>プロジェクトの状況・決定事項</td></tr>
+  <tr><td>feedback</td><td>フィードバック・改善点</td></tr>
+  <tr><td>reference</td><td>外部リソースへの参照</td></tr>
+</table>
+<pre><code>You: 今後はコードを書くとき必ず型ヒントを付けてください
+→ Claude Code がメモリに保存
+→ 次のセッションでも型ヒントを付けるようになる</code></pre>
+
+<h2>まとめ</h2>
+<table>
+  <tr><th>機能</th><th>設定場所</th><th>主な用途</th></tr>
+  <tr><td>CLAUDE.md</td><td>プロジェクトルート</td><td>プロジェクト固有の指示</td></tr>
+  <tr><td>settings.json</td><td>~/.claude/ または .claude/</td><td>権限・環境変数・Hooks</td></tr>
+  <tr><td>Hooks</td><td>settings.json 内</td><td>ツール前後の自動処理</td></tr>
+  <tr><td>MCP</td><td>settings.json 内</td><td>ツールの拡張</td></tr>
+  <tr><td>スキル</td><td>settings.json 内</td><td>処理の定型化</td></tr>
+  <tr><td>メモリ</td><td>~/.claude/memory/</td><td>セッションをまたぐ情報保持</td></tr>
+</table>
+
+<div class="step-links">
+  <a href="../step3/lesson.html">← Step 3</a>
+  <div>
+    <a href="quiz.html">✅ Quiz へ</a>
+    &nbsp;
+    <a href="../step5/lesson.html">Step 5 →</a>
+  </div>
+</div>
+</body>
+</html>

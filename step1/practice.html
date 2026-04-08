@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 1 ハンズオン | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 920px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  /* Python status */
+  .py-status { padding: 8px 14px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }
+  .py-status.loading { background: #fff8e1; color: #795548; border: 1px solid #ffe082; }
+  .py-status.ready   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .py-status.idle    { background: #e8eaf6; color: #3f51b5; border: 1px solid #c5cae9; }
+  /* Exercise */
+  .ex-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 10px; padding: 22px 26px; margin: 28px 0; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .ex-label { display: inline-block; background: #3f51b5; color: #fff; border-radius: 4px; font-size: 0.78em; font-weight: bold; padding: 2px 10px; margin-bottom: 6px; letter-spacing: .05em; }
+  .ex-box h3 { margin: 4px 0 12px; color: #1a237e; font-size: 1.05em; }
+  .ex-box p  { margin: 0 0 14px; color: #444; font-size: 0.95em; }
+  /* Code editor */
+  .code-wrap { position: relative; margin-bottom: 10px; }
+  textarea.code-editor {
+    width: 100%; box-sizing: border-box;
+    background: #1e272e; color: #ecf0f1;
+    font-family: 'Courier New', Consolas, monospace; font-size: 0.88em;
+    padding: 14px 16px; border: none; border-radius: 6px;
+    resize: vertical; min-height: 220px; outline: none;
+    tab-size: 4; white-space: pre; overflow-x: auto;
+    line-height: 1.6;
+  }
+  /* Controls */
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .btn { border: none; border-radius: 6px; padding: 8px 20px; font-size: 0.9em; cursor: pointer; font-weight: bold; transition: background .15s; }
+  .btn-run      { background: #388e3c; color: #fff; }
+  .btn-run:hover{ background: #2e7d32; }
+  .btn-sol      { background: #fff; color: #3f51b5; border: 1.5px solid #3f51b5; }
+  .btn-sol:hover{ background: #e8eaf6; }
+  .btn-rst      { background: #fff; color: #888; border: 1.5px solid #ccc; }
+  .btn-rst:hover{ background: #f5f5f5; }
+  /* Output */
+  .output-area { background: #263238; color: #b2dfdb; font-family: 'Courier New', Consolas, monospace; font-size: 0.87em; padding: 12px 16px; border-radius: 6px; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-bottom: 10px; display: none; }
+  .output-area.show { display: block; }
+  .output-area.error { color: #ef9a9a; }
+  /* Solution */
+  .solution-area { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; padding: 14px 16px; margin-top: 6px; }
+  .solution-area.show { display: block; }
+  .solution-area pre { background: #1e272e; color: #ecf0f1; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.86em; margin: 8px 0 0; }
+  .hint { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 10px 14px; border-radius: 4px; font-size: 0.9em; margin: 10px 0; }
+  /* Nav */
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 1 ハンズオン — Claude Code 入門</h1>
+<div class="meta">Python をブラウザで実行 &nbsp;|&nbsp; 演習数: 2問 &nbsp;|&nbsp; 所要時間: 約20分</div>
+
+<p>▼ コードを編集して <strong>実行</strong> ボタンを押してください。<code># TODO:</code> の部分を完成させましょう。</p>
+
+<div id="py-status" class="py-status idle">初回「実行」時に Python 環境を自動ロードします（数秒かかります）</div>
+
+<!-- ===== Exercise 1 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 1</div>
+  <h3>CLAUDE.md パーサー</h3>
+  <p>CLAUDE.md の Markdown 内容を解析して、セクション（<code>##</code> 見出し）ごとに項目をまとめる関数を完成させてください。</p>
+  <div class="hint">ヒント: <code>line.startswith('## ')</code> でセクション行を検出、<code>line[3:].strip()</code> でセクション名を取得します。</div>
+  <div class="code-wrap">
+    <textarea class="code-editor" id="code1"></textarea>
+  </div>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(1)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(1)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(1)">リセット</button>
+  </div>
+  <div class="output-area" id="out1"></div>
+  <div class="solution-area" id="sol1">
+    <strong>正解:</strong>
+    <pre id="sol1-code"></pre>
+  </div>
+</div>
+
+<!-- ===== Exercise 2 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 2</div>
+  <h3>スラッシュコマンドハンドラー</h3>
+  <p>Claude Code のスラッシュコマンドを処理するクラスと、会話履歴を管理するメソッドを完成させてください。</p>
+  <div class="hint">ヒント: 辞書の存在確認は <code>key in dict</code>、リストへの追加は <code>list.append(item)</code>、長さは <code>len(list)</code>。</div>
+  <div class="code-wrap">
+    <textarea class="code-editor" id="code2"></textarea>
+  </div>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(2)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(2)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(2)">リセット</button>
+  </div>
+  <div class="output-area" id="out2"></div>
+  <div class="solution-area" id="sol2">
+    <strong>正解:</strong>
+    <pre id="sol2-code"></pre>
+  </div>
+</div>
+
+<div class="step-links">
+  <a href="quiz.html">← Quiz に戻る</a>
+  <a href="../step2/lesson.html">Step 2 へ →</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script>
+// ===== Starter & Solution code =====
+const STARTER = {};
+const SOLUTION = {};
+
+STARTER[1] = `# === Exercise 1: CLAUDE.md パーサー ===
+# TODO の箇所を完成させて実行してください
+
+claude_md = """# My Project
+
+## よく使うコマンド
+- テスト: pytest tests/
+- ビルド: python setup.py build
+- 起動: python main.py
+
+## コーディング規約
+- PEP 8 に準拠する
+- 型ヒントを付ける
+
+## 禁止事項
+- main ブランチへの直接コミット
+- .env ファイルのコミット
+"""
+
+def parse_claude_md(content):
+    """CLAUDE.md を解析して {セクション名: [項目, ...]} の辞書を返す"""
+    sections = {}
+    current_section = None
+
+    for line in content.strip().split('\\n'):
+        if line.startswith('## '):
+            # TODO: ## を除いたセクション名を current_section に代入し、
+            #       sections[current_section] を空リストで初期化してください
+            pass
+
+        elif current_section and line.startswith('- '):
+            # TODO: '- ' を除いた文字列を sections[current_section] に追加してください
+            pass
+
+    return sections
+
+# --- 実行 ---
+result = parse_claude_md(claude_md)
+
+if not result:
+    print("⚠ TODOを完成させると結果が表示されます")
+else:
+    for section, items in result.items():
+        print(f"【{section}】")
+        for item in items:
+            print(f"  ✓ {item}")
+        print()
+    print(f"計 {len(result)} セクション / {sum(len(v) for v in result.values())} 項目")
+`;
+
+SOLUTION[1] = `def parse_claude_md(content):
+    sections = {}
+    current_section = None
+
+    for line in content.strip().split('\\n'):
+        if line.startswith('## '):
+            current_section = line[3:].strip()   # ← TODO 1
+            sections[current_section] = []        # ← TODO 1
+        elif current_section and line.startswith('- '):
+            sections[current_section].append(line[2:])  # ← TODO 2
+
+    return sections`;
+
+STARTER[2] = `# === Exercise 2: スラッシュコマンドハンドラー ===
+# TODO の箇所を完成させて実行してください
+
+COMMANDS = {
+    '/help':   'ヘルプを表示します',
+    '/clear':  '会話履歴をリセットします',
+    '/exit':   'Claude Code を終了します',
+    '/status': '現在の設定状態を表示します',
+    '/cost':   'セッションのコストを確認します',
+}
+
+class Session:
+    def __init__(self):
+        self.history = []
+
+    def handle_command(self, cmd):
+        """スラッシュコマンドを処理して説明文を返す"""
+        # TODO: cmd が COMMANDS に存在すれば説明を返し、
+        #       なければ f"不明なコマンドです: {cmd}" を返してください
+        pass
+
+    def add_message(self, role, content):
+        """会話履歴にメッセージを追加する"""
+        # TODO: {"role": role, "content": content} を self.history に追加してください
+        pass
+
+    def count(self):
+        """会話履歴の件数を返す"""
+        # TODO: self.history の長さを返してください
+        pass
+
+
+# --- 実行 ---
+session = Session()
+session.add_message("user", "このプロジェクトを説明して")
+session.add_message("assistant", "[プロジェクト構造の説明...]")
+session.add_message("user", "src/main.py を読んで")
+
+n = session.count()
+print(f"会話履歴: {n if n is not None else '⚠ count()を完成させてください'} 件")
+print()
+
+for cmd in ['/help', '/cost', '/clear', '/unknown']:
+    result = session.handle_command(cmd)
+    if result is None:
+        print(f"{cmd} → ⚠ handle_command() を完成させてください")
+    else:
+        print(f"{cmd} → {result}")
+`;
+
+SOLUTION[2] = `class Session:
+    def __init__(self):
+        self.history = []
+
+    def handle_command(self, cmd):
+        if cmd in COMMANDS:              # ← TODO
+            return COMMANDS[cmd]
+        return f"不明なコマンドです: {cmd}"
+
+    def add_message(self, role, content):
+        self.history.append({"role": role, "content": content})  # ← TODO
+
+    def count(self):
+        return len(self.history)  # ← TODO`;
+
+// ===== Pyodide runner =====
+let pyodideInstance = null;
+
+async function ensurePyodide() {
+  if (pyodideInstance) return pyodideInstance;
+  const status = document.getElementById('py-status');
+  status.textContent = '⏳ Python 実行環境を準備中（初回のみ数秒かかります）...';
+  status.className = 'py-status loading';
+  pyodideInstance = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/' });
+  status.textContent = '✓ Python 実行環境が準備できました';
+  status.className = 'py-status ready';
+  return pyodideInstance;
+}
+
+async function runCode(n) {
+  const out = document.getElementById('out' + n);
+  out.className = 'output-area show';
+  out.textContent = '⏳ 実行中...';
+  try {
+    const py = await ensurePyodide();
+    py.runPython('import sys, io; sys.stdout = io.StringIO()');
+    await py.runPythonAsync(document.getElementById('code' + n).value);
+    const result = py.runPython('sys.stdout.getvalue()');
+    out.textContent = result || '(出力なし)';
+    out.className = 'output-area show';
+  } catch (e) {
+    out.textContent = 'エラー:\n' + e.message;
+    out.className = 'output-area show error';
+  }
+}
+
+function toggleSolution(n) {
+  const el = document.getElementById('sol' + n);
+  el.classList.toggle('show');
+}
+
+function resetCode(n) {
+  document.getElementById('code' + n).value = STARTER[n];
+  const out = document.getElementById('out' + n);
+  out.textContent = '';
+  out.className = 'output-area';
+  document.getElementById('sol' + n).classList.remove('show');
+}
+
+// Initialize
+window.addEventListener('DOMContentLoaded', () => {
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('code' + i).value = STARTER[i];
+    document.getElementById('sol' + i + '-code').textContent = SOLUTION[i];
+  }
+});
+</script>
+</body>
+</html>

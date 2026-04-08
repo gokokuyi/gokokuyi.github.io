@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  h3 { color: #1565c0; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #263238; color: #eceff1; padding: 16px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #3f51b5; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  th { background: #3f51b5; color: #fff; padding: 11px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 10px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  a { color: #3f51b5; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin: 24px 0; }
+  .card { background: #fff; border: 1px solid #c5cae9; border-radius: 8px; padding: 20px; box-shadow: 0 2px 6px rgba(63,81,181,.08); transition: box-shadow .2s; }
+  .card:hover { box-shadow: 0 4px 14px rgba(63,81,181,.18); }
+  .card h3 { margin: 0 0 6px; font-size: 1.05em; color: #1a237e; }
+  .card .level { font-size: 0.8em; background: #e8eaf6; color: #3f51b5; padding: 2px 9px; border-radius: 12px; display: inline-block; margin-bottom: 8px; }
+  .card p { margin: 8px 0 12px; font-size: 0.9em; color: #555; }
+  .card .links a { margin-right: 10px; font-size: 0.88em; background: #3f51b5; color: #fff; padding: 4px 12px; border-radius: 4px; display: inline-block; }
+  .card .links a:hover { background: #283593; text-decoration: none; }
+  .info-box { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 14px 18px; border-radius: 4px; margin: 20px 0; }
+  ol li { margin-bottom: 6px; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #c5cae9; color: #777; font-size: 0.88em; }
+</style>
+</head>
+<body>
+
+<h1>📘 Claude Code 実践ガイド</h1>
+
+<div class="info-box">
+  自分のペースで <strong>Claude Code</strong> を習得するためのセルフラーニング教材です。<br>
+  各ステップは <strong>Lesson（読む）→ Quiz（確認する）→ ハンズオン（動かす）</strong> の3セットで構成されています。
+</div>
+
+<h2>カリキュラム構成</h2>
+
+<div class="card-grid">
+
+  <div class="card">
+    <span class="level">全員向け</span>
+    <h3>Step 1: Claude Code 入門</h3>
+    <p>概要・インストール・基本操作・権限モードと安全性</p>
+    <div class="links">
+      <a href="step1/lesson.html">Lesson</a>
+      <a href="step1/quiz.html">Quiz</a>
+      <a href="step1/practice.html">宿題</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="level">全員向け</span>
+    <h3>Step 2: ファイル操作と基本ツール</h3>
+    <p>Read / Write / Edit / Grep / Glob / Bash の使い方</p>
+    <div class="links">
+      <a href="step2/lesson.html">Lesson</a>
+      <a href="step2/quiz.html">Quiz</a>
+      <a href="step2/practice.html">宿題</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="level">中級向け</span>
+    <h3>Step 3: エージェント機能と自動化</h3>
+    <p>Agent・TodoWrite・並列処理・バックグラウンド実行</p>
+    <div class="links">
+      <a href="step3/lesson.html">Lesson</a>
+      <a href="step3/quiz.html">Quiz</a>
+      <a href="step3/practice.html">宿題</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="level">中〜上級向け</span>
+    <h3>Step 4: カスタマイズと高度な設定</h3>
+    <p>CLAUDE.md・Hooks・MCP・settings.json</p>
+    <div class="links">
+      <a href="step4/lesson.html">Lesson</a>
+      <a href="step4/quiz.html">Quiz</a>
+      <a href="step4/practice.html">宿題</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="level">全員向け</span>
+    <h3>Step 5: チーム活用とベストプラクティス</h3>
+    <p>運用ルール・セキュリティ・プロンプト設計・CI/CD</p>
+    <div class="links">
+      <a href="step5/lesson.html">Lesson</a>
+      <a href="step5/quiz.html">Quiz</a>
+      <a href="step5/practice.html">宿題</a>
+    </div>
+  </div>
+
+</div>
+
+<h2>学習の進め方</h2>
+<ol>
+  <li>各ステップの <strong>Lesson</strong> を読んで概念を理解する</li>
+  <li><strong>Quiz</strong> に回答して理解度を確認する（その場で採点されます）</li>
+  <li><strong>ハンズオン</strong> で Python コードを実際に動かして体験する</li>
+</ol>
+
+<h2>前提条件</h2>
+<table>
+  <tr><th>条件</th><th>補足</th></tr>
+  <tr><td>Claude Code インストール済み</td><td>Step 1 で手順説明あり</td></tr>
+  <tr><td>Anthropic アカウント保有</td><td>claude.ai でサインアップ</td></tr>
+  <tr><td>基本的なターミナル操作</td><td>cd, ls 程度で可</td></tr>
+</table>
+
+<footer>作成日: 2026年4月8日</footer>
+</body>
+</html>

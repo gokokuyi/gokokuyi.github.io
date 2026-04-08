@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 3: エージェント機能と自動化 | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  h3 { color: #1565c0; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #263238; color: #eceff1; padding: 16px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #3f51b5; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  th { background: #3f51b5; color: #fff; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .agent-card { background: #fff; border-left: 4px solid #3f51b5; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 14px 0; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .agent-card h4 { margin: 0 0 6px; color: #1a237e; }
+  .agent-card .tag { display: inline-block; background: #e8eaf6; color: #3f51b5; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-bottom: 6px; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  .section-num { display: inline-block; background: #3f51b5; color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.85em; margin-right: 6px; }
+  ul li, ol li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 3: エージェント機能と自動化</h1>
+<div class="meta">対象: 中級 &nbsp;|&nbsp; 所要時間: 約60分</div>
+
+<h2>ラーニング目標</h2>
+<ul>
+  <li>Agent ツールとサブエージェントの概念を理解する</li>
+  <li>利用可能なサブエージェントの種類と使い分けを習得する</li>
+  <li>TodoWrite でタスク管理する方法を学ぶ</li>
+  <li>並列処理とバックグラウンド実行の活用法を理解する</li>
+</ul>
+
+<h2><span class="section-num">1</span> エージェント機能とは</h2>
+<p>Claude Code では、複雑なタスクを処理するために「サブエージェント」を起動できます。メインの Claude が、専門的なサブエージェントに作業を委任する仕組みです。</p>
+
+<pre><code>ユーザーの依頼
+    ↓
+メイン Claude（調整役）
+    ↓
+┌──────────────────────────────────┐
+│  サブエージェントA（調査担当）    │
+│  サブエージェントB（実装担当）    │
+│  サブエージェントC（テスト担当）  │
+└──────────────────────────────────┘
+    ↓
+結果をまとめてユーザーに報告</code></pre>
+
+<h3>エージェントを使うメリット</h3>
+<table>
+  <tr><th>状況</th><th>メリット</th></tr>
+  <tr><td>大規模なコードベースの探索</td><td>メインのコンテキストを節約できる</td></tr>
+  <tr><td>独立した複数タスク</td><td>並列処理で高速化</td></tr>
+  <tr><td>専門的な作業</td><td>専用エージェントの知識を活用</td></tr>
+  <tr><td>長時間タスク</td><td>バックグラウンド実行で並行作業</td></tr>
+</table>
+
+<h2><span class="section-num">2</span> サブエージェントの種類</h2>
+
+<div class="agent-card">
+  <span class="tag">汎用</span>
+  <h4>general-purpose エージェント</h4>
+  <p>複雑なマルチステップタスク、コードベースの調査に使う。全ツールにアクセス可能。特定のファイルや関数を探すのが難しい場合に活用。</p>
+</div>
+
+<div class="agent-card">
+  <span class="tag">探索専用</span>
+  <h4>Explore エージェント</h4>
+  <p>コードベースの素早い探索に特化。読み取り専用（編集ツールなし）。ファイルパターン検索・キーワード検索を効率的に実行。</p>
+</div>
+
+<div class="agent-card">
+  <span class="tag">設計専用</span>
+  <h4>Plan エージェント</h4>
+  <p>実装計画の立案・設計に特化。読み取り専用（実装はしない）。大きな機能追加・リファクタリングの前に使う。</p>
+</div>
+
+<div class="agent-card">
+  <span class="tag">知識参照</span>
+  <h4>claude-code-guide エージェント</h4>
+  <p>Claude Code 自体の使い方を調べるときに使う。Claude Code のドキュメントに特化。MCP 設定、Hooks 設定などの方法を調べるときに活用。</p>
+</div>
+
+<h2><span class="section-num">3</span> TodoWrite — タスク管理</h2>
+<p>複雑なタスクを実行する際、Claude Code は TodoWrite ツールで作業を管理します。タスクの進捗が可視化されるため、何をしているか把握しやすくなります。</p>
+
+<pre><code>[タスクリスト]
+✓ ファイル構造を確認する         ← 完了
+✓ 既存の認証コードを読み込む      ← 完了
+→ 新しい認証関数を実装する        ← 現在実行中
+○ テストを追加する               ← 待機中
+○ ドキュメントを更新する          ← 待機中</code></pre>
+
+<h3>タスクの状態</h3>
+<table>
+  <tr><th>状態</th><th>記号</th><th>意味</th></tr>
+  <tr><td>完了</td><td>✓</td><td>終了したタスク</td></tr>
+  <tr><td>実行中</td><td>→</td><td>現在進行中</td></tr>
+  <tr><td>待機</td><td>○</td><td>まだ実行していない</td></tr>
+</table>
+
+<h2><span class="section-num">4</span> 並列処理の活用</h2>
+<p>独立した複数のタスクを同時に実行することで、作業を高速化できます。</p>
+
+<pre><code>You: src/auth.py と src/utils.py と tests/ を同時に調査して、
+     問題点をまとめてレポートして
+
+[3つのサブエージェントが並列起動]
+  エージェントA: src/auth.py を調査
+  エージェントB: src/utils.py を調査
+  エージェントC: tests/ を調査
+  → 結果をまとめて報告</code></pre>
+
+<h3>並列 vs 順序実行の判断</h3>
+<table>
+  <tr><th>並列でOK（独立したタスク）</th><th>順序が必要（依存するタスク）</th></tr>
+  <tr><td>複数のファイルを同時に調査</td><td>ファイルを読んでから編集</td></tr>
+  <tr><td>異なるモジュールを同時にテスト</td><td>テストを書いてから実行</td></tr>
+  <tr><td>複数 API を同時に調査</td><td>設計してから実装</td></tr>
+</table>
+
+<h2><span class="section-num">5</span> バックグラウンド実行</h2>
+<p>時間のかかるタスクをバックグラウンドで実行し、その間に他の作業を続けられます。</p>
+<pre><code>You: 全ファイルのコードレビューをして（バックグラウンドで）
+
+[バックグラウンドでエージェント起動]
+
+You: （別の作業を続ける）
+
+[レビュー完了後、通知が来る]
+Claude: バックグラウンドのレビューが完了しました。
+        問題点が7箇所見つかりました...</code></pre>
+
+<h2><span class="section-num">6</span> 効果的なエージェント活用パターン</h2>
+
+<h3>パターン1: 調査 → 計画 → 実装</h3>
+<pre><code>Step 1: 「このバグの原因を調査して（広く調べて）」
+Step 2: 「調査結果をもとに修正計画を立てて」
+Step 3: 「計画に従って修正を実装して」</code></pre>
+
+<h3>パターン2: コード品質チェック</h3>
+<pre><code>「プロジェクト全体を調査して：
+ - セキュリティ上の問題
+ - パフォーマンスのボトルネック
+ - テストカバレッジが低い箇所
+ をまとめてレポートして」</code></pre>
+
+<h2><span class="section-num">7</span> エージェントへの効果的な指示</h2>
+<table>
+  <tr><th>NG</th><th>OK</th></tr>
+  <tr><td>「バグを探して」</td><td>「src/ 以下を調査して、型ヒントがない関数をリストアップして」</td></tr>
+  <tr><td>「さっき話した件を調査して」</td><td>「src/auth.py の login 関数において、None チェックがないという問題を調査して」</td></tr>
+</table>
+
+<h2>まとめ</h2>
+<table>
+  <tr><th>機能</th><th>用途</th><th>効果</th></tr>
+  <tr><td>general-purpose エージェント</td><td>汎用的な複雑タスク</td><td>コンテキスト節約</td></tr>
+  <tr><td>Explore エージェント</td><td>コードベース探索</td><td>高速検索</td></tr>
+  <tr><td>Plan エージェント</td><td>設計・計画立案</td><td>実装前の整理</td></tr>
+  <tr><td>TodoWrite</td><td>タスク進捗管理</td><td>可視性向上</td></tr>
+  <tr><td>並列処理</td><td>独立タスクの同時実行</td><td>作業高速化</td></tr>
+  <tr><td>バックグラウンド実行</td><td>長時間タスク</td><td>待ち時間削減</td></tr>
+</table>
+
+<div class="step-links">
+  <a href="../step2/lesson.html">← Step 2</a>
+  <div>
+    <a href="quiz.html">✅ Quiz へ</a>
+    &nbsp;
+    <a href="../step4/lesson.html">Step 4 →</a>
+  </div>
+</div>
+</body>
+</html>

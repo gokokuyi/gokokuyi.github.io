@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 4 ハンズオン | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 920px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #3f51b5; padding-bottom: 10px; }
+  h2 { color: #283593; border-bottom: 1px solid #c5cae9; padding-bottom: 6px; margin-top: 36px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  a { color: #3f51b5; }
+  .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; background: #e8eaf6; padding: 8px 14px; border-radius: 4px; display: inline-block; }
+  .py-status { padding: 8px 14px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }
+  .py-status.loading { background: #fff8e1; color: #795548; border: 1px solid #ffe082; }
+  .py-status.ready   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .py-status.idle    { background: #e8eaf6; color: #3f51b5; border: 1px solid #c5cae9; }
+  .ex-box { background: #fff; border: 1.5px solid #c5cae9; border-radius: 10px; padding: 22px 26px; margin: 28px 0; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .ex-label { display: inline-block; background: #3f51b5; color: #fff; border-radius: 4px; font-size: 0.78em; font-weight: bold; padding: 2px 10px; margin-bottom: 6px; letter-spacing: .05em; }
+  .ex-box h3 { margin: 4px 0 12px; color: #1a237e; font-size: 1.05em; }
+  .ex-box p  { margin: 0 0 14px; color: #444; font-size: 0.95em; }
+  textarea.code-editor {
+    width: 100%; box-sizing: border-box;
+    background: #1e272e; color: #ecf0f1;
+    font-family: 'Courier New', Consolas, monospace; font-size: 0.88em;
+    padding: 14px 16px; border: none; border-radius: 6px;
+    resize: vertical; min-height: 280px; outline: none;
+    tab-size: 4; line-height: 1.6;
+  }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .btn { border: none; border-radius: 6px; padding: 8px 20px; font-size: 0.9em; cursor: pointer; font-weight: bold; transition: background .15s; }
+  .btn-run      { background: #388e3c; color: #fff; }
+  .btn-run:hover{ background: #2e7d32; }
+  .btn-sol      { background: #fff; color: #3f51b5; border: 1.5px solid #3f51b5; }
+  .btn-sol:hover{ background: #e8eaf6; }
+  .btn-rst      { background: #fff; color: #888; border: 1.5px solid #ccc; }
+  .btn-rst:hover{ background: #f5f5f5; }
+  .output-area { background: #263238; color: #b2dfdb; font-family: 'Courier New', Consolas, monospace; font-size: 0.87em; padding: 12px 16px; border-radius: 6px; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-bottom: 10px; display: none; }
+  .output-area.show { display: block; }
+  .output-area.error { color: #ef9a9a; }
+  .solution-area { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; padding: 14px 16px; margin-top: 6px; }
+  .solution-area.show { display: block; }
+  .solution-area pre { background: #1e272e; color: #ecf0f1; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.86em; margin: 8px 0 0; }
+  .hint { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 10px 14px; border-radius: 4px; font-size: 0.9em; margin: 10px 0; }
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">✅ Quiz</a>
+  <a href="practice.html">📝 宿題</a>
+</nav>
+
+<h1>Step 4 ハンズオン — カスタマイズと高度な設定</h1>
+<div class="meta">Python をブラウザで実行 &nbsp;|&nbsp; 演習数: 2問 &nbsp;|&nbsp; 所要時間: 約25分</div>
+
+<p>Claude Code の <strong>settings.json</strong> の操作と <strong>Hooks</strong> の仕組みを Python で実装して体感しましょう。</p>
+
+<div id="py-status" class="py-status idle">初回「実行」時に Python 環境を自動ロードします（数秒かかります）</div>
+
+<!-- ===== Exercise 1 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 1</div>
+  <h3>settings.json の操作（権限とフックの追加）</h3>
+  <p>Claude Code の設定ファイル <code>settings.json</code> に対して、<code>allow</code>/<code>deny</code> 権限と Hooks エントリを追加する関数を完成させてください。</p>
+  <div class="hint">ヒント: <code>settings["permissions"]["allow"].append(pattern)</code> で権限を追加、Hooks は <code>{"matcher": ..., "hooks": [...]}</code> 形式のオブジェクトをリストに追加します。</div>
+  <textarea class="code-editor" id="code1"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(1)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(1)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(1)">リセット</button>
+  </div>
+  <div class="output-area" id="out1"></div>
+  <div class="solution-area" id="sol1">
+    <strong>正解:</strong>
+    <pre id="sol1-code"></pre>
+  </div>
+</div>
+
+<!-- ===== Exercise 2 ===== -->
+<div class="ex-box">
+  <div class="ex-label">Exercise 2</div>
+  <h3>PostToolUse Hook のシミュレーション</h3>
+  <p>Hooks は「ツール実行後に特定のコマンドを自動実行する」仕組みです。設定された hooks リストに対してツール名をマッチングし、マッチした hook を「実行」するシミュレーターを完成させてください。</p>
+  <div class="hint">ヒント: matcher は <code>"Edit|Write"</code> のようなパイプ区切り文字列です。<code>tool_name in matcher.split('|')</code> でマッチ判定できます。</div>
+  <textarea class="code-editor" id="code2"></textarea>
+  <div class="controls">
+    <button class="btn btn-run" onclick="runCode(2)">▶ 実行</button>
+    <button class="btn btn-sol" onclick="toggleSolution(2)">正解を見る</button>
+    <button class="btn btn-rst" onclick="resetCode(2)">リセット</button>
+  </div>
+  <div class="output-area" id="out2"></div>
+  <div class="solution-area" id="sol2">
+    <strong>正解:</strong>
+    <pre id="sol2-code"></pre>
+  </div>
+</div>
+
+<div class="step-links">
+  <a href="quiz.html">← Quiz に戻る</a>
+  <a href="../step5/lesson.html">Step 5 へ →</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script>
+const STARTER = {};
+const SOLUTION = {};
+
+STARTER[1] = `# === Exercise 1: settings.json の操作 ===
+import json
+
+# 初期の settings.json
+INITIAL_SETTINGS = {
+    "permissions": {
+        "allow": [
+            "Read",
+            "Glob",
+            "Grep"
+        ],
+        "deny": [
+            "Bash(rm -rf *)"
+        ]
+    },
+    "hooks": {
+        "PostToolUse": []
+    }
+}
+
+def add_permission(settings, permission_type, pattern):
+    """
+    allow または deny リストにパターンを追加する
+    permission_type: "allow" または "deny"
+    pattern: 追加するパターン文字列
+    """
+    # TODO: settings["permissions"][permission_type] に pattern を追加してください
+    pass
+
+def add_hook(settings, event, matcher, command):
+    """
+    Hooks にエントリを追加する
+    event:   "PostToolUse" など
+    matcher: "Edit|Write" など（パイプ区切りのツール名）
+    command: 実行するコマンド文字列
+    """
+    # TODO: 以下の形式のオブジェクトを settings["hooks"][event] に追加してください
+    # {"matcher": matcher, "hooks": [{"type": "command", "command": command}]}
+    pass
+
+
+# --- 実行 ---
+import copy
+settings = copy.deepcopy(INITIAL_SETTINGS)
+
+# 権限を追加
+add_permission(settings, "allow", "Edit")
+add_permission(settings, "allow", "Bash(pytest *)")
+add_permission(settings, "deny",  "Bash(git push --force*)")
+add_permission(settings, "deny",  "Bash(git reset --hard*)")
+
+# フックを追加（ファイル編集後に Lint を実行）
+add_hook(settings, "PostToolUse", "Edit|Write", "ruff check --fix")
+
+print("=== 更新された settings.json ===")
+print(json.dumps(settings, indent=2, ensure_ascii=False))
+
+# 確認
+allow_count = len(settings["permissions"]["allow"])
+deny_count  = len(settings["permissions"]["deny"])
+hook_count  = len(settings["hooks"]["PostToolUse"])
+print(f"\\nallow: {allow_count}件 / deny: {deny_count}件 / PostToolUse hooks: {hook_count}件")
+if allow_count == 5 and deny_count == 3 and hook_count == 1:
+    print("✓ 正解！")
+else:
+    print("⚠ TODOを完成させると数値が合います")
+`;
+
+SOLUTION[1] = `def add_permission(settings, permission_type, pattern):
+    settings["permissions"][permission_type].append(pattern)  # ← TODO
+
+def add_hook(settings, event, matcher, command):
+    hook_entry = {
+        "matcher": matcher,
+        "hooks": [{"type": "command", "command": command}]
+    }
+    settings["hooks"][event].append(hook_entry)  # ← TODO`;
+
+STARTER[2] = `# === Exercise 2: PostToolUse Hook シミュレーション ===
+# Hooks が「ツール実行後」に起動する仕組みを再現します
+
+# hooks の設定例（settings.json の PostToolUse セクション）
+HOOKS_CONFIG = [
+    {
+        "matcher": "Edit|Write",
+        "hooks": [{"type": "command", "command": "ruff check --fix"}]
+    },
+    {
+        "matcher": "Bash",
+        "hooks": [{"type": "command", "command": "echo 'Bash command logged'"}]
+    },
+    {
+        "matcher": "Edit|Write|Read",
+        "hooks": [{"type": "command", "command": "echo 'file operation done'"}]
+    },
+]
+
+def find_matching_hooks(hooks_config, tool_name):
+    """
+    ツール名にマッチする hook のコマンドリストを返す
+    matcher は "|" 区切りのツール名リスト
+    例: "Edit|Write" は Edit または Write にマッチ
+    """
+    matched_commands = []
+    for entry in hooks_config:
+        matcher = entry["matcher"]
+        # TODO: tool_name が matcher に含まれるか確認し、
+        #       マッチしたら entry["hooks"] の各コマンドを matched_commands に追加してください
+        # ヒント: matcher.split('|') でリストに分割して tool_name が含まれるか確認
+        pass
+    return matched_commands
+
+def simulate_tool_use(tool_name, description):
+    """ツール使用をシミュレートし、PostToolUse Hooks を発火させる"""
+    print(f"[ツール実行] {tool_name}: {description}")
+    matched = find_matching_hooks(HOOKS_CONFIG, tool_name)
+    if matched:
+        for cmd_entry in matched:
+            print(f"  [Hook発火] {cmd_entry['command']}")
+    else:
+        print("  [Hook] マッチする設定なし")
+    print()
+
+
+# --- テスト実行 ---
+print("=== PostToolUse Hook シミュレーション ===\\n")
+simulate_tool_use("Edit",  "main.py を編集")
+simulate_tool_use("Write", "helper.py を作成")
+simulate_tool_use("Read",  "config.py を読み込み")
+simulate_tool_use("Bash",  "pytest tests/ を実行")
+simulate_tool_use("Glob",  "*.py ファイルを検索")
+`;
+
+SOLUTION[2] = `def find_matching_hooks(hooks_config, tool_name):
+    matched_commands = []
+    for entry in hooks_config:
+        matcher = entry["matcher"]
+        if tool_name in matcher.split('|'):   # ← TODO
+            matched_commands.extend(entry["hooks"])  # ← TODO
+    return matched_commands`;
+
+// ===== Pyodide runner =====
+let pyodideInstance = null;
+
+async function ensurePyodide() {
+  if (pyodideInstance) return pyodideInstance;
+  const status = document.getElementById('py-status');
+  status.textContent = '⏳ Python 実行環境を準備中（初回のみ数秒かかります）...';
+  status.className = 'py-status loading';
+  pyodideInstance = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/' });
+  status.textContent = '✓ Python 実行環境が準備できました';
+  status.className = 'py-status ready';
+  return pyodideInstance;
+}
+
+async function runCode(n) {
+  const out = document.getElementById('out' + n);
+  out.className = 'output-area show';
+  out.textContent = '⏳ 実行中...';
+  try {
+    const py = await ensurePyodide();
+    py.runPython('import sys, io; sys.stdout = io.StringIO()');
+    await py.runPythonAsync(document.getElementById('code' + n).value);
+    const result = py.runPython('sys.stdout.getvalue()');
+    out.textContent = result || '(出力なし)';
+    out.className = 'output-area show';
+  } catch (e) {
+    out.textContent = 'エラー:\n' + e.message;
+    out.className = 'output-area show error';
+  }
+}
+
+function toggleSolution(n) {
+  document.getElementById('sol' + n).classList.toggle('show');
+}
+
+function resetCode(n) {
+  document.getElementById('code' + n).value = STARTER[n];
+  const out = document.getElementById('out' + n);
+  out.textContent = '';
+  out.className = 'output-area';
+  document.getElementById('sol' + n).classList.remove('show');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('code' + i).value = STARTER[i];
+    document.getElementById('sol' + i + '-code').textContent = SOLUTION[i];
+  }
+});
+</script>
+</body>
+</html>
