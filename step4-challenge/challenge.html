@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 4 チャレンジ — MCP クライアント実装 | Claude Code 実践ガイド</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif; max-width: 960px; margin: 0 auto; padding: 24px; color: #222; line-height: 1.75; background: #fafafa; }
+  nav { background: #1a237e; color: #fff; padding: 12px 18px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+  nav a { color: #90caf9; text-decoration: none; margin-right: 14px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { color: #1a237e; border-bottom: 3px solid #e65100; padding-bottom: 10px; }
+  h2 { color: #bf360c; border-bottom: 1px solid #ffccbc; padding-bottom: 6px; margin-top: 40px; }
+  h3 { color: #e65100; margin-top: 28px; }
+  h4 { color: #283593; margin: 20px 0 8px; }
+  code { background: #e8eaf6; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', Consolas, monospace; font-size: 0.92em; }
+  pre { background: #1e272e; color: #ecf0f1; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 14px 0; font-size: 0.87em; line-height: 1.65; }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+  a { color: #3f51b5; }
+  /* Badges */
+  .badge { display: inline-block; padding: 3px 12px; border-radius: 14px; font-size: 0.8em; font-weight: bold; margin-right: 8px; }
+  .badge-challenge { background: #e65100; color: #fff; }
+  .badge-diff { background: #fff3e0; color: #e65100; border: 1px solid #ffb74d; }
+  .badge-low  { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .badge-mid  { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+  /* Info boxes */
+  .info-box  { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 14px 18px; border-radius: 4px; margin: 16px 0; }
+  .warn-box  { background: #fff8e1; border-left: 4px solid #ffc107; padding: 14px 18px; border-radius: 4px; margin: 16px 0; }
+  .goal-box  { background: #fbe9e7; border-left: 4px solid #e65100; padding: 14px 18px; border-radius: 4px; margin: 16px 0; }
+  /* Architecture diagram */
+  .arch-box { background: #263238; color: #eceff1; border-radius: 8px; padding: 18px 22px; font-family: 'Courier New', Consolas, monospace; font-size: 0.9em; margin: 16px 0; line-height: 2; }
+  .arch-box .hl { color: #80cbc4; font-weight: bold; }
+  .arch-box .arrow { color: #ffcc02; }
+  /* Step marker */
+  .step-marker { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: #e65100; color: #fff; border-radius: 50%; font-weight: bold; font-size: 0.9em; margin-right: 8px; flex-shrink: 0; }
+  .step-row { display: flex; align-items: flex-start; gap: 0; margin-bottom: 12px; }
+  .step-content { flex: 1; }
+  /* Edit-here highlight */
+  .edit-line { background: rgba(255,204,0,0.25); border-left: 3px solid #ffc107; display: block; padding-left: 6px; margin-left: -6px; }
+  /* EDIT HERE section boxes */
+  .edit-box { border: 2px solid #e65100; border-radius: 10px; padding: 20px 24px; margin: 24px 0; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .edit-box-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .edit-num { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: #e65100; color: #fff; border-radius: 50%; font-weight: bold; font-size: 1em; flex-shrink: 0; }
+  .edit-box h3 { margin: 0; color: #bf360c; }
+  .hint { background: #e8f4fd; border-left: 4px solid #1565c0; padding: 10px 14px; border-radius: 4px; font-size: 0.9em; margin: 12px 0; }
+  /* Solution toggle */
+  .btn-sol { background: #fff; color: #e65100; border: 1.5px solid #e65100; border-radius: 6px; padding: 7px 18px; font-size: 0.9em; cursor: pointer; font-weight: bold; margin-top: 10px; transition: background .15s; }
+  .btn-sol:hover { background: #fbe9e7; }
+  .solution-area { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; padding: 14px 16px; margin-top: 10px; }
+  .solution-area.show { display: block; }
+  .solution-area pre { background: #1e272e; color: #ecf0f1; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.86em; margin: 8px 0 0; }
+  /* File sections */
+  .file-section { border: 1.5px solid #c5cae9; border-radius: 8px; overflow: hidden; margin: 16px 0; }
+  .file-header { background: #3f51b5; color: #fff; padding: 8px 16px; font-family: monospace; font-size: 0.9em; display: flex; justify-content: space-between; align-items: center; }
+  .file-header .badge-file { background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 10px; font-size: 0.8em; }
+  .file-body { padding: 0; }
+  .file-body pre { margin: 0; border-radius: 0; }
+  /* Expected output */
+  .output-box { background: #263238; color: #a5d6a7; font-family: 'Courier New', Consolas, monospace; font-size: 0.87em; padding: 14px 16px; border-radius: 6px; margin: 12px 0; white-space: pre-wrap; }
+  /* Collapsible full code */
+  details { border: 1.5px solid #c5cae9; border-radius: 8px; margin: 16px 0; overflow: hidden; }
+  details summary { background: #e8eaf6; color: #1a237e; padding: 10px 16px; cursor: pointer; font-weight: bold; user-select: none; }
+  details summary:hover { background: #c5cae9; }
+  details pre { margin: 0; border-radius: 0; }
+  /* Table */
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+  th { background: #3f51b5; color: #fff; padding: 9px 14px; text-align: left; }
+  td { border: 1px solid #c5cae9; padding: 8px 14px; }
+  tr:nth-child(even) td { background: #f3f4fb; }
+  /* Nav footer */
+  .step-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #c5cae9; }
+  .step-links a { color: #3f51b5; padding: 7px 16px; border: 1.5px solid #3f51b5; border-radius: 5px; text-decoration: none; font-size: 0.9em; }
+  .step-links a:hover { background: #3f51b5; color: #fff; }
+  ol li, ul li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">🏠 TOP</a>
+  <a href="../step4/lesson.html">📖 Step4 Lesson</a>
+  <a href="../step4/quiz.html">✅ Step4 Quiz</a>
+  <a href="../step4/practice.html">📝 Step4 ハンズオン</a>
+</nav>
+
+<h1>Step 4 チャレンジ — MCP クライアントを実装する</h1>
+
+<p>
+  <span class="badge badge-challenge">CHALLENGE</span>
+  <span class="badge badge-diff">ローカル実行</span>
+  所要時間: 約30〜45分
+</p>
+
+<div class="goal-box">
+  <strong>このチャレンジのゴール</strong><br>
+  MCP（Model Context Protocol）サーバーに接続し、ツール定義を動的に取得・実行する
+  クライアントコードを <strong>3箇所</strong> 埋めて完成させる。
+</div>
+
+<!-- ===== MCP とは ===== -->
+<h2>MCP（Model Context Protocol）とは</h2>
+
+<p>Step 4 で学んだ「Claude Code のツール拡張」の基盤となるプロトコルです。
+従来の手書きツールと MCP の最大の違いは <strong>「ツールの実装場所の分離」</strong> にあります。</p>
+
+<table>
+  <tr><th></th><th>手書きツール（従来方式）</th><th>MCP（動的取得）</th></tr>
+  <tr><td>ツール定義</td><td>クライアントコードに手書き</td><td>サーバーから動的取得</td></tr>
+  <tr><td>ツール実行</td><td>自分の Python 関数を直接呼ぶ</td><td>MCP サーバーに委譲</td></tr>
+  <tr><td>ツールを追加したとき</td><td>クライアントコードも修正が必要</td><td>クライアントは変更不要</td></tr>
+  <tr><td>サーバーの言語</td><td>—</td><td>Python / TypeScript / 任意</td></tr>
+</table>
+
+<div class="arch-box">
+  <span class="hl">あなたが実装する部分</span>
+  <br>
+  <span class="hl">MCP クライアント</span> <span class="arrow">──── SSE ────&gt;</span> <span class="hl">MCP サーバー</span>
+  <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;① ツール一覧を問い合わせる&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">&lt;──────────</span>&nbsp; ツール定義を返す
+  <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;② LLM にツール定義を渡す
+  <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;③ ツール実行を委譲する&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">──────────&gt;</span>&nbsp; 実行して結果を返す
+</div>
+
+<!-- ===== ファイル構成 ===== -->
+<h2>ファイル構成</h2>
+
+<table>
+  <tr><th>ファイル</th><th>役割</th><th>編集</th></tr>
+  <tr><td><code>step4_mcp-server.py</code></td><td>MCP サーバー（3つのツールを提供）</td><td>変更不要</td></tr>
+  <tr><td><code>step4_mcp-client.exercise.py</code></td><td>クライアント演習ファイル（3箇所を埋める）</td><td>ここを編集</td></tr>
+  <tr><td><code>step4_mcp-client.sample.py</code></td><td>MockLLM 使用の完成サンプル（API キー不要）</td><td>参考用</td></tr>
+</table>
+
+<!-- ===== セットアップ ===== -->
+<h2>セットアップ</h2>
+
+<div class="step-row">
+  <span class="step-marker">1</span>
+  <div class="step-content">
+    <strong>依存パッケージをインストール</strong>
+    <pre><code>pip install mcp openai</code></pre>
+  </div>
+</div>
+
+<div class="step-row">
+  <span class="step-marker">2</span>
+  <div class="step-content">
+    <strong>ターミナル A で MCP サーバーを起動</strong>
+    <pre><code>python step4_mcp-server.py</code></pre>
+    <p>起動確認: <code>http://localhost:8000/sse</code> にアクセスして SSE ストリームが見えること</p>
+  </div>
+</div>
+
+<div class="step-row">
+  <span class="step-marker">3</span>
+  <div class="step-content">
+    <strong>ターミナル B でクライアントを実行（演習ファイルを完成させてから）</strong>
+    <pre><code>python step4_mcp-client.exercise.py</code></pre>
+    <div class="warn-box">
+      <strong>API キーについて:</strong> exercise.py は Azure OpenAI 接続が必要です。
+      API キーなしで動作確認したい場合は <code>step4_mcp-client.sample.py</code> を先に実行してください（MockLLM 使用）。
+    </div>
+  </div>
+</div>
+
+<!-- ===== MCP サーバー確認 ===== -->
+<h2>Step 1: MCP サーバーを確認する（変更不要）</h2>
+
+<p>サーバーが提供する <strong>3つのツール</strong> を把握しておきましょう。</p>
+
+<table>
+  <tr><th>ツール名</th><th>説明</th><th>主なパラメータ</th></tr>
+  <tr><td><code>get_current_datetime</code></td><td>現在の日付・時刻を返す</td><td>なし</td></tr>
+  <tr><td><code>calculate_loan_monthly_payment</code></td><td>元利均等返済の月額を計算</td><td>principal / annual_rate_percent / months</td></tr>
+  <tr><td><code>count_days_until</code></td><td>今日から指定日までの残日数を計算</td><td>target_date_str（YYYY-MM-DD）</td></tr>
+</table>
+
+<details>
+  <summary>📄 step4_mcp-server.py（クリックで展開）</summary>
+<pre><code>from datetime import date, datetime
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("SxxxFinanceTools")
+
+
+@mcp.tool()
+def get_current_datetime() -> str:
+    """現在の日付と時刻を返す。"""
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+@mcp.tool()
+def calculate_loan_monthly_payment(
+    principal: float, annual_rate_percent: float, months: int
+) -> str:
+    """元利均等返済方式での毎月の返済額を計算する。"""
+    if annual_rate_percent == 0:
+        monthly_payment = principal / months
+    else:
+        r = annual_rate_percent / 100 / 12
+        monthly_payment = principal * r * (1 + r) ** months / ((1 + r) ** months - 1)
+    total_payment = monthly_payment * months
+    total_interest = total_payment - principal
+    return (
+        f"借入元金: {principal:,.0f} 円\n"
+        f"年利: {annual_rate_percent} %\n"
+        f"返済期間: {months} ヶ月（{months // 12} 年）\n"
+        f"毎月の返済額: {monthly_payment:,.0f} 円\n"
+        f"返済総額: {total_payment:,.0f} 円\n"
+        f"支払利息合計: {total_interest:,.0f} 円"
+    )
+
+
+@mcp.tool()
+def count_days_until(target_date_str: str) -> str:
+    """今日から指定した日付までの残り日数を計算する。"""
+    try:
+        target = date.fromisoformat(target_date_str)
+    except ValueError:
+        return f"日付の形式が正しくありません。'YYYY-MM-DD' 形式で指定してください。"
+    today = date.today()
+    delta = (target - today).days
+    if delta &gt; 0:
+        return f"今日（{today}）から {target_date_str} まで、あと {delta} 日です。"
+    elif delta == 0:
+        return f"今日（{today}）が {target_date_str} です。"
+    else:
+        return f"{target_date_str} は {abs(delta)} 日前（{today} 時点）です。"
+
+
+if __name__ == "__main__":
+    print("MCP サーバーを起動します（http://localhost:8000/sse）")
+    mcp.run(transport="sse")</code></pre>
+</details>
+
+<!-- ===== クライアント実装 ===== -->
+<h2>Step 2: クライアントを実装する（3箇所）</h2>
+
+<p><code>step4_mcp-client.exercise.py</code> の <code>...</code> となっている箇所を埋めてください。</p>
+
+<!-- EDIT HERE ① -->
+<div class="edit-box">
+  <div class="edit-box-header">
+    <span class="edit-num">①</span>
+    <h3>ツール一覧の取得</h3>
+    <span class="badge badge-low">難易度: 低</span>
+  </div>
+
+  <p>MCP サーバーに接続済みの <code>session</code> オブジェクトを使って、サーバーが提供するツール一覧を取得してください。</p>
+
+  <div class="file-section">
+    <div class="file-header">
+      <span>step4_mcp-client.exercise.py — discover_tools()</span>
+      <span class="badge-file">EDIT HERE ①</span>
+    </div>
+    <div class="file-body">
+<pre><code>async def discover_tools(session: ClientSession) -&gt; list[dict[str, Any]]:
+    # EDIT HERE ①: MCP サーバーからツール一覧を取得してください
+    # ヒント: session.list_tools() を await で呼び出すと、
+    #         tools_response.tools にツールオブジェクトのリストが入ります
+<span class="edit-line">    tools_response = ...  # ← ここを完成させる</span>
+
+    logger.info(f"MCP サーバーから {len(tools_response.tools)} 件のツールを取得しました")
+    ...</code></pre>
+    </div>
+  </div>
+
+  <div class="hint">
+    <strong>ヒント:</strong> <code>session.list_tools()</code> は非同期メソッドです。<code>await</code> を付けて呼び出してください。
+    戻り値の <code>.tools</code> 属性にツールオブジェクトのリストが入っています。
+  </div>
+
+  <button class="btn-sol" onclick="toggleSol('sol1')">正解を見る</button>
+  <div class="solution-area" id="sol1">
+    <strong>正解:</strong>
+    <pre><code>tools_response = await session.list_tools()</code></pre>
+    <p style="margin:8px 0 0;font-size:.9em;color:#2e7d32;">
+      従来は tools リストをコードに手書きしていました。ここでは1行で MCP サーバーから動的に取得できます。
+    </p>
+  </div>
+</div>
+
+<!-- EDIT HERE ② -->
+<div class="edit-box">
+  <div class="edit-box-header">
+    <span class="edit-num">②</span>
+    <h3>MCP ツール定義を OpenAI 形式に変換</h3>
+    <span class="badge badge-mid">難易度: 中</span>
+  </div>
+
+  <p>取得した MCP ツール定義を、OpenAI の Responses API が受け付ける形式（辞書のリスト）に変換してください。</p>
+
+  <div class="file-section">
+    <div class="file-header">
+      <span>step4_mcp-client.exercise.py — discover_tools() 続き</span>
+      <span class="badge-file">EDIT HERE ②</span>
+    </div>
+    <div class="file-body">
+<pre><code>    # EDIT HERE ②: MCP のツール定義を OpenAI のツール定義形式に変換してください
+    # MCP ツールのプロパティ   : tool.name / tool.description / tool.inputSchema
+    # OpenAI ツールのプロパティ: type / name / description / strict / parameters
+<span class="edit-line">    openai_tools = ...  # ← ここを完成させる</span>
+    return openai_tools</code></pre>
+    </div>
+  </div>
+
+  <div class="hint">
+    <strong>ヒント — OpenAI ツール定義の形式:</strong>
+    <pre style="margin:8px 0 0;font-size:.85em;"><code>{
+    "type": "function",
+    "name": tool.name,           # MCP の tool.name をそのまま使う
+    "description": tool.description or "",
+    "strict": False,
+    "parameters": tool.inputSchema,  # MCP の inputSchema が JSON Schema 形式
+}</code></pre>
+    各ツールについてこの辞書を作り、リストに追加して返してください。
+  </div>
+
+  <button class="btn-sol" onclick="toggleSol('sol2')">正解を見る</button>
+  <div class="solution-area" id="sol2">
+    <strong>正解:</strong>
+    <pre><code>openai_tools = []
+for tool in tools_response.tools:
+    logger.info(f"  - {tool.name}: {tool.description}")
+    openai_tools.append({
+        "type": "function",
+        "name": tool.name,
+        "description": tool.description or "",
+        "strict": False,
+        "parameters": tool.inputSchema,
+    })
+return openai_tools</code></pre>
+    <p style="margin:8px 0 0;font-size:.9em;color:#2e7d32;">
+      サーバー側でツールを追加・変更しても、このクライアントコードは一切変更不要になります。これが MCP の最大のメリットです。
+    </p>
+  </div>
+</div>
+
+<!-- EDIT HERE ③ -->
+<div class="edit-box">
+  <div class="edit-box-header">
+    <span class="edit-num">③</span>
+    <h3>MCP サーバーへのツール実行委譲</h3>
+    <span class="badge badge-low">難易度: 低</span>
+  </div>
+
+  <p>LLM が決定したツールを MCP サーバー経由で実行し、結果のテキストを取り出して返してください。</p>
+
+  <div class="file-section">
+    <div class="file-header">
+      <span>step4_mcp-client.exercise.py — execute_tool()</span>
+      <span class="badge-file">EDIT HERE ③</span>
+    </div>
+    <div class="file-body">
+<pre><code>async def execute_tool(session: ClientSession, output: ResponseFunctionToolCall) -&gt; str:
+    args = json.loads(output.arguments)
+    logger.info(f"MCP ツール実行: {output.name}({args})")
+
+    # EDIT HERE ③: MCP サーバーにツール実行を委譲し、結果のテキストを取り出してください
+    # ヒント:
+    #   result = await session.call_tool(output.name, args)
+    #   # result.content はテキストブロックのリスト
+    #   return "\n".join(block.text for block in result.content if hasattr(block, "text"))
+<span class="edit-line">    result = ...  # ← ここを完成させる</span>
+<span class="edit-line">    return ...    # ← ここを完成させる</span></code></pre>
+    </div>
+  </div>
+
+  <div class="hint">
+    <strong>ヒント:</strong>
+    <ul>
+      <li><code>session.call_tool(ツール名, 引数辞書)</code> でサーバーにツール実行を委譲します</li>
+      <li>戻り値の <code>result.content</code> はテキストブロックのリストです</li>
+      <li>各ブロックの <code>.text</code> 属性がテキスト本文です（<code>hasattr</code> で確認してから取得）</li>
+    </ul>
+  </div>
+
+  <button class="btn-sol" onclick="toggleSol('sol3')">正解を見る</button>
+  <div class="solution-area" id="sol3">
+    <strong>正解:</strong>
+    <pre><code>result = await session.call_tool(output.name, args)
+return "\n".join(block.text for block in result.content if hasattr(block, "text"))</code></pre>
+    <p style="margin:8px 0 0;font-size:.9em;color:#2e7d32;">
+      従来は <code>my_own_function(args)</code> と自分の関数を直接呼んでいました。
+      ここでは <code>session.call_tool()</code> の1行でサーバー側の関数に委譲できます。
+    </p>
+  </div>
+</div>
+
+<!-- ===== 動作確認 ===== -->
+<h2>Step 3: 動作確認</h2>
+
+<h3>まず sample.py で確認（API キー不要）</h3>
+
+<p>3箇所の実装が完成したら、同じロジックを持つ <code>sample.py</code>（MockLLM 版）で確認できます。</p>
+
+<pre><code># ターミナル A: サーバーを起動したまま
+# ターミナル B:
+python step4_mcp-client.sample.py</code></pre>
+
+<h4>期待する出力</h4>
+<div class="output-box">============================================================
+MCP クライアント デモ（モック LLM 使用）
+============================================================
+
+User: 今日の日付と現在時刻を教えてください
+[MockLLM] ツール呼び出し決定: get_current_datetime({})
+MCP ツール実行: get_current_datetime({})
+Assistant: 【モック回答】ツール実行結果:
+2026-04-08 14:32:15
+
+User: 借入300万円・年利1.5%・10年ローンの月々の返済額を計算してください
+[MockLLM] ツール呼び出し決定: calculate_loan_monthly_payment(...)
+MCP ツール実行: calculate_loan_monthly_payment(...)
+Assistant: 【モック回答】ツール実行結果:
+借入元金: 3,000,000 円
+年利: 1.5 %
+返済期間: 120 ヶ月（10 年）
+毎月の返済額: 26,981 円
+返済総額: 3,237,735 円
+支払利息合計: 237,735 円
+
+User: 2025年12月31日まであと何日残っていますか
+...
+
+============================================================
+デモ完了
+============================================================</div>
+
+<h3>exercise.py での実行（Azure OpenAI 環境）</h3>
+
+<pre><code>python step4_mcp-client.exercise.py
+
+# User: 今日の日付を教えて
+# → LLM が get_current_datetime ツールを呼び出し、結果を自然な文章で回答
+
+# User: 500万円を年利2%で20年借りた場合の月々の返済額は？
+# → LLM が calculate_loan_monthly_payment ツールを呼び出して計算
+
+# User: q
+# → 終了</code></pre>
+
+<!-- ===== 完成版 ===== -->
+<h2>完成版コード（全体）</h2>
+
+<details>
+  <summary>📄 step4_mcp-client.sample.py — 完成サンプルを見る（MockLLM 版）</summary>
+<pre><code>import asyncio
+import json
+import uuid
+from dataclasses import dataclass, field
+from typing import Any
+import logging
+
+from mcp import ClientSession
+from mcp.client.sse import sse_client
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logger = logging.getLogger(__name__)
+
+MCP_SERVER_URL = "http://localhost:8000/sse"
+
+
+# ── モック LLM ──────────────────────────────────────────────
+@dataclass
+class MockFunctionCall:
+    name: str
+    arguments: str
+    type: str = "function_call"
+    call_id: str = field(default_factory=lambda: f"mock_{uuid.uuid4().hex[:8]}")
+
+@dataclass
+class MockResponse:
+    output: list
+    output_text: str = ""
+
+class MockLLMResponses:
+    _ROUTING = [
+        (("ローン","返済","月々","月額","借入"),
+         "calculate_loan_monthly_payment",
+         {"principal": 3_000_000, "annual_rate_percent": 1.5, "months": 120}),
+        (("今日","今","日付","日時","時刻","現在"),
+         "get_current_datetime", {}),
+        (("残り","あと何日","日数","期限","まであと"),
+         "count_days_until", {"target_date_str": "2025-12-31"}),
+    ]
+
+    def create(self, *, input, tools, **_):
+        tool_outputs = [m["output"] for m in input
+                        if isinstance(m, dict) and m.get("type") == "function_call_output"]
+        if tool_outputs:
+            summary = "【モック回答】ツール実行結果:\n" + "\n---\n".join(tool_outputs)
+            return MockResponse(output=[], output_text=summary)
+        user_msg = next((m.get("content","") for m in reversed(input)
+                         if isinstance(m,dict) and m.get("role")=="user"), "")
+        available = {t["name"] for t in tools}
+        for keywords, tool_name, args in self._ROUTING:
+            if tool_name in available and any(kw in user_msg for kw in keywords):
+                return MockResponse(
+                    output=[MockFunctionCall(name=tool_name,
+                                            arguments=json.dumps(args, ensure_ascii=False))],
+                    output_text="")
+        return MockResponse(output=[],
+                            output_text=f"[MockLLM] 「{user_msg}」に対応するツールが見つかりませんでした。")
+
+class MockLLMClient:
+    def __init__(self): self.responses = MockLLMResponses()
+
+
+# ── MCP ユーティリティ ──────────────────────────────────────
+async def discover_tools(session: ClientSession) -&gt; list[dict[str, Any]]:
+    # ① ツール一覧を取得
+    tools_response = await session.list_tools()
+    logger.info(f"MCP サーバーから {len(tools_response.tools)} 件のツールを取得しました")
+    # ② OpenAI 形式に変換
+    openai_tools = []
+    for tool in tools_response.tools:
+        logger.info(f"  - {tool.name}: {tool.description}")
+        openai_tools.append({
+            "type": "function",
+            "name": tool.name,
+            "description": tool.description or "",
+            "strict": False,
+            "parameters": tool.inputSchema,
+        })
+    return openai_tools
+
+async def execute_tool(session: ClientSession, output) -&gt; str:
+    args = json.loads(output.arguments)
+    logger.info(f"MCP ツール実行: {output.name}({args})")
+    # ③ ツール実行を委譲
+    result = await session.call_tool(output.name, args)
+    return "\n".join(block.text for block in result.content if hasattr(block, "text"))
+
+
+# ── デモ実行 ─────────────────────────────────────────────────
+async def run_demo(client: MockLLMClient, session: ClientSession) -&gt; None:
+    tools = await discover_tools(session)
+    demo_questions = [
+        "今日の日付と現在時刻を教えてください",
+        "借入300万円・年利1.5%・10年ローンの月々の返済額を計算してください",
+        "2025年12月31日まであと何日残っていますか",
+    ]
+    print("\n" + "=" * 60 + "\nMCP クライアント デモ（モック LLM 使用）\n" + "=" * 60)
+    for question in demo_questions:
+        print(f"\nUser: {question}")
+        messages: list[Any] = [{"role": "user", "content": question}]
+        for _ in range(3):
+            response = client.responses.create(input=messages, tools=tools)
+            messages += response.output
+            tool_called = False
+            for output in response.output:
+                if output.type != "function_call": continue
+                tool_called = True
+                tool_result = await execute_tool(session, output)
+                messages.append({"type": "function_call_output",
+                                  "call_id": output.call_id, "output": tool_result})
+            if not tool_called: break
+        if response.output_text:
+            print(f"Assistant: {response.output_text}")
+    print("\n" + "=" * 60 + "\nデモ完了\n" + "=" * 60)
+
+async def main() -&gt; None:
+    client = MockLLMClient()
+    logger.info(f"MCP サーバーに接続中... ({MCP_SERVER_URL})")
+    async with sse_client(url=MCP_SERVER_URL) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            logger.info("MCP セッション確立")
+            await run_demo(client, session)
+
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre>
+</details>
+
+<!-- ===== ポイントまとめ ===== -->
+<h2>学習のポイントまとめ</h2>
+
+<table>
+  <tr><th>ポイント</th><th>内容</th></tr>
+  <tr><td>ツールの動的取得</td><td><code>session.list_tools()</code> で実行時にサーバーから取得。クライアントの変更不要でツールを追加できる</td></tr>
+  <tr><td>ツール実行の委譲</td><td><code>session.call_tool(name, args)</code> でサーバー側の関数を呼び出す。言語・ホストを問わない</td></tr>
+  <tr><td>asyncio.run()</td><td>MCP SDK は非同期設計。<code>asyncio.run(main())</code> でエントリーポイントを起動する</td></tr>
+  <tr><td>Claude Code との関係</td><td>Claude Code の MCP サーバー設定（settings.json）も同じ仕組みで外部ツールを Claude に提供している</td></tr>
+</table>
+
+<div class="info-box">
+  <strong>Claude Code での活用:</strong><br>
+  <code>~/.claude/settings.json</code> の <code>mcpServers</code> に追加すると、自作 MCP サーバーのツールを Claude Code から直接利用できます。
+  <pre style="margin:8px 0 0;"><code>{
+  "mcpServers": {
+    "finance": {
+      "command": "python",
+      "args": ["step4_mcp-server.py"]
+    }
+  }
+}</code></pre>
+</div>
+
+<div class="step-links">
+  <a href="../step4/practice.html">← Step4 ハンズオンに戻る</a>
+  <a href="../step5/lesson.html">Step 5 へ →</a>
+</div>
+
+<script data-goatcounter="https://gokokuyi.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<script>
+function toggleSol(id) {
+  document.getElementById(id).classList.toggle('show');
+}
+</script>
+</body>
+</html>
