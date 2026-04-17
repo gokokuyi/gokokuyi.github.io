@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>セットアップガイド | AI活用人材育成</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">セットアップガイド</span>
+</nav>
+
+<div class="container">
+
+  <div class="page-header handson">
+    <span class="module-badge">SETUP</span>
+    <h1>ローカル環境セットアップガイド</h1>
+    <p class="subtitle">演習ファイルを実行するための環境を準備しましょう</p>
+  </div>
+
+  <!-- Section 1: 前提条件 -->
+  <div class="section">
+    <h2>前提条件</h2>
+    <p>演習を開始する前に、以下が揃っていることを確認してください。</p>
+    <ul>
+      <li><strong>Python 3.10 以上</strong> — <code>python --version</code> で確認できます</li>
+      <li><strong>pip（パッケージ管理）</strong> — <code>pip --version</code> で確認できます</li>
+      <li><strong>Azure OpenAI Service または OpenAI API のアクセス権</strong> — API キーと接続 URL が必要です</li>
+    </ul>
+    <div class="info-box">
+      <strong>注意：</strong> Python のバージョンが 3.10 未満の場合、一部のライブラリが正常に動作しないことがあります。
+      <code>python --version</code> で確認し、必要に応じてアップグレードしてください。
+    </div>
+  </div>
+
+  <!-- Section 2: セットアップ手順 -->
+  <div class="section">
+    <h2>セットアップ手順</h2>
+
+    <!-- Step 1 -->
+    <div class="handson-step">
+      <span class="step-badge">Step 1</span>
+      <h3>必要なライブラリのインストール</h3>
+      <p>以下のコマンドで必要なライブラリをインストールしてください。</p>
+      <pre><code>pip install openai pyyaml</code></pre>
+      <div class="info-box">
+        <strong>Module 205（MCP）を受講する場合は追加で：</strong>
+        <pre><code>pip install mcp</code></pre>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="handson-step">
+      <span class="step-badge">Step 2</span>
+      <h3>config.yaml の作成</h3>
+      <p>API 接続情報を設定するための <code>config.yaml</code> を作成します。</p>
+
+      <p>まず、サンプルファイルをダウンロードしてください：</p>
+      <div class="download-grid">
+        <div class="file-row">
+          <span class="file-name">config.yaml.example</span>
+          <a href="config.yaml.example" download class="btn-download" title="ダウンロード">⬇</a>
+        </div>
+      </div>
+
+      <p>次に、ダウンロードしたファイルを <code>config.yaml</code> という名前でコピーします：</p>
+      <pre><code>cp config.yaml.example config.yaml</code></pre>
+
+      <p>テキストエディタで <code>config.yaml</code> を開き、<code>BASE_URL</code> と <code>API_KEY</code> を実際の値に書き換えてください：</p>
+      <pre><code>base_url: "https://your-resource.openai.azure.com/openai/deployments/your-model"
+api_key: "your-api-key-here"
+model: "gpt-4o"</code></pre>
+
+      <div class="why-box">
+        <strong>セキュリティに関する注意：</strong> <code>config.yaml</code> には API キーが含まれます。
+        Git リポジトリにコミットしないよう注意してください。
+        <code>.gitignore</code> に <code>config.yaml</code> が含まれていることを確認してください。
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="handson-step">
+      <span class="step-badge">Step 3</span>
+      <h3>Python ファイルのダウンロード</h3>
+      <p>各モジュールの演習ファイルは、それぞれのモジュールページからダウンロードできます。</p>
+      <p><a href="../index.html">トップページ</a>から受講するモジュールを選択し、「Handson」タブから演習ファイルをダウンロードしてください。</p>
+      <div class="info-box">
+        ダウンロードしたファイルは <code>handson/</code> フォルダ（<code>config.yaml</code> と同じ場所）に配置してください。
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="handson-step">
+      <span class="step-badge">Step 4</span>
+      <h3>演習の実行</h3>
+      <p>演習ファイルは必ず <code>handson/</code> ディレクトリから実行してください。</p>
+      <pre><code>cd /path/to/AI-learning/handson
+python 201_openai-sdk.py --step 1</code></pre>
+      <div class="info-box">
+        <strong>重要：</strong> <code>handson/</code> ディレクトリ内に <code>config.yaml</code> と <code>utils/</code> フォルダが存在する必要があります。
+        別のディレクトリから実行するとエラーが発生します。
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: 実行ディレクトリについて -->
+  <div class="section">
+    <h2>実行ディレクトリについて</h2>
+    <div class="preview-box">
+      <div class="preview-title">重要：必ず handson/ ディレクトリから実行してください</div>
+      <p>
+        演習ファイルは <code>handson/</code> ディレクトリに <code>config.yaml</code> と <code>utils/</code> フォルダが存在することを前提に動作します。
+        別のディレクトリから実行すると、設定ファイルが見つからずエラーになります。
+      </p>
+    </div>
+
+    <h3>正しい実行例</h3>
+    <pre><code>cd /path/to/AI-learning/handson &amp;&amp; python 201_openai-sdk.py --step 1</code></pre>
+
+    <h3>handson/ ディレクトリ構成</h3>
+    <pre><code>handson/
+├── config.yaml              # API 接続設定（自分で作成）
+├── config.yaml.example      # 設定テンプレート
+├── utils/                   # 共通ユーティリティ（配布済み）
+├── 201_openai-sdk.py        # Module 201 演習ファイル
+├── 202_cli-chat.py          # Module 202 演習ファイル
+├── 203_introduction_of_embeddings.py
+├── 203_rag-chat.py
+├── 204_function-calling-step1.py
+├── 205_mcp-step1.py
+└── ...                      # その他の演習ファイル</code></pre>
+  </div>
+
+  <!-- Section 4: トラブルシューティング -->
+  <div class="section">
+    <h2>トラブルシューティング</h2>
+
+    <div class="why-box">
+      <strong>ModuleNotFoundError: No module named 'utils'</strong><br>
+      <code>handson/</code> ディレクトリから実行していることを確認してください。
+      <code>config.yaml</code> と <code>utils/</code> フォルダが同じ場所に存在する必要があります。
+      <pre><code>cd /path/to/AI-learning/handson
+python 201_openai-sdk.py --step 1</code></pre>
+    </div>
+
+    <div class="why-box">
+      <strong>API Key エラー（AuthenticationError）</strong><br>
+      <code>config.yaml</code> の <code>api_key</code> と <code>base_url</code> を確認してください。
+      Azure OpenAI の場合はリソース名・デプロイ名・APIバージョンが正確に設定されているかチェックしてください。
+      <pre><code>base_url: "https://&lt;resource-name&gt;.openai.azure.com/openai/deployments/&lt;deployment-name&gt;"
+api_key: "&lt;your-api-key&gt;"</code></pre>
+    </div>
+
+    <div class="why-box">
+      <strong>BadRequestError: Request too large（Embeddings エラー）</strong><br>
+      Embeddings API に渡すテキストが長すぎる場合に発生します。
+      入力テキストを短くするか、複数のチャンクに分割して処理してください。
+      一般的に、<code>text-embedding-3-small</code> モデルは 8,191 トークンまで受け付けます。
+    </div>
+
+    <div class="info-box">
+      上記で解決しない場合は、研修担当者または AI 推進部（ai-support@jxxx.co.jp / 内線 1234）にお問い合わせください。
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="../index.html" class="btn-nav prev">&#8592; トップへ戻る</a>
+  </div>
+
+</div><!-- /container -->
+
+<script src="../download.js"></script>
+</body>
+</html>

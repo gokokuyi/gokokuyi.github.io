@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 0 Lesson: 生成AIの前提</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <a href="lesson.html">Module 0</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">Lesson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html" class="active-lesson">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header lesson">
+    <span class="module-badge">M0 LESSON</span>
+    <h1>生成AIの前提（全員）</h1>
+    <p class="subtitle">LLMの仕組み・限界・正しさの作り方・業務活用の基本姿勢を理解する</p>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <h2>🧠 LLMとは何か ─ 確率的生成の仕組み</h2>
+    <p>LLM（大規模言語モデル）は、インターネット上の大量のテキストデータを学習し、「次のトークン（単語・文字のかたまり）として何が来る確率が高いか」を予測することで文章を生成します。</p>
+
+    <h3>トークン予測の仕組み</h3>
+    <p>LLMは入力テキストを受け取ると、語彙全体（数万〜数十万トークン）に対して確率分布を計算し、その分布からサンプリングして次のトークンを選びます。これを終端トークン（<code>&lt;/s&gt;</code>）が選ばれるまで繰り返します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">入力（プロンプト）</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">次のトークン候補（確率の例）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「東京の天気は」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">晴れ: 40%、曇り: 25%、雨: 20%、不明: 15%</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「東京の天気は晴れ」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">です: 55%、でした: 20%、の: 15%、だ: 10%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>同じ入力でも毎回出力が変わる理由</h3>
+    <p>LLMが確率分布からサンプリングするため、同じプロンプトを与えても毎回異なる出力が生成されます。これを制御するのが <strong>temperature（温度）</strong> パラメータです。</p>
+    <ul>
+      <li><strong>temperature = 0</strong>: 常に最高確率のトークンを選ぶ（決定論的・再現性あり）</li>
+      <li><strong>temperature = 0.7〜1.0</strong>: ランダム性が増し、創造的な表現が出やすい</li>
+      <li><strong>temperature &gt; 1.0</strong>: 低確率トークンも選ばれやすくなり、荒唐無稽な出力になりやすい</li>
+    </ul>
+
+    <div class="why-box">
+      <strong>重要な視点：</strong> LLMは「考えている」わけではありません。膨大なテキストから学習した<strong>統計的パターン</strong>に基づき、「文脈に合いそうなトークン列」を生成しているに過ぎません。これがLLMの能力と限界の両方を説明する根本的な事実です。
+    </div>
+
+    <h3>「考えている」わけではない ─ 統計的パターンマッチ</h3>
+    <p>LLMは以下のような「理解」や「推論」を本質的には行っていません：</p>
+    <ul>
+      <li>概念の意味を「わかって」いるわけではない（記号操作に近い）</li>
+      <li>事実を「知って」いるわけではない（学習データに出現したパターンを記憶している）</li>
+      <li>計算を「実行して」いるわけではない（計算式の見た目のパターンから回答を推測している）</li>
+    </ul>
+    <div class="info-box">
+      たとえば「7839 × 4291 = ?」という問いに対して、LLMは実際に掛け算を実行せず、学習データ中の類似した掛け算の結果パターンから推測します。そのため計算を間違えることが多くあります。
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <h2>⚖️ LLMの得意なこと / 不得意なこと</h2>
+    <p>LLMを業務に活用するには、何が得意で何が苦手かを正確に把握することが不可欠です。</p>
+
+    <h3>得意なこと</h3>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#e6f4ea;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #c3e6cb;">得意タスク</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #c3e6cb;">説明</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #c3e6cb;">例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>文章生成・ドラフト</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">指示に沿った文章を高速に生成する</td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">メール下書き、提案書のたたき台</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>要約</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">長文を要点に絞って短くまとめる</td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">議事録要約、インシデントレポート</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>翻訳</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">多言語間の翻訳（文脈を保ちながら）</td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">技術文書の日英翻訳</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>コード補完・生成</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">仕様からコードのたたき台を生成する</td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">ボイラープレート生成、リファクタ提案</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>パターン認識・分類</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">テキストのカテゴリ分け・感情分析</td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">問い合わせ種別の自動振り分け</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>不得意なこと（リスクが高い領域）</h3>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#fce8e6;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #f5c6cb;">不得意タスク</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #f5c6cb;">理由</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #f5c6cb;">対策</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>最新情報の提供</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">学習データには<strong>カットオフ日</strong>があり、それ以降の情報を知らない</td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">RAG（検索拡張生成）で最新文書を注入する</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>正確な計算</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">計算はパターンマッチで行うため誤りが生じる</td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">コードインタープリタ（ツール）に計算を委ねる</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>事実の根拠確認</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">「もっともらしい文章」を生成するため、誤った事実でも自信満々に述べる（幻覚：ハルシネーション）</td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">引用元URLや原文との照合を必須にする</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>「わからない」と言えない</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">不確かな情報でも回答を生成してしまう傾向がある</td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">プロンプトで「わからない場合はわからないと答えよ」と明示する</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>ハルシネーション（幻覚）とは：</strong> 存在しない書籍のタイトル・著者名、架空のURLや法令番号、実際には発言していない人物の言葉などを、自信満々に「事実」として生成する現象です。Axxx Japanの社内業務においても、LLMが内部規程や手続きについて誤った情報を正しいかのように提示するリスクがあります。
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <h2>🔍 「正しさ」をどう作るか ─ 参照（Retrieval）と評価（Eval）が本体</h2>
+    <p>LLMは単体では「正しさ」を保証できません。本番で信頼できる出力を得るには、<strong>参照（Retrieval）</strong> と <strong>評価（Evals）</strong> の2つの仕組みが必須です。</p>
+
+    <h3>参照（RAG: Retrieval-Augmented Generation）</h3>
+    <p>RAGは「外部の正しい知識をプロンプトに注入してから回答させる」設計パターンです。</p>
+
+    <pre><code><span class="comment"># RAGの基本フロー（概念）</span>
+<span class="comment"># 1. ユーザーの質問を受け取る</span>
+user_question = <span class="string">"有給休暇の申請方法は？"</span>
+
+<span class="comment"># 2. 社内文書データベースから関連文書を検索する</span>
+relevant_docs = search_internal_docs(user_question)
+
+<span class="comment"># 3. 検索結果をプロンプトに埋め込む</span>
+prompt = f<span class="string">"""
+以下の社内文書を参照して質問に答えてください。
+
+## 参照文書
+{relevant_docs}
+
+## 質問
+{user_question}
+"""</span>
+
+<span class="comment"># 4. LLMに回答させる（根拠のある回答が得られる）</span>
+answer = llm.generate(prompt)</code></pre>
+
+    <div class="info-box">
+      <strong>RAGの効果：</strong>
+      <ul>
+        <li>学習カットオフ以降の情報（最新規程・社内情報）を参照できる</li>
+        <li>回答に「どの文書から引用したか」を明示できる</li>
+        <li>ハルシネーションを大幅に低減できる</li>
+      </ul>
+    </div>
+
+    <h3>評価（Evals: Evaluations）</h3>
+    <p>Evalsは「LLMの出力品質を継続的にテストし続ける仕組み」です。ソフトウェアのユニットテストに相当します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">Eval の種類</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">説明</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>自動Eval（ルールベース）</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">正規表現・完全一致・包含チェックで自動採点</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「回答に電話番号が含まれているか」</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>自動Eval（LLMベース）</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">別のLLMが回答の正確さ・適切さを採点</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「回答は社内規程に沿っているか（5点満点）」</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>手動Eval</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">人間がサンプルを目視確認して品質を保証</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">週次でランダム50件をレビューする</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="why-box">
+      <strong>なぜEvalsが「本体」なのか：</strong><br>
+      プロンプトを変更した際に「品質が上がったか下がったか」を判断するには、定量的なEvalsが必要です。Evalsなしでプロンプトを改修すると、改善なのか劣化なのかが判断できなくなります。RAGとEvalsの2つがないまま本番稼働させると、品質劣化に気づかずユーザーに誤情報を提供し続けるリスクがあります。
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <h2>🏢 AIを業務に使うときの基本姿勢</h2>
+    <p>LLMの仕組みと限界を踏まえ、業務に導入する際に守るべき基本原則を理解しましょう。</p>
+
+    <h3>原則1: LLMの回答を一次情報として使わない</h3>
+    <p>LLMが生成した情報は、学習データのパターンから生成されたものであり、事実の正確性は保証されていません。以下のことを徹底してください。</p>
+    <ul>
+      <li>LLMの回答を、原典・公式ドキュメント・社内規程などと<strong>必ず照合する</strong></li>
+      <li>「LLMがそう言っていた」という理由だけで意思決定しない</li>
+      <li>外部への回答・報告書への引用には、原典を確認してから使用する</li>
+    </ul>
+
+    <div class="info-box">
+      <strong>Axxx Japanでの具体例：</strong><br>
+      社内規程についての質問をLLMにして、回答をそのままメールに書いてはいけません。必ずイントラネットの規程ページで確認してから使用してください。
+    </div>
+
+    <h3>原則2: 人間がレビューする工程を必ず残す</h3>
+    <p>LLMを使った自動化の設計において、以下のフローを守ってください：</p>
+    <ul>
+      <li><strong>ドラフト生成はLLMに任せる</strong> ─ 初稿・たたき台・候補リストの生成</li>
+      <li><strong>最終判断・送付・確定は人間が行う</strong> ─ 担当者が内容を確認してから実行</li>
+      <li><strong>高リスク領域は二重確認</strong> ─ 顧客向け回答・法的文書・金額に関わるものは複数人でレビュー</li>
+    </ul>
+
+    <h3>原則3: 用途・リスク・責任範囲を明確にしてから始める</h3>
+    <p>AI導入前に以下を明文化する習慣をつけましょう：</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">確認項目</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">確認内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>用途</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">何の業務に、誰が、どのように使うか</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>リスク</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">誤答したとき何が起きるか（顧客影響・金融影響・法的影響）</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>責任範囲</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">誤りが生じた場合、誰が責任を持つか</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>情報の機密性</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">プロンプトに入力する情報は社外に出て良いか（クラウドLLMの場合）</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>品質基準</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">どの程度の精度・品質があれば「使える」と判断するか</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="why-box">
+      <strong>まとめ：AI活用の3原則</strong><br>
+      ① LLMの回答は必ず原典照合する<br>
+      ② 最終判断は人間が行う<br>
+      ③ 用途・リスク・責任を明文化してから始める
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="../index.html" class="btn-nav prev">&#8592; トップへ戻る</a>
+    <a href="quiz.html" class="btn-nav next-quiz">Quiz に進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+<script src="../progress.js"></script>
+</body>
+</html>

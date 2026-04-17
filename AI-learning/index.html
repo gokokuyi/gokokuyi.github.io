@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI活用人材育成 研修教材</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <span class="current">SE向け 生成AI実践研修</span>
+</nav>
+
+<div class="hero">
+  <h1>AI活用人材育成 研修教材</h1>
+  <p>SE が業務で使える生成AI の「選定・設計・実装・安全化・評価」をゼロから学ぶ</p>
+</div>
+
+<div class="container">
+
+  <div class="overall-progress">
+    <span class="progress-label">全体進捗</span>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progress-bar-inner"></div>
+    </div>
+    <span class="progress-pct" id="progress-pct">0%</span>
+    <button type="button" class="btn-reset-progress" onclick="resetProgress()">リセット</button>
+  </div>
+
+  <!-- ストーリー説明 -->
+  <div class="section" style="margin-bottom:24px;">
+    <h2>📖 研修の構成</h2>
+    <p>本研修は Module 0〜6 の7段階で構成されています。</p>
+    <p>各モジュールは <strong>Lesson（知識習得）→ Quiz（理解確認）→ Handson（実装練習）</strong> の順に進めてください。</p>
+    <div class="preview-box">
+      <div class="preview-title">研修全体の到達目標</div>
+      <ul>
+        <li>✅ LLMの特性と限界を正しく理解した上で業務判断できる <span class="tag">M0</span></li>
+        <li>✅ 頻度×単価×リスクでユースケースを選定できる <span class="tag">M1</span></li>
+        <li>✅ 再現性・品質の高いプロンプトを設計できる <span class="tag">M2</span></li>
+        <li>✅ 社内ナレッジをベクトル検索で活用する RAG を実装できる <span class="tag">M3</span></li>
+        <li>✅ 業務システムと連携するツール呼び出し・MCP を実装できる <span class="tag">M4</span></li>
+        <li>✅ PII保護・プロンプトインジェクション対策・ガバナンスを実践できる <span class="tag">M5</span></li>
+        <li>✅ LLM-as-judge を含む自動評価・回帰テストを設計できる <span class="tag">M6</span></li>
+      </ul>
+    </div>
+    <div class="info-box info-box--note">
+      演習コードに登場する「<strong>Axxx Japan</strong>」はシナリオ用の架空の会社です。登場する会社名・人物名はすべてフィクションです。
+    </div>
+  </div>
+
+  <!-- ロードマップ -->
+  <h2 class="roadmap-heading">🗺️ 学習ロードマップ</h2>
+  <div class="roadmap">
+
+    <!-- Module 0 -->
+    <div class="module-card" id="card-module0">
+      <div class="module-number">M0</div>
+      <div class="module-info">
+        <h3>生成AIの前提</h3>
+        <p>LLMの確率的生成の仕組みと得意/不得意を理解し、「正しさ」を担保する参照（RAG）と評価（Eval）の重要性を学ぶ。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star empty">★</span><span class="star empty">★</span>
+          </div>
+          <span class="tag">⏱ 約30分</span>
+          <span class="tag">全員</span>
+          <span class="tag">概念</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module0_llm-basics/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module0_llm-basics/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module0_llm-basics/handson.html" class="link-handson">💬 Discussion</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 1 -->
+    <div class="module-card" id="card-module1">
+      <div class="module-number">M1</div>
+      <div class="module-info">
+        <h3>ユースケース選定</h3>
+        <p>「やりたい」ではなく頻度×単価×リスクで優先候補を絞り込む手法を習得。SE向け典型ユースケースのパターンを把握する。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star empty">★</span><span class="star empty">★</span>
+          </div>
+          <span class="tag">⏱ 約45分</span>
+          <span class="tag">ワークシート</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module1_usecase/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module1_usecase/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module1_usecase/handson.html" class="link-handson">📋 Workshop</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 2 -->
+    <div class="module-card" id="card-module2">
+      <div class="module-number">M2</div>
+      <div class="module-info">
+        <h3>プロンプト設計</h3>
+        <p>入出力の仕様化・タスク/評価基準/禁止事項の明記・構造化出力（JSON）・Few-shotによる再現性の高いプロンプト設計を学ぶ。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+          </div>
+          <span class="tag">⏱ 約60分</span>
+          <span class="tag">Python</span>
+          <span class="tag">Structured Output</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module2_prompt/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module2_prompt/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module2_prompt/handson.html" class="link-handson">💻 Handson</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 3 -->
+    <div class="module-card" id="card-module3">
+      <div class="module-number">M3</div>
+      <div class="module-info">
+        <h3>RAG（社内知識で正しさを作る）</h3>
+        <p>ベクトル検索の基本（分割・埋め込み・コサイン類似度）から、社内ドキュメントを対象にした RAG チャットの実装まで。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+          </div>
+          <span class="tag">⏱ 約90分</span>
+          <span class="tag">Python</span>
+          <span class="tag">Embeddings</span>
+          <span class="tag">RAG</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module3_rag/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module3_rag/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module3_rag/handson.html" class="link-handson">💻 Handson</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 4 -->
+    <div class="module-card" id="card-module4">
+      <div class="module-number">M4</div>
+      <div class="module-info">
+        <h3>ツール利用（業務システムと繋ぐ）</h3>
+        <p>Function Calling でチケット・DB・API をツールとして抽象化。過剰権限のリスクと MCP（Model Context Protocol）サーバーの実装も学ぶ。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <span class="tag">⏱ 約120分</span>
+          <span class="tag">Python</span>
+          <span class="tag">Function Calling</span>
+          <span class="tag">MCP</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module4_tools/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module4_tools/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module4_tools/handson.html" class="link-handson">💻 Handson</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 5 -->
+    <div class="module-card" id="card-module5">
+      <div class="module-number">M5</div>
+      <div class="module-info">
+        <h3>セキュリティ & ガバナンス</h3>
+        <p>OWASP LLM Top 10 をベースに PII 保護・プロンプトインジェクション対策・過剰権限防止を実装。NIST AI RMF でリスク管理体制を整理する。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+          </div>
+          <span class="tag">⏱ 約60分</span>
+          <span class="tag">Python</span>
+          <span class="tag">Security</span>
+          <span class="tag">OWASP</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module5_security/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module5_security/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module5_security/handson.html" class="link-handson">💻 Handson</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 6 -->
+    <div class="module-card" id="card-module6">
+      <div class="module-number">M6</div>
+      <div class="module-info">
+        <h3>評価（Evals）が品質保証</h3>
+        <p>ルールベース・LLM-as-judge による自動評価と回帰テストを設計。プロンプト変更・モデル更新で品質が劣化しない仕組みを構築する。</p>
+        <div class="module-meta">
+          <div class="difficulty">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <span class="tag">⏱ 約90分</span>
+          <span class="tag">Python</span>
+          <span class="tag">LLM-as-judge</span>
+          <span class="tag">Evals</span>
+        </div>
+        <span class="progress-badge not-started">0 / 3</span>
+        <div class="module-links">
+          <a href="module6_evals/lesson.html" class="link-lesson">📖 Lesson</a>
+          <a href="module6_evals/quiz.html" class="link-quiz">❓ Quiz</a>
+          <a href="module6_evals/handson.html" class="link-handson">💻 Handson</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /roadmap -->
+
+  <!-- セットアップガイド -->
+  <div class="section section-cta">
+    <h2>🛠️ ローカル環境のセットアップ</h2>
+    <p>Python演習ファイル（M2〜M6）を実行するには、事前に環境のセットアップが必要です。</p>
+    <a href="handson/setup.html" class="btn-cta">📋 セットアップガイドを見る</a>
+  </div>
+
+  <div class="footer-note">
+    AI活用人材育成教材 v2.0
+  </div>
+
+</div><!-- /container -->
+<script src="progress.js"></script>
+</body>
+</html>

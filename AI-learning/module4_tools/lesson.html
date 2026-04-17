@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 4 Lesson: ツール利用</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <a href="lesson.html">Module 4</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">Lesson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html" class="active-lesson">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header lesson">
+    <span class="module-badge">M4 LESSON</span>
+    <h1>ツール利用（業務システムと繋ぐ）</h1>
+    <p class="subtitle">Function Calling と MCP でAIを業務システムに接続し、安全なエージェントを設計する</p>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <h2>🔌 ツール利用（Function Calling）の基本</h2>
+    <p>ツール利用（Function Calling）とは、LLMが自律的に「どの関数を、どの引数で呼ぶか」を判断し、外部の処理を実行させる仕組みです。「AIに何かをやらせる」ためのインターフェースです。</p>
+
+    <h3>ツール定義の構造</h3>
+    <p>ツールは <code>name</code>（名前）・<code>description</code>（説明）・<code>parameters</code>（引数の定義）の3要素で定義します。LLMはこの定義を読んで「このツールをいつ使うか」を判断します。</p>
+
+    <pre><code><span class="comment"># ツール定義の例（チケット検索ツール）</span>
+tool_search_ticket = {
+    <span class="string">"type"</span>: <span class="string">"function"</span>,
+    <span class="string">"function"</span>: {
+        <span class="string">"name"</span>: <span class="string">"search_ticket"</span>,
+        <span class="string">"description"</span>: <span class="string">"社内チケットシステムでチケットを検索します。キーワードまたはステータスで絞り込めます。"</span>,
+        <span class="string">"parameters"</span>: {
+            <span class="string">"type"</span>: <span class="string">"object"</span>,
+            <span class="string">"properties"</span>: {
+                <span class="string">"keyword"</span>: {
+                    <span class="string">"type"</span>: <span class="string">"string"</span>,
+                    <span class="string">"description"</span>: <span class="string">"検索キーワード"</span>
+                },
+                <span class="string">"status"</span>: {
+                    <span class="string">"type"</span>: <span class="string">"string"</span>,
+                    <span class="string">"enum"</span>: [<span class="string">"open"</span>, <span class="string">"in_progress"</span>, <span class="string">"closed"</span>],
+                    <span class="string">"description"</span>: <span class="string">"チケットのステータス"</span>
+                }
+            },
+            <span class="string">"required"</span>: [<span class="string">"keyword"</span>]
+        }
+    }
+}</code></pre>
+
+    <h3>AIはいつツールを使うかを自律判断する</h3>
+    <p>ツール定義を渡すだけで、LLMはユーザーのメッセージを読み「このツールを呼ぶべきか、呼ぶなら何の引数を使うか」を自律的に判断します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">ユーザーの入力</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">LLMの判断</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「ログイン不可のチケットを探して」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><code>search_ticket(keyword="ログイン不可")</code> を呼び出す</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「オープン中のチケット一覧を見せて」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><code>search_ticket(keyword="", status="open")</code> を呼び出す</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「AIについて教えて」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">ツールを使わず直接回答する</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="why-box">
+      <strong>ツール利用の3ステップ：</strong><br>
+      ① LLM が <code>tool_calls</code> を返す（関数名と引数）<br>
+      ② アプリケーション（コード）が実際の関数を実行する<br>
+      ③ 実行結果を <code>role: "tool"</code> メッセージとして LLM に渡し、最終回答を得る
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <h2>🛠️ ツールとして抽象化できるもの</h2>
+    <p>業務システムの様々な操作を「ツール」として抽象化することで、LLMがこれらを呼び出して業務タスクを自律的に処理できるようになります。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">カテゴリ</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">ツール例</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">業務シナリオ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>チケットシステム</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><code>create_ticket</code>, <code>search_ticket</code>, <code>update_ticket</code></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">障害報告の自動チケット起票</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>データベース検索</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><code>search_faq</code>, <code>lookup_customer</code></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">FAQへの自動回答、顧客情報照会</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>社内API</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><code>submit_expense</code>, <code>book_room</code></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">経費申請、会議室予約</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>計算・変換処理</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><code>calculate_tax</code>, <code>convert_currency</code></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">税計算、通貨換算</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>ツール定義で重要な「description」</h3>
+    <p>LLMはツールの <code>description</code> を読んで使用判断をします。説明が曖昧だと、ツールを使うべき場面で使わなかったり、使うべきでない場面で使ったりします。</p>
+
+    <pre><code><span class="comment"># 悪い例: description が曖昧</span>
+{<span class="string">"name"</span>: <span class="string">"get_data"</span>, <span class="string">"description"</span>: <span class="string">"データを取得します"</span>}
+
+<span class="comment"># 良い例: 使用条件・引数・戻り値が明確</span>
+{<span class="string">"name"</span>: <span class="string">"get_expense_limit"</span>,
+ <span class="string">"description"</span>: <span class="string">"従業員IDと経費カテゴリを受け取り、そのカテゴリの上限金額（円）を返します。</span>
+<span class="string">                   カテゴリ: 交通費、宿泊費、会議費、接待費"</span>}</code></pre>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <h2>🔒 過剰権限のリスクと段階的権限付与</h2>
+    <p>ツールにどの権限を与えるかは、セキュリティ設計の中で最も重要な判断の一つです。過剰な権限を持つエージェントは、誤動作時や悪意ある入力（プロンプトインジェクション）の際に取り返しのつかない損害を引き起こす可能性があります。</p>
+
+    <h3>「読み取り専用から始める」原則</h3>
+    <p>権限は段階的に付与します。書き込み・削除・外部送信は慎重に検討してから追加します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">フェーズ</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">許可する操作</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">判断基準</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>フェーズ1</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">読み取りのみ（search, get, list）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">まず始める。誤動作のリスクが低い</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>フェーズ2</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">作成（create）の追加</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">作成物は後から確認・修正できる</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>フェーズ3</strong></td>
+          <td style="padding:10px 14px; border:1px solid #e2e8f0;">更新・削除（update, delete）の追加</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">不可逆な操作。Human-in-the-loop を必ず実装する</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>フェーズ4</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">外部送信（email, notify）の追加</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">外部への影響。必ず人間の承認フローを経る</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Human-in-the-loop（重要アクションに人間の確認を挟む）</h3>
+    <p>削除・外部送信・金額の大きい申請など、取り消しが困難な操作の前には必ず人間の確認ステップを設けます。</p>
+
+    <pre><code><span class="comment"># Human-in-the-loop の実装例</span>
+<span class="keyword">def</span> delete_ticket(ticket_id: str) -> dict:
+    <span class="comment"># 削除前に人間の確認を求める</span>
+    ticket = get_ticket(ticket_id)
+    print(<span class="string">f"\n⚠️ 以下のチケットを削除します:"</span>)
+    print(<span class="string">f"  ID: {ticket['id']}, タイトル: {ticket['title']}"</span>)
+    confirm = input(<span class="string">"削除してよいですか？ (yes/no): "</span>).strip().lower()
+
+    <span class="keyword">if</span> confirm != <span class="string">"yes"</span>:
+        <span class="keyword">return</span> {<span class="string">"status"</span>: <span class="string">"cancelled"</span>, <span class="string">"message"</span>: <span class="string">"ユーザーによりキャンセルされました"</span>}
+
+    <span class="comment"># 承認後に実際の削除を実行</span>
+    <span class="keyword">return</span> execute_delete(ticket_id)</code></pre>
+
+    <div class="info-box">
+      <strong>OWASP LLM06: 過剰な権限（Excessive Agency）：</strong><br>
+      LLMエージェントに過剰な権限を与えることは、OWASPが定めるLLMアプリケーションのリスクの一つです。最小権限の原則（Principle of Least Privilege）に従い、タスクの実行に必要な最小限のツールと権限のみを付与してください。
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <h2>🌐 MCP（Model Context Protocol）入門</h2>
+    <p>MCP（Model Context Protocol）は、ツールをサーバーとして外部公開するための標準プロトコルです。2024年にAnthropicが提案し、OpenAIを含む主要プレイヤーが採用しています。</p>
+
+    <h3>MCPとは何か</h3>
+    <p>従来のFunction Callingでは、ツールの実装とLLMの呼び出しコードが密結合していました。MCPではツールをサーバーとして分離することで、再利用性・セキュリティ・保守性が大幅に向上します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">観点</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">従来の Function Calling</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">MCP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>構成</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">ツール定義とLLM呼び出しが同一コード内</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">ツールはサーバーとして分離・独立</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>再利用性</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">プロジェクトごとに再実装が必要</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">MCPサーバーを複数のAIから利用可能</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>セキュリティ</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">権限制御が実装次第</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">サーバー側で権限・認証を一元管理</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>FastMCP でサーバーを実装する</h3>
+    <p>FastMCP は Python でMCPサーバーを簡単に実装できるライブラリです。</p>
+
+    <pre><code><span class="comment"># FastMCP によるMCPサーバーの実装例</span>
+<span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP
+
+mcp = FastMCP(<span class="string">"Axxx Japan-社内ツールサーバー"</span>)
+
+<span class="comment"># デコレータでツールを定義</span>
+@mcp.tool()
+<span class="keyword">def</span> search_ticket(keyword: str, status: str = <span class="string">"open"</span>) -> dict:
+    <span class="string">"""チケットシステムで検索します。keyword: 検索キーワード、status: open/closed"""</span>
+    <span class="comment"># 実際の処理（DBアクセス等）</span>
+    tickets = ticket_db.search(keyword=keyword, status=status)
+    <span class="keyword">return</span> {<span class="string">"tickets"</span>: tickets, <span class="string">"count"</span>: len(tickets)}
+
+@mcp.tool()
+<span class="keyword">def</span> get_expense_limit(category: str) -> dict:
+    <span class="string">"""経費カテゴリの上限金額を返します。category: 交通費/宿泊費/会議費"""</span>
+    limits = {<span class="string">"交通費"</span>: <span class="keyword">50000</span>, <span class="string">"宿泊費"</span>: <span class="keyword">15000</span>, <span class="string">"会議費"</span>: <span class="keyword">30000</span>}
+    <span class="keyword">return</span> {<span class="string">"category"</span>: category, <span class="string">"limit"</span>: limits.get(category, <span class="keyword">0</span>)}
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    mcp.run(transport=<span class="string">"streamable-http"</span>, host=<span class="string">"127.0.0.1"</span>, port=<span class="keyword">8000</span>)</code></pre>
+
+    <h3>OpenAI SDK クライアントから MCP サーバーを呼び出す</h3>
+
+    <pre><code><span class="comment"># OpenAI SDK + MCP クライアントの実装例</span>
+<span class="keyword">from</span> openai <span class="keyword">import</span> AzureOpenAI
+
+<span class="comment"># MCPサーバーのツール一覧を取得してOpenAI形式に変換</span>
+<span class="keyword">import</span> httpx
+mcp_tools = httpx.get(<span class="string">"http://127.0.0.1:8000/tools"</span>).json()
+openai_tools = convert_mcp_tools_to_openai_format(mcp_tools)
+
+<span class="comment"># 通常の Function Calling と同様に呼び出す</span>
+response = client.chat.completions.create(
+    model=MODEL,
+    tools=openai_tools,
+    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"経費精算の上限を教えて"</span>}]
+)</code></pre>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="section">
+    <h2>🛡️ 設計のまとめ ─ 安全なエージェント設計</h2>
+    <p>ツール利用エージェントを本番で稼働させる際の設計原則をまとめます。</p>
+
+    <h3>ツール数は最小限に</h3>
+    <p>LLMに与えるツール数が多いほど、誤った選択をするリスクが増えます。「タスクに必要なツールのみを与える」ことが基本原則です。</p>
+
+    <h3>エラーハンドリングとフォールバック</h3>
+    <p>ツールが失敗したとき（タイムアウト・認証エラー・API障害）の処理を必ず実装します。</p>
+
+    <pre><code><span class="comment"># エラーハンドリングの実装例</span>
+<span class="keyword">def</span> safe_tool_call(tool_name: str, args: dict) -> dict:
+    <span class="keyword">try</span>:
+        result = execute_tool(tool_name, args)
+        <span class="keyword">return</span> {<span class="string">"status"</span>: <span class="string">"success"</span>, <span class="string">"result"</span>: result}
+    <span class="keyword">except</span> TimeoutError:
+        <span class="keyword">return</span> {<span class="string">"status"</span>: <span class="string">"error"</span>, <span class="string">"message"</span>: <span class="string">"ツールがタイムアウトしました。後でやり直してください。"</span>}
+    <span class="keyword">except</span> PermissionError:
+        <span class="keyword">return</span> {<span class="string">"status"</span>: <span class="string">"error"</span>, <span class="string">"message"</span>: <span class="string">"権限がありません。管理者に確認してください。"</span>}
+    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+        <span class="keyword">return</span> {<span class="string">"status"</span>: <span class="string">"error"</span>, <span class="string">"message"</span>: f<span class="string">"予期しないエラー: {str(e)}"</span>}</code></pre>
+
+    <h3>監査ログ ─ どのツールをいつ呼んだかを記録</h3>
+    <p>エージェントが実行したツール呼び出しはすべてログに記録します。問題発生時の原因調査と、セキュリティ監査に不可欠です。</p>
+
+    <pre><code><span class="comment"># 監査ログの実装例</span>
+<span class="keyword">import</span> json
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+
+<span class="keyword">def</span> log_tool_call(user_id: str, tool_name: str, args: dict, result: dict):
+    log_entry = {
+        <span class="string">"timestamp"</span>: datetime.utcnow().isoformat(),
+        <span class="string">"user_id"</span>: user_id,
+        <span class="string">"tool_name"</span>: tool_name,
+        <span class="string">"args"</span>: args,
+        <span class="string">"result_status"</span>: result.get(<span class="string">"status"</span>),
+    }
+    <span class="keyword">with</span> open(<span class="string">"audit.log"</span>, <span class="string">"a"</span>) <span class="keyword">as</span> f:
+        f.write(json.dumps(log_entry, ensure_ascii=<span class="keyword">False</span>) + <span class="string">"\n"</span>)</code></pre>
+
+    <div class="info-box">
+      <strong>安全なエージェント設計の5原則：</strong>
+      <ol>
+        <li><strong>最小権限：</strong> 必要最小限のツールと権限のみを付与する</li>
+        <li><strong>読み取り優先：</strong> 書き込み・削除は慎重に追加する</li>
+        <li><strong>Human-in-the-loop：</strong> 不可逆な操作は必ず人間の確認を経る</li>
+        <li><strong>エラーハンドリング：</strong> ツール失敗時の処理を必ず実装する</li>
+        <li><strong>監査ログ：</strong> すべてのツール呼び出しを記録する</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="../module3_rag/handson.html" class="btn-nav prev">&#8592; Module 3 へ戻る</a>
+    <a href="quiz.html" class="btn-nav next-quiz">Quiz に進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+<script src="../progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 4 Handson: ツール利用</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <a href="lesson.html">Module 4</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">Handson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html" class="active-handson">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header handson">
+    <span class="module-badge">M4 HANDSON</span>
+    <h1>ツール利用 — 実装演習</h1>
+    <p class="subtitle">Function Calling で業務ツールを接続し、MCP サーバーを実装しましょう</p>
+  </div>
+
+  <!-- 演習ファイル: Function Calling -->
+  <div class="section">
+    <h2>📥 演習ファイル（Function Calling）</h2>
+    <p>以下のファイルをダウンロードして <code>src/handson/</code> フォルダに配置してください。</p>
+    <div class="download-grid">
+      <div class="file-row">
+        <span class="file-name">module4_tools-step0.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_tools-step0.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_tools-step1.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_tools-step1.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_tools-step1.sample.py</span>
+        <span class="file-badge sample">解答例</span>
+        <a href="../handson/module4_tools-step1.sample.py" download class="btn-download sample" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_tools-step2.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_tools-step2.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_tools-step2.sample.py</span>
+        <span class="file-badge sample">解答例</span>
+        <a href="../handson/module4_tools-step2.sample.py" download class="btn-download sample" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_tools-step3.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_tools-step3.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_tools-step3.sample.py</span>
+        <span class="file-badge sample">解答例</span>
+        <a href="../handson/module4_tools-step3.sample.py" download class="btn-download sample" title="ダウンロード">⬇</a>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>実行方法：</strong> <code>cd src/handson &amp;&amp; python module4_tools-step1.py</code><br>
+      <strong>前提：</strong> <code>config.yaml</code> に Azure OpenAI の接続設定が必要です。step0 から順番に取り組んでください。
+    </div>
+  </div>
+
+  <!-- 演習ファイル: MCP -->
+  <div class="section">
+    <h2>📥 演習ファイル（MCP）</h2>
+    <p>以下のファイルをダウンロードして <code>src/handson/</code> フォルダに配置してください。</p>
+    <div class="download-grid">
+      <div class="file-row">
+        <span class="file-name">module4_mcp-step1.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_mcp-step1.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_mcp-step2.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_mcp-step2.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_mcp-step3.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_mcp-step3.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_mcp-step3.sample.py</span>
+        <span class="file-badge sample">解答例</span>
+        <a href="../handson/module4_mcp-step3.sample.py" download class="btn-download sample" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_mcp-client.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module4_mcp-client.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module4_mcp-client.sample.py</span>
+        <span class="file-badge sample">解答例</span>
+        <a href="../handson/module4_mcp-client.sample.py" download class="btn-download sample" title="ダウンロード">⬇</a>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>実行方法（MCPサーバー起動）：</strong> <code>python module4_mcp-step3.py</code><br>
+      <strong>実行方法（MCPクライアント）：</strong> 別ターミナルで <code>python module4_mcp-client.py</code><br>
+      <strong>前提：</strong> <code>pip install fastmcp httpx</code> が必要です。Function Calling の演習を先に完了してください。
+    </div>
+  </div>
+
+  <!-- 学習目標 -->
+  <div class="section">
+    <h2>🎯 学習目標</h2>
+    <ul>
+      <li>ツール定義（name・description・parameters）を正確に記述できる</li>
+      <li>LLM の <code>tool_calls</code> レスポンスを解析して実際の関数を実行できる</li>
+      <li>ツール実行結果を <code>role: "tool"</code> として返し、最終回答を得られる</li>
+      <li>FastMCP で MCP サーバーを実装し、クライアントから呼び出せる</li>
+    </ul>
+    <div class="info-box">
+      演習ファイルを開き、<code># EDIT HERE!</code> とマークされた部分を埋めていきましょう。詰まったらヒントを活用してください。
+    </div>
+  </div>
+
+  <!-- Step FC-1 -->
+  <div class="handson-step">
+    <span class="step-badge">Step FC-1</span>
+    <h3>ツール定義を作成して LLM に渡す</h3>
+    <p>社内チケットシステムの検索ツールを定義し、LLMに渡してください。LLMが <code>tool_calls</code> を返すことを確認します。</p>
+
+    <pre><code><span class="comment"># Step FC-1: ツール定義と LLM への渡し方</span>
+<span class="edit-marker">search_ticket_tool = {  <span class="comment"># EDIT HERE!</span>
+    <span class="string">"type"</span>: <span class="string">"function"</span>,
+    <span class="string">"function"</span>: {
+        <span class="string">"name"</span>: <span class="string">"search_ticket"</span>,
+        <span class="string">"description"</span>: <span class="string">"社内チケットシステムでチケットを検索します。キーワードで絞り込めます。"</span>,
+        <span class="string">"parameters"</span>: {
+            <span class="string">"type"</span>: <span class="string">"object"</span>,
+            <span class="string">"properties"</span>: {
+                <span class="string">"keyword"</span>: {
+                    <span class="string">"type"</span>: <span class="string">"string"</span>,
+                    <span class="string">"description"</span>: <span class="string">"検索キーワード"</span>
+                },
+                <span class="string">"status"</span>: {
+                    <span class="string">"type"</span>: <span class="string">"string"</span>,
+                    <span class="string">"enum"</span>: [<span class="string">"open"</span>, <span class="string">"closed"</span>],
+                    <span class="string">"description"</span>: <span class="string">"チケットのステータス"</span>
+                }
+            },
+            <span class="string">"required"</span>: [<span class="string">"keyword"</span>]
+        }
+    }
+}</span>
+
+response = client.chat.completions.create(
+    model=MODEL,
+<span class="edit-marker">    tools=[search_ticket_tool],  <span class="comment"># EDIT HERE!</span></span>
+    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"ログインエラーのチケットを探して"</span>}]
+)
+
+<span class="comment"># LLM が tool_calls を返したか確認</span>
+msg = response.choices[<span class="keyword">0</span>].message
+<span class="keyword">if</span> msg.tool_calls:
+    tc = msg.tool_calls[<span class="keyword">0</span>]
+    print(<span class="string">f"ツール名: {tc.function.name}"</span>)
+    print(<span class="string">f"引数: {tc.function.arguments}"</span>)</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint-fc1-1')">ヒント ① ツール定義の構造</button>
+    <div class="hint-box" id="hint-fc1-1" style="display:none;">
+      <div class="hint-title">ヒント ①</div>
+      <div class="hint-item"><code>{"type": "function", "function": {"name": ..., "description": ..., "parameters": {...}}}</code></div>
+      <div class="hint-item"><code>parameters</code> は JSON Schema 形式: <code>{"type": "object", "properties": {...}, "required": [...]}</code></div>
+    </div>
+
+    <button class="btn-hint" onclick="toggleHint('hint-fc1-2')">ヒント ② tool_calls の確認方法</button>
+    <div class="hint-box" id="hint-fc1-2" style="display:none;">
+      <div class="hint-title">ヒント ②</div>
+      <div class="hint-item"><code>response.choices[0].message.tool_calls</code> で確認できます</div>
+      <div class="hint-item"><code>tool_calls[0].function.name</code> でツール名、<code>.arguments</code> で引数（JSON文字列）を取得</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol-fc1')">解答を見る</button>
+    <div id="sol-fc1" style="display:none; margin-top:12px;">
+      <pre><code><span class="comment"># 解答: Step FC-1</span>
+search_ticket_tool = {
+    <span class="string">"type"</span>: <span class="string">"function"</span>,
+    <span class="string">"function"</span>: {
+        <span class="string">"name"</span>: <span class="string">"search_ticket"</span>,
+        <span class="string">"description"</span>: <span class="string">"社内チケットシステムでチケットを検索します。キーワードで絞り込めます。"</span>,
+        <span class="string">"parameters"</span>: {
+            <span class="string">"type"</span>: <span class="string">"object"</span>,
+            <span class="string">"properties"</span>: {
+                <span class="string">"keyword"</span>: {<span class="string">"type"</span>: <span class="string">"string"</span>, <span class="string">"description"</span>: <span class="string">"検索キーワード"</span>},
+                <span class="string">"status"</span>: {<span class="string">"type"</span>: <span class="string">"string"</span>, <span class="string">"enum"</span>: [<span class="string">"open"</span>, <span class="string">"closed"</span>]}
+            },
+            <span class="string">"required"</span>: [<span class="string">"keyword"</span>]
+        }
+    }
+}
+response = client.chat.completions.create(
+    model=MODEL,
+    tools=[search_ticket_tool],
+    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"ログインエラーのチケットを探して"</span>}]
+)</code></pre>
+    </div>
+  </div>
+
+  <!-- Step FC-2 -->
+  <div class="handson-step">
+    <span class="step-badge">Step FC-2</span>
+    <h3>tool_calls を解析して実際の関数を実行する</h3>
+    <p>LLM が返した <code>tool_calls</code> の関数名と引数を解析し、対応するPython関数を実行してください。</p>
+
+    <pre><code><span class="comment"># Step FC-2: tool_calls の解析と関数実行</span>
+<span class="keyword">import</span> json
+
+<span class="comment"># モックの検索関数（実際の演習ではDBアクセスに置き換え）</span>
+<span class="keyword">def</span> search_ticket(keyword: str, status: str = <span class="string">"open"</span>) -> list[dict]:
+    mock_db = [
+        {<span class="string">"id"</span>: <span class="string">"T-001"</span>, <span class="string">"title"</span>: <span class="string">"ログインエラー発生"</span>, <span class="string">"status"</span>: <span class="string">"open"</span>},
+        {<span class="string">"id"</span>: <span class="string">"T-002"</span>, <span class="string">"title"</span>: <span class="string">"パスワードリセット不可"</span>, <span class="string">"status"</span>: <span class="string">"open"</span>},
+        {<span class="string">"id"</span>: <span class="string">"T-003"</span>, <span class="string">"title"</span>: <span class="string">"ログイン後に画面がフリーズ"</span>, <span class="string">"status"</span>: <span class="string">"closed"</span>},
+    ]
+    <span class="keyword">return</span> [t <span class="keyword">for</span> t <span class="keyword">in</span> mock_db <span class="keyword">if</span> keyword <span class="keyword">in</span> t[<span class="string">"title"</span>] <span class="keyword">and</span> t[<span class="string">"status"</span>] == status]
+
+<span class="comment"># tool_calls レスポンスの処理</span>
+msg = response.choices[<span class="keyword">0</span>].message
+<span class="keyword">if</span> msg.tool_calls:
+    tc = msg.tool_calls[<span class="keyword">0</span>]
+<span class="edit-marker">    args = json.loads(tc.function.arguments)  <span class="comment"># EDIT HERE!</span>
+    result = search_ticket(**args)              <span class="comment"># EDIT HERE!</span></span>
+
+    print(<span class="string">f"検索結果: {result}"</span>)
+
+    <span class="comment"># 結果を role: "tool" として LLM に返す</span>
+<span class="edit-marker">    messages = [  <span class="comment"># EDIT HERE!</span>
+        {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"ログインエラーのチケットを探して"</span>},
+        msg,  <span class="comment"># LLM の tool_calls メッセージ</span>
+        {
+            <span class="string">"role"</span>: <span class="string">"tool"</span>,
+            <span class="string">"tool_call_id"</span>: tc.id,
+            <span class="string">"content"</span>: json.dumps(result, ensure_ascii=<span class="keyword">False</span>)
+        }
+    ]</span>
+
+    final_response = client.chat.completions.create(
+        model=MODEL,
+        messages=messages
+    )
+    print(final_response.choices[<span class="keyword">0</span>].message.content)</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint-fc2-1')">ヒント ① 引数の解析</button>
+    <div class="hint-box" id="hint-fc2-1" style="display:none;">
+      <div class="hint-title">ヒント ①</div>
+      <div class="hint-item"><code>tc.function.arguments</code> は JSON 文字列です</div>
+      <div class="hint-item"><code>json.loads(tc.function.arguments)</code> で辞書に変換</div>
+      <div class="hint-item"><code>search_ticket(**args)</code> でアンパックして関数に渡します</div>
+    </div>
+
+    <button class="btn-hint" onclick="toggleHint('hint-fc2-2')">ヒント ② role: "tool" メッセージの作り方</button>
+    <div class="hint-box" id="hint-fc2-2" style="display:none;">
+      <div class="hint-title">ヒント ②</div>
+      <div class="hint-item"><code>{"role": "tool", "tool_call_id": tc.id, "content": json.dumps(result)}</code></div>
+      <div class="hint-item"><code>tool_call_id</code> は <code>tc.id</code> から取得します（どのtool_callへの応答かを紐付けるため）</div>
+      <div class="hint-item">messages リスト: [ユーザーメッセージ, LLMのtool_callsメッセージ, ツール結果メッセージ]</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol-fc2')">解答を見る</button>
+    <div id="sol-fc2" style="display:none; margin-top:12px;">
+      <pre><code><span class="comment"># 解答: Step FC-2</span>
+tc = msg.tool_calls[<span class="keyword">0</span>]
+args = json.loads(tc.function.arguments)
+result = search_ticket(**args)
+
+messages = [
+    {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"ログインエラーのチケットを探して"</span>},
+    msg,
+    {
+        <span class="string">"role"</span>: <span class="string">"tool"</span>,
+        <span class="string">"tool_call_id"</span>: tc.id,
+        <span class="string">"content"</span>: json.dumps(result, ensure_ascii=<span class="keyword">False</span>)
+    }
+]
+final_response = client.chat.completions.create(model=MODEL, messages=messages)
+print(final_response.choices[<span class="keyword">0</span>].message.content)</code></pre>
+    </div>
+  </div>
+
+  <!-- Step FC-3 -->
+  <div class="handson-step">
+    <span class="step-badge">Step FC-3</span>
+    <h3>複数ツールを登録してエージェントループを実装する</h3>
+    <p>チケット検索と経費上限照会の2つのツールを登録し、LLMが必要に応じて自律的にツールを選んで使うエージェントループを実装してください。</p>
+
+    <pre><code><span class="comment"># Step FC-3: 複数ツールとエージェントループ</span>
+tools = [search_ticket_tool, get_expense_limit_tool]  <span class="comment"># 2つのツールを登録</span>
+
+<span class="keyword">def</span> run_agent(user_message: str) -> str:
+    messages = [{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: user_message}]
+
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        response = client.chat.completions.create(
+            model=MODEL,
+            tools=tools,
+            messages=messages
+        )
+        msg = response.choices[<span class="keyword">0</span>].message
+
+        <span class="comment"># ツール呼び出しがなければ終了</span>
+<span class="edit-marker">        <span class="keyword">if</span> <span class="keyword">not</span> msg.tool_calls:  <span class="comment"># EDIT HERE!</span>
+            <span class="keyword">return</span> msg.content</span>
+
+        <span class="comment"># 全ての tool_calls を処理する</span>
+        messages.append(msg)
+<span class="edit-marker">        <span class="keyword">for</span> tc <span class="keyword">in</span> msg.tool_calls:  <span class="comment"># EDIT HERE!</span>
+            args = json.loads(tc.function.arguments)
+            <span class="keyword">if</span> tc.function.name == <span class="string">"search_ticket"</span>:
+                result = search_ticket(**args)
+            <span class="keyword">elif</span> tc.function.name == <span class="string">"get_expense_limit"</span>:
+                result = get_expense_limit(**args)
+            <span class="keyword">else</span>:
+                result = {<span class="string">"error"</span>: <span class="string">"Unknown tool"</span>}
+
+            messages.append({
+                <span class="string">"role"</span>: <span class="string">"tool"</span>,
+                <span class="string">"tool_call_id"</span>: tc.id,
+                <span class="string">"content"</span>: json.dumps(result, ensure_ascii=<span class="keyword">False</span>)
+            })</span>
+
+<span class="comment"># テスト実行</span>
+print(run_agent(<span class="string">"交通費の上限とオープン中のログイン関連チケット数を教えて"</span>))</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint-fc3-1')">ヒント: エージェントループの考え方</button>
+    <div class="hint-box" id="hint-fc3-1" style="display:none;">
+      <div class="hint-title">ヒント</div>
+      <div class="hint-item">while ループ: <code>tool_calls</code> がなくなるまでLLMを繰り返し呼び出します</div>
+      <div class="hint-item"><code>msg.tool_calls</code> が空（None または []）なら最終回答として返します</div>
+      <div class="hint-item">複数の <code>tool_calls</code> がある場合は <code>for tc in msg.tool_calls:</code> で全て処理します</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol-fc3')">解答を見る</button>
+    <div id="sol-fc3" style="display:none; margin-top:12px;">
+      <pre><code><span class="comment"># 解答: Step FC-3（エージェントループの核心部分）</span>
+<span class="keyword">while</span> <span class="keyword">True</span>:
+    response = client.chat.completions.create(model=MODEL, tools=tools, messages=messages)
+    msg = response.choices[<span class="keyword">0</span>].message
+    <span class="keyword">if</span> <span class="keyword">not</span> msg.tool_calls:
+        <span class="keyword">return</span> msg.content
+    messages.append(msg)
+    <span class="keyword">for</span> tc <span class="keyword">in</span> msg.tool_calls:
+        args = json.loads(tc.function.arguments)
+        <span class="keyword">if</span> tc.function.name == <span class="string">"search_ticket"</span>:
+            result = search_ticket(**args)
+        <span class="keyword">elif</span> tc.function.name == <span class="string">"get_expense_limit"</span>:
+            result = get_expense_limit(**args)
+        <span class="keyword">else</span>:
+            result = {<span class="string">"error"</span>: <span class="string">"Unknown tool"</span>}
+        messages.append({
+            <span class="string">"role"</span>: <span class="string">"tool"</span>,
+            <span class="string">"tool_call_id"</span>: tc.id,
+            <span class="string">"content"</span>: json.dumps(result, ensure_ascii=<span class="keyword">False</span>)
+        })</code></pre>
+    </div>
+  </div>
+
+  <!-- Step MCP-1 -->
+  <div class="handson-step">
+    <span class="step-badge">Step MCP-1</span>
+    <h3>FastMCP でMCPサーバーを実装する</h3>
+    <p>FastMCP を使って社内ツール（チケット検索・経費上限照会）をMCPサーバーとして公開してください。</p>
+
+    <pre><code><span class="comment"># Step MCP-1: FastMCP サーバーの実装</span>
+<span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP
+
+mcp = FastMCP(<span class="string">"Axxx Japan-社内ツールサーバー"</span>)
+
+<span class="edit-marker">@mcp.tool()  <span class="comment"># EDIT HERE!</span>
+<span class="keyword">def</span> search_ticket(keyword: str, status: str = <span class="string">"open"</span>) -> dict:
+    <span class="string">"""チケットシステムで検索します。keyword: 検索キーワード、status: open/closed"""</span>
+    mock_db = [
+        {<span class="string">"id"</span>: <span class="string">"T-001"</span>, <span class="string">"title"</span>: <span class="string">"ログインエラー"</span>, <span class="string">"status"</span>: <span class="string">"open"</span>},
+        {<span class="string">"id"</span>: <span class="string">"T-002"</span>, <span class="string">"title"</span>: <span class="string">"パスワードリセット不可"</span>, <span class="string">"status"</span>: <span class="string">"open"</span>},
+    ]
+    results = [t <span class="keyword">for</span> t <span class="keyword">in</span> mock_db <span class="keyword">if</span> keyword <span class="keyword">in</span> t[<span class="string">"title"</span>] <span class="keyword">and</span> t[<span class="string">"status"</span>] == status]
+    <span class="keyword">return</span> {<span class="string">"tickets"</span>: results, <span class="string">"count"</span>: len(results)}</span>
+
+<span class="edit-marker">@mcp.tool()  <span class="comment"># EDIT HERE!</span>
+<span class="keyword">def</span> get_expense_limit(category: str) -> dict:
+    <span class="string">"""経費カテゴリの上限金額を返します。category: 交通費/宿泊費/会議費"""</span>
+    limits = {<span class="string">"交通費"</span>: <span class="keyword">50000</span>, <span class="string">"宿泊費"</span>: <span class="keyword">15000</span>, <span class="string">"会議費"</span>: <span class="keyword">30000</span>}
+    limit = limits.get(category)
+    <span class="keyword">if</span> limit <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">return</span> {<span class="string">"error"</span>: f<span class="string">"カテゴリ '{category}' は存在しません"</span>}
+    <span class="keyword">return</span> {<span class="string">"category"</span>: category, <span class="string">"limit"</span>: limit, <span class="string">"currency"</span>: <span class="string">"JPY"</span>}</span>
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    mcp.run(transport=<span class="string">"streamable-http"</span>, host=<span class="string">"127.0.0.1"</span>, port=<span class="keyword">8000</span>)</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint-mcp1-1')">ヒント: @mcp.tool() の使い方</button>
+    <div class="hint-box" id="hint-mcp1-1" style="display:none;">
+      <div class="hint-title">ヒント</div>
+      <div class="hint-item">通常の Python 関数に <code>@mcp.tool()</code> を付けるだけでツールとして公開されます</div>
+      <div class="hint-item">関数の型アノテーション（<code>str</code>, <code>int</code> など）が自動的に JSON Schema に変換されます</div>
+      <div class="hint-item">docstring がツールの <code>description</code> として使われます</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol-mcp1')">解答を見る</button>
+    <div id="sol-mcp1" style="display:none; margin-top:12px;">
+      <pre><code><span class="comment"># 解答: Step MCP-1</span>
+<span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP
+mcp = FastMCP(<span class="string">"Axxx Japan-社内ツールサーバー"</span>)
+
+@mcp.tool()
+<span class="keyword">def</span> search_ticket(keyword: str, status: str = <span class="string">"open"</span>) -> dict:
+    <span class="string">"""チケットシステムで検索します。keyword: 検索キーワード、status: open/closed"""</span>
+    <span class="comment"># ... 実装 ...</span>
+    <span class="keyword">return</span> {<span class="string">"tickets"</span>: results, <span class="string">"count"</span>: len(results)}
+
+@mcp.tool()
+<span class="keyword">def</span> get_expense_limit(category: str) -> dict:
+    <span class="string">"""経費カテゴリの上限金額を返します。"""</span>
+    <span class="comment"># ... 実装 ...</span>
+    <span class="keyword">return</span> {<span class="string">"category"</span>: category, <span class="string">"limit"</span>: limit}
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    mcp.run(transport=<span class="string">"streamable-http"</span>, host=<span class="string">"127.0.0.1"</span>, port=<span class="keyword">8000</span>)</code></pre>
+    </div>
+  </div>
+
+  <!-- 完了チェックリスト -->
+  <div class="checklist">
+    <h3>✅ 完了チェックリスト</h3>
+    <label><input type="checkbox"> ツール定義（name・description・parameters）を正確に記述できた</label>
+    <label><input type="checkbox"> LLM の tool_calls を解析して実際の関数を実行できた</label>
+    <label><input type="checkbox"> role: "tool" メッセージを正しく組み立てて最終回答を得られた</label>
+    <label><input type="checkbox"> 複数ツールのエージェントループが動作した</label>
+    <label><input type="checkbox"> FastMCP でMCPサーバーを起動し、クライアントから呼び出せた</label>
+  </div>
+
+  <div class="handson-complete-wrap">
+    <button type="button" id="btn-handson-complete" class="btn-handson-complete"
+            onclick="markHandsonComplete()">
+      このHandsonを完了する
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="quiz.html" class="btn-nav prev">&#8592; Quiz に戻る</a>
+    <a href="../module5_security/lesson.html" class="btn-nav next-module">Module 5 へ進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function toggleHint(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+<script src="../download.js"></script>
+<script src="../progress.js"></script>
+</body>
+</html>

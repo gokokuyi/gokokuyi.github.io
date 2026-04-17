@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 1 Lesson: ユースケース選定</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <a href="lesson.html">Module 1</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">Lesson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html" class="active-lesson">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header lesson">
+    <span class="module-badge">M1 LESSON</span>
+    <h1>ユースケース選定（業務に閉じる）</h1>
+    <p class="subtitle">「やりたい」から「すべき」へ ─ 頻度×単価×リスクで最優先ユースケースを特定する</p>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <h2>🎯 「やりたい」から「すべき」へ ─ ユースケース選定の重要性</h2>
+    <p>AI導入に失敗するプロジェクトの多くは、「何に使うか」が曖昧なまま技術検討に入ってしまうことが原因です。「AIを使いたい」という動機は大切ですが、「この業務のこの課題にAIを使うべきだ」という具体的な選定なしに進むと、多くの場合PoC（概念実証）どまりで終わります。</p>
+
+    <h3>AI導入の典型的な失敗パターン</h3>
+    <ul>
+      <li><strong>技術先行型:</strong> 「ChatGPTを社内に導入しよう」→どの業務に使うか未定のまま環境構築→使われないまま撤退</li>
+      <li><strong>PoC永続型:</strong> 小さな実証実験には成功→「本当に必要か」「誰が維持するか」が決まらず→本番移行できずに終了</li>
+      <li><strong>過大期待型:</strong> 「全部AIに任せよう」→複雑なエッジケースで誤答多発→プロジェクト停止</li>
+    </ul>
+
+    <div class="why-box">
+      <strong>PoC ≠ 本番:</strong> PoCが成功するのは「理想的なテストデータで試した場合」です。本番に移行するには、エッジケース対応・品質評価（Evals）・保守体制・セキュリティ審査・コスト見積り・ユーザートレーニングなど、PoCでは検証しきれない課題が山積しています。ユースケース選定の段階でこれらを見越して選ぶことが重要です。
+    </div>
+
+    <h3>正しいアプローチ: 業務の課題から逆算する</h3>
+    <p>「AIを使いたい」ではなく「この課題を解決したい、AIはその手段として有効か」という問いの立て方が重要です。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">悪いアプローチ</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">良いアプローチ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">AIを導入する → どの業務に使うか考える</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">解決したい課題を特定する → AIが有効な手段かを判断する</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「最先端技術を使いたい」で始まる</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「週に100件の問い合わせ対応を効率化したい」で始まる</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">成功基準が定性的（「便利になった感じ」）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">成功基準が定量的（「一次回答時間を3時間→30分に短縮」）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <h2>📊 頻度 × 単価 × リスクで選ぶ</h2>
+    <p>どのユースケースを優先すべきかを判断するための3軸フレームワークを紹介します。この3軸で業務タスクをスコアリングすることで、「今すぐ着手すべき最優先候補」を絞り込めます。</p>
+
+    <h3>軸1: 頻度（Frequency）</h3>
+    <p>そのタスクが週・月に何件発生するかを測ります。</p>
+    <ul>
+      <li><strong>高頻度（週50件以上）:</strong> 自動化の恩恵が大きい。最優先候補。</li>
+      <li><strong>中頻度（週10〜50件）:</strong> 標準的な候補。品質・コストを慎重に評価。</li>
+      <li><strong>低頻度（週10件未満）:</strong> 自動化しても工数削減効果が小さい。後回しでよい。</li>
+    </ul>
+
+    <div class="info-box">
+      <strong>注意点:</strong> 低頻度でも1件あたりの工数が非常に大きい（例: 月1回の大規模レポート作成に40時間かかる）場合は、「単価」軸で高スコアになります。頻度だけで判断しないようにしましょう。
+    </div>
+
+    <h3>軸2: 単価（Unit Cost）</h3>
+    <p>1件あたりの工数・コスト（人件費換算）を測ります。</p>
+    <ul>
+      <li><strong>高単価（1件あたり2時間以上）:</strong> 自動化できれば大きなコスト削減につながる。</li>
+      <li><strong>中単価（1件あたり30分〜2時間）:</strong> 標準的なROI。頻度が高ければ有望。</li>
+      <li><strong>低単価（1件あたり30分未満）:</strong> 個々の効果は小さいが、高頻度なら積み上がる。</li>
+    </ul>
+
+    <h3>軸3: リスク（Risk）</h3>
+    <p>AIが誤答・誤動作した場合に何が起きるかを評価します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">リスクレベル</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">誤答時の影響</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">例</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">AI活用の可否</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#e6f4ea;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>低リスク</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">内部でのミスで容易に修正可能</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">内部向けドキュメントのドラフト作成</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">積極的に活用可能</td>
+        </tr>
+        <tr style="background:#fff8e1;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>中リスク</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">顧客や取引先への影響がある</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">顧客向けQ&A自動回答</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">人間レビュー必須で活用可能</td>
+        </tr>
+        <tr style="background:#fce8e6;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>高リスク</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">金融・医療・法的・安全への影響</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">融資判断・診断補助・法的助言</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">専門家の承認プロセス必須</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>評価マトリクスの使い方</h3>
+    <p>以下のスコアリング表で各タスクに1〜5点を付け、合計スコアで優先度を決定します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">評価軸</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">5点</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">3点</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">1点</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>頻度</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">週50件以上</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">週10〜50件</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">週10件未満</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>単価</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">2時間以上/件</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">30分〜2時間/件</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">30分未満/件</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>リスク（逆転）</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">低リスク（誤答しても社内修正で完結）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">中リスク（顧客影響あり、レビュー可能）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">高リスク（金融・医療・法的影響あり）</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>スコアの解釈:</strong><br>
+      12〜15点: 今すぐ着手すべき最優先候補<br>
+      8〜11点: 中期的に着手すべき候補（リスク軽減策を検討）<br>
+      3〜7点: 低優先度。他の手段（RPA・人員最適化など）を先に検討する
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <h2>💻 SE向け典型ユースケース</h2>
+    <p>Axxx JapanのSEが実際に検討すべき高優先度ユースケースを具体的に紹介します。</p>
+
+    <h3>高優先度候補一覧</h3>
+
+    <div class="handson-step" style="margin-bottom:20px;">
+      <span class="step-badge">UC-1</span>
+      <h3>問い合わせ一次回答（FAQ・Tier1サポート）</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; width:25%; font-weight:bold; background:#f8f9fa;">業務概要</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">システム利用者からの定型的な操作方法・障害問い合わせへの一次回答</td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">頻度スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">高（週100件以上が多い）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">単価スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">中（1件15〜60分）→ <strong>3〜5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">リスクスコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">低〜中（誤回答も人間レビューで対応可能）→ <strong>3〜5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">実装パターン</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">RAG（社内FAQ文書を検索）+ 一次回答の自動生成、人間による最終確認・送付</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="handson-step" style="margin-bottom:20px;">
+      <span class="step-badge">UC-2</span>
+      <h3>インシデント要約・Runbook生成</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; width:25%; font-weight:bold; background:#f8f9fa;">業務概要</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">障害ログ・アラートを自動で要約し、対応手順書（Runbook）のドラフトを生成する</td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">頻度スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">中〜高（環境による）→ <strong>3〜5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">単価スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">高（1インシデントあたり30分〜数時間の報告書作成）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">リスクスコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">低（ドラフト生成のみ、最終確認は人間）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">実装パターン</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">ログをプロンプトに埋め込み → 要約・原因仮説・対処手順のドラフトをLLMが生成 → SREがレビュー</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="handson-step" style="margin-bottom:20px;">
+      <span class="step-badge">UC-3</span>
+      <h3>仕様書→テスト観点→テストケース生成</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; width:25%; font-weight:bold; background:#f8f9fa;">業務概要</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">要件定義書・詳細設計書からテスト観点を抽出し、テストケースのドラフトを自動生成する</td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">頻度スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">中（機能リリースごと）→ <strong>3点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">単価スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">高（テストケース作成は工数が大きい）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">リスクスコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">低〜中（テスターが必ず確認する）→ <strong>3〜5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">実装パターン</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">仕様書テキストをプロンプトに→ 「正常系・異常系・境界値」のテストケースをMarkdown/Excelで出力</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="handson-step" style="margin-bottom:20px;">
+      <span class="step-badge">UC-4</span>
+      <h3>コードレビュー補助・リファクタ提案</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; width:25%; font-weight:bold; background:#f8f9fa;">業務概要</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">コードの品質問題・セキュリティ脆弱性・可読性改善点を提案し、リファクタリング案を生成する</td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">頻度スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">高（デイリーコミット × チームメンバー数）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">単価スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">中（1PRあたり30分〜2時間のレビュー工数）→ <strong>3〜5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">リスクスコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">低（提案のみ、マージ判断は人間）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">実装パターン</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">差分コードをプロンプトに → バグ・セキュリティ・命名・重複排除の観点でコメント生成 → レビュアーが判断</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="handson-step" style="margin-bottom:20px;">
+      <span class="step-badge">UC-5</span>
+      <h3>調査メモ自動生成</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; width:25%; font-weight:bold; background:#f8f9fa;">業務概要</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">エラーログ・チケット・会議録から「問題の要点・試したこと・結論」を構造化したメモを自動作成する</td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">頻度スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">高（日常的に発生）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">単価スコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">中（1件あたり15〜60分のドキュメント作成）→ <strong>3点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">リスクスコア</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">低（内部メモのドラフト）→ <strong>5点</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">実装パターン</td>
+          <td style="padding:7px 12px; border:1px solid #e2e8f0;">Slackログ・チケットをプロンプトに → 「背景・問題・試したこと・結論・次のアクション」フォーマットで出力</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <h2>🔲 「できるAI」の境界線を知る</h2>
+    <p>AIを正しく使うには、AIが得意・苦手なタスクの特徴を理解することが重要です。境界線を知ることで、「過剰な期待」と「不必要な敬遠」の両方を避けられます。</p>
+
+    <h3>AIが得意なタスクの特徴</h3>
+    <ul>
+      <li><strong>反復的・パターン化されている:</strong> 同じ形式の作業が繰り返される（問い合わせ回答・コードレビュー・要約など）</li>
+      <li><strong>明確な正解基準がある:</strong> 「正しい/間違い」を判断できる（コードが動く・要件を満たすなど）</li>
+      <li><strong>入力と出力が明確:</strong> 「この情報を入れると、この形式で出てくる」が定義できる</li>
+      <li><strong>ドラフト・提案で十分:</strong> 最終判断は人間が行う設計になっている</li>
+    </ul>
+
+    <h3>AIが苦手なタスクの特徴</h3>
+    <ul>
+      <li><strong>判断が主観的・価値観依存:</strong> 「良い戦略か」「デザインが美しいか」など正解が個人・組織により異なる</li>
+      <li><strong>最新情報が必須:</strong> 今日の株価・昨日リリースされたアップデートなど（RAGなしで対応不可）</li>
+      <li><strong>法的責任・コンプライアンスが伴う:</strong> 医療診断・法的助言・財務予測など、AIの誤りが直接的な被害につながる領域</li>
+      <li><strong>感情的・対人的な判断:</strong> 人事評価・面談・調停など、コンテキストや非言語情報が重要な場面</li>
+    </ul>
+
+    <div class="why-box">
+      <strong>重要な視点 — 「できる」と「すべき」は別問題:</strong><br>
+      技術的にAIがタスクをこなせる場合でも、「すべきか」は別の判断です。品質・コスト・倫理・法規制・ステークホルダーの受け入れ可能性など、複数の観点から「AIを使うことが適切か」を判断してください。
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="../index.html" class="btn-nav prev">&#8592; トップへ戻る</a>
+    <a href="quiz.html" class="btn-nav next-quiz">Quiz に進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+<script src="../progress.js"></script>
+</body>
+</html>
