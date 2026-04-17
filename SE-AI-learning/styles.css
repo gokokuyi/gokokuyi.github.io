@@ -1,0 +1,635 @@
+/* =============================================
+   AI活用人材育成教材 共通スタイルシート
+   ============================================= */
+
+:root {
+  --primary: #2c5f8a;
+  --lesson-color: #2c5f8a;
+  --lesson-light: #e8f1f8;
+  --quiz-color: #c0622a;
+  --quiz-light: #fdf0e8;
+  --handson-color: #2c7a4b;
+  --handson-light: #e8f5ee;
+  --bg: #f5f7fa;
+  --white: #ffffff;
+  --text: #2d3748;
+  --text-light: #718096;
+  --border: #e2e8f0;
+  --code-bg: #1e2a3a;
+  --code-text: #e2e8f0;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* ── ナビゲーションバー ── */
+.navbar {
+  background: var(--primary);
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  flex-wrap: wrap;
+}
+.navbar a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 13px; }
+.navbar a:hover { color: white; }
+.navbar .sep { color: rgba(255,255,255,0.4); font-size: 13px; }
+.navbar .current { color: white; font-weight: 600; font-size: 13px; }
+.navbar .site-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-right: 8px;
+}
+
+/* ── モジュールタブ ── */
+.module-tabs {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  padding: 0 24px;
+  gap: 4px;
+}
+.module-tabs a {
+  display: inline-block;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.module-tabs a:hover { color: var(--text); border-bottom-color: var(--border); }
+.module-tabs a.active-lesson { color: var(--lesson-color); border-bottom-color: var(--lesson-color); font-weight: 700; }
+.module-tabs a.active-quiz { color: var(--quiz-color); border-bottom-color: var(--quiz-color); font-weight: 700; }
+.module-tabs a.active-handson { color: var(--handson-color); border-bottom-color: var(--handson-color); font-weight: 700; }
+
+/* ── メインコンテンツ ── */
+.container {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+
+/* ── ページヘッダー ── */
+.page-header {
+  background: white;
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  border-left: 5px solid var(--primary);
+}
+.page-header.lesson { border-left-color: var(--lesson-color); }
+.page-header.quiz { border-left-color: var(--quiz-color); }
+.page-header.handson { border-left-color: var(--handson-color); }
+.page-header .module-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.lesson .module-badge { background: var(--lesson-light); color: var(--lesson-color); }
+.quiz .module-badge { background: var(--quiz-light); color: var(--quiz-color); }
+.handson .module-badge { background: var(--handson-light); color: var(--handson-color); }
+.page-header h1 { font-size: 22px; color: var(--text); margin-bottom: 6px; }
+.page-header .subtitle { color: var(--text-light); font-size: 14px; }
+
+/* ── セクション ── */
+.section {
+  background: white;
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.section h2 {
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--lesson-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section h3 { font-size: 16px; color: var(--text); margin: 20px 0 10px; }
+.section h4 { font-size: 14px; color: var(--text); margin: 16px 0 8px; }
+.section p { margin-bottom: 12px; }
+.section ul, .section ol { padding-left: 24px; margin-bottom: 12px; }
+.section li { margin-bottom: 6px; }
+
+/* ── 強調ボックス ── */
+.info-box {
+  background: var(--lesson-light);
+  border-left: 4px solid var(--lesson-color);
+  padding: 14px 18px;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.info-box--note {
+  margin: 12px 0;
+  font-size: 13px;
+}
+.preview-box {
+  background: #f0fff4;
+  border: 1px solid #9ae6b4;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.preview-box .preview-title {
+  font-weight: 700;
+  color: var(--handson-color);
+  margin-bottom: 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.why-box {
+  background: #fffbf0;
+  border: 1px solid #f6d860;
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.why-box::before { content: '💡 Why: '; font-weight: 700; color: #b7791f; }
+
+/* ── コードブロック ── */
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+code {
+  font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+}
+p code, li code {
+  background: #edf2f7;
+  color: #c53030;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.comment { color: #68d391; }
+.keyword { color: #90cdf4; }
+.string { color: #faf089; }
+.edit-marker {
+  background: rgba(251, 211, 141, 0.2);
+  border-left: 3px solid #f6ad55;
+  display: block;
+  margin: -4px -24px;
+  padding: 4px 24px;
+}
+
+/* ── Quiz スタイル ── */
+.quiz-progress {
+  background: var(--quiz-light);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.quiz-item {
+  background: white;
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.q-number {
+  display: inline-block;
+  background: var(--quiz-color);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.q-text { font-size: 15px; font-weight: 500; margin-bottom: 14px; line-height: 1.7; }
+.options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.options label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 14px;
+}
+.options label:hover { background: var(--quiz-light); border-color: var(--quiz-color); }
+.options input[type="radio"] { margin-top: 3px; flex-shrink: 0; }
+.fill-blank {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Cascadia Code', monospace;
+  font-size: 13px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.blank-input {
+  display: inline-block;
+  min-width: 140px;
+  background: rgba(255,255,255,0.15);
+  border: 1px dashed rgba(255,255,255,0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  color: #faf089;
+}
+.btn-answer {
+  background: white;
+  border: 1px solid var(--quiz-color);
+  color: var(--quiz-color);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.btn-answer:hover { background: var(--quiz-color); color: white; }
+.answer {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: var(--quiz-light);
+  border-radius: 6px;
+  border-left: 3px solid var(--quiz-color);
+  font-size: 14px;
+}
+.correct-label {
+  font-weight: 700;
+  color: var(--quiz-color);
+  margin-bottom: 6px;
+}
+.explanation { color: var(--text); line-height: 1.7; }
+.bridge-note {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.btn-show-all {
+  display: block;
+  margin: 24px auto 0;
+  background: var(--quiz-color);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-show-all:hover { opacity: 0.88; }
+
+/* ── Handson スタイル ── */
+.handson-step {
+  background: white;
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--handson-color);
+}
+.step-badge {
+  display: inline-block;
+  background: var(--handson-color);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.hint-box {
+  background: #f0fff4;
+  border: 1px solid #9ae6b4;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.hint-box .hint-title { font-weight: 700; color: var(--handson-color); margin-bottom: 6px; }
+.hint-item { margin-bottom: 4px; color: var(--text-light); }
+.hint-item::before { content: '▶ '; color: var(--handson-color); }
+.btn-hint {
+  background: white;
+  border: 1px solid var(--handson-color);
+  color: var(--handson-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-hint:hover { background: var(--handson-color); color: white; }
+.btn-solution {
+  background: var(--handson-color);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 12px;
+}
+.btn-solution:hover { opacity: 0.85; }
+.checklist {
+  background: var(--handson-light);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.checklist h3 { color: var(--handson-color); margin-bottom: 12px; }
+.checklist label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.checklist input[type="checkbox"] { margin-top: 3px; width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ── ナビゲーションボタン ── */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-nav.prev { background: white; border: 1px solid var(--border); color: var(--text-light); }
+.btn-nav.prev:hover { border-color: var(--text-light); color: var(--text); }
+.btn-nav.next-lesson { background: var(--lesson-color); color: white; }
+.btn-nav.next-quiz { background: var(--quiz-color); color: white; }
+.btn-nav.next-handson { background: var(--handson-color); color: white; }
+.btn-nav.next-module { background: var(--primary); color: white; }
+.btn-nav:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* ── Index ページ ── */
+.hero {
+  background: linear-gradient(135deg, #2c5f8a 0%, #1a3a5c 100%);
+  color: white;
+  padding: 48px 32px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.hero h1 { font-size: 28px; margin-bottom: 10px; }
+.hero p { font-size: 16px; opacity: 0.9; }
+.roadmap { display: flex; flex-direction: column; gap: 16px; max-width: 760px; margin: 0 auto; }
+.module-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.module-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+.module-number {
+  background: var(--primary);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.module-info { flex: 1; }
+.module-info h3 { font-size: 16px; margin-bottom: 4px; }
+.module-info p { font-size: 13px; color: var(--text-light); margin-bottom: 10px; }
+.module-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.module-links a {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.module-links a:hover { opacity: 0.8; }
+.link-lesson { background: var(--lesson-light); color: var(--lesson-color); }
+.link-quiz { background: var(--quiz-light); color: var(--quiz-color); }
+.link-handson { background: var(--handson-light); color: var(--handson-color); }
+.difficulty { display: flex; gap: 2px; align-items: center; }
+.star { color: #f6ad55; font-size: 14px; }
+.star.empty { color: #e2e8f0; }
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #edf2f7;
+  color: var(--text-light);
+  margin-right: 4px;
+}
+
+/* ── レスポンシブ ── */
+@media (max-width: 640px) {
+  .container { padding: 0 16px; }
+  .section, .handson-step, .quiz-item { padding: 18px 16px; }
+  pre { padding: 14px 14px; font-size: 12px; }
+  .module-card { flex-direction: column; gap: 12px; }
+}
+
+/* ── Quiz 採点スタイル ── */
+.options label.option-correct {
+  background: #f0fff4;
+  border-color: #48bb78;
+  color: var(--text);
+}
+.options label.option-wrong {
+  background: #fff5f5;
+  border-color: #fc8181;
+  color: var(--text);
+}
+.score-result {
+  display: none;
+  background: #ebf8ff;
+  border: 2px solid #90cdf4;
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  text-align: center;
+  font-size: 18px;
+  margin: 20px 0;
+  font-weight: 500;
+}
+
+/* ── ダウンロードセクション ── */
+.download-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 14px 0;
+}
+
+/* ── ファイル行 ── */
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: #f8f9fb;
+  border: 1px solid #e3e8ef;
+  border-radius: 7px;
+  min-width: 0;
+}
+.file-name {
+  font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  color: #2d3748;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--handson-light);
+  border: 1px solid var(--handson-color);
+  color: var(--handson-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.file-badge.sample {
+  background: var(--lesson-light);
+  border-color: var(--lesson-color);
+  color: var(--lesson-color);
+}
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--handson-light);
+  border: 1px solid var(--handson-color);
+  color: var(--handson-color);
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.btn-download:hover { background: var(--handson-color); color: white; }
+.btn-download.sample { background: var(--lesson-light); border-color: var(--lesson-color); color: var(--lesson-color); }
+.btn-download.sample:hover { background: var(--lesson-color); color: white; }
+.btn-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid #d0d7de;
+  color: #8892a4;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.btn-view:hover { border-color: var(--primary); color: var(--primary); background: rgba(79,140,255,0.05); }
+
+/* ── セットアップ CTA ── */
+.btn-cta {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 12px 32px;
+  background: var(--handson-color);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: opacity 0.2s;
+}
+.btn-cta:hover { opacity: 0.85; }
+
+/* ── index.html 専用ユーティリティ ── */
+.roadmap-heading {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #2d3748;
+}
+.module-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.section-cta {
+  margin-top: 32px;
+  text-align: center;
+}
+.footer-note {
+  text-align: center;
+  margin: 40px 0 20px;
+  color: var(--text-light);
+  font-size: 13px;
+}

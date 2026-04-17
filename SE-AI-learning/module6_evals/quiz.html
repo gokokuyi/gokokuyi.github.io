@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 6 Quiz: 評価（Evals）が品質保証</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">›</span>
+  <a href="lesson.html">Module 6</a>
+  <span class="sep">›</span>
+  <span class="current">Quiz</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html" class="active-quiz">❓ Quiz</a>
+  <a href="handson.html">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header quiz">
+    <span class="module-badge">M6 QUIZ</span>
+    <h1>評価（Evals）理解確認</h1>
+    <p class="subtitle">全 8 問 — 各問の「答えを見る」ボタンで解答と解説を確認しましょう</p>
+  </div>
+
+  <div class="quiz-progress">
+    <span>📝 全 8 問</span>
+    <button class="btn-show-all" onclick="showAllAnswers()">すべての答えを表示</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="quiz-item">
+    <span class="q-number">Q1</span>
+    <p class="q-text">LLMアプリにおいて「評価（Evals）がない」ことの最大のリスクとして正しいものはどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q1"> <span>APIの費用が増加する</span></label>
+      <label><input type="radio" name="q1"> <span>プロンプト変更やモデル更新による品質劣化を検知できない</span></label>
+      <label><input type="radio" name="q1"> <span>レスポンスが遅くなる</span></label>
+      <label><input type="radio" name="q1"> <span>ユーザーがシステムにログインできなくなる</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(1)">答えを見る</button>
+    <div class="answer" id="answer-1" style="display:none;">
+      <div class="correct-label">✅ 正解：プロンプト変更やモデル更新による品質劣化を検知できない</div>
+      <div class="explanation">
+        評価がない最大のリスクは「何が変わったことで品質が変化したのかわからない」ことです。
+        プロンプト変更・モデルバージョン更新・RAGデータ更新など、品質に影響する変数が多数ある中で、
+        評価の仕組みがなければ品質劣化を発見するのはユーザーからのクレームを待つしかありません。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-item">
+    <span class="q-number">Q2</span>
+    <p class="q-text">「ルールベース評価」が最も適している場面はどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q2"> <span>自由形式の回答の品質を総合的に判断したいとき</span></label>
+      <label><input type="radio" name="q2"> <span>LLMが返すJSON出力が必要なキーを含んでいるか確認したいとき</span></label>
+      <label><input type="radio" name="q2"> <span>2つの異なるプロンプトの回答を比較したいとき</span></label>
+      <label><input type="radio" name="q2"> <span>回答の感情や文体を評価したいとき</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(2)">答えを見る</button>
+    <div class="answer" id="answer-2" style="display:none;">
+      <div class="correct-label">✅ 正解：LLMが返すJSON出力が必要なキーを含んでいるか確認したいとき</div>
+      <div class="explanation">
+        ルールベース評価は「明確な正解基準をコードで記述できる」場合に適しています。
+        JSONスキーマ検証・キーワード含有確認・正規表現マッチなどが典型例です。
+        高速で低コストですが、自由形式の品質評価や比較評価には不向きです。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-item">
+    <span class="q-number">Q3</span>
+    <p class="q-text">LLM-as-judge において「PositionBias（位置バイアス）」とはどのような問題ですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q3"> <span>長い回答の方が高評価される傾向</span></label>
+      <label><input type="radio" name="q3"> <span>評価者と同じモデルが生成した回答を高評価する傾向</span></label>
+      <label><input type="radio" name="q3"> <span>複数の回答を比較するとき、先に提示された回答を高評価する傾向</span></label>
+      <label><input type="radio" name="q3"> <span>特定の言語の回答を優遇する傾向</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(3)">答えを見る</button>
+    <div class="answer" id="answer-3" style="display:none;">
+      <div class="correct-label">✅ 正解：複数の回答を比較するとき、先に提示された回答を高評価する傾向</div>
+      <div class="explanation">
+        PositionBias は、pairwise 比較（2つの回答を比較して優劣を判定する）の際に、
+        最初に提示された回答を高評価しやすい傾向のことです。
+        対策として評価の提示順をランダム化することが有効です。
+        LengthBias は長い回答の優遇、SelfEnhancementBias は同一モデルの優遇です。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-item">
+    <span class="q-number">Q4</span>
+    <p class="q-text">LLM評価における「G-eval」の特徴として正しいものはどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q4"> <span>参照回答（ゴールデン回答）なしで2つの回答を比較する手法</span></label>
+      <label><input type="radio" name="q4"> <span>参照回答と比較しながら採点する手法</span></label>
+      <label><input type="radio" name="q4"> <span>正規表現を使ってルールベースで評価する手法</span></label>
+      <label><input type="radio" name="q4"> <span>ユーザーが手動でスコアをつける手法</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(4)">答えを見る</button>
+    <div class="answer" id="answer-4" style="display:none;">
+      <div class="correct-label">✅ 正解：参照回答と比較しながら採点する手法</div>
+      <div class="explanation">
+        G-eval は、ゴールデンデータセットの正解回答とLLMの生成回答を比較しながら採点する手法です。
+        参照回答があることで評価の一貫性が高まりますが、ゴールデンデータセットの作成・維持コストがかかります。
+        pairwise は参照回答なしで2つの回答の優劣を比較する手法で、A/Bテストに適しています。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="quiz-item">
+    <span class="q-number">Q5</span>
+    <p class="q-text">良い評価セット（テストケース集）を効率的に作る方法として最も適切なものはどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q5"> <span>すべてランダムな質問をAIに生成させる</span></label>
+      <label><input type="radio" name="q5"> <span>実際のユーザーの質問・問題のあった回答・FAQデータから収集する</span></label>
+      <label><input type="radio" name="q5"> <span>システム設計者が想定した質問だけで作成する</span></label>
+      <label><input type="radio" name="q5"> <span>評価セットは一度作れば更新不要である</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(5)">答えを見る</button>
+    <div class="answer" id="answer-5" style="display:none;">
+      <div class="correct-label">✅ 正解：実際のユーザーの質問・問題のあった回答・FAQデータから収集する</div>
+      <div class="explanation">
+        「人工的に作ったテストケース」よりも「実際にユーザーが質問した内容」の方が、
+        本番環境での品質を正確に反映します。
+        カスタマーサポートのチケット・FAQ・本番ログが最良のソースです。
+        評価セットは本番で問題になったケースを追加するなど、継続的に育て続けるものです。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="quiz-item">
+    <span class="q-number">Q6</span>
+    <p class="q-text">LLMアプリの回帰テストをCI/CDパイプラインに組み込む主な目的はどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q6"> <span>コードの構文エラーを自動で修正するため</span></label>
+      <label><input type="radio" name="q6"> <span>プロンプトやモデルの変更が既存の品質を壊していないかを自動で検証するため</span></label>
+      <label><input type="radio" name="q6"> <span>APIの費用を自動で最適化するため</span></label>
+      <label><input type="radio" name="q6"> <span>ユーザーインターフェースのデザインを自動でテストするため</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(6)">答えを見る</button>
+    <div class="answer" id="answer-6" style="display:none;">
+      <div class="correct-label">✅ 正解：プロンプトやモデルの変更が既存の品質を壊していないかを自動で検証するため</div>
+      <div class="explanation">
+        LLMアプリの回帰テストをCI/CDに組み込む目的は、
+        プロンプト変更・モデル更新・データ変更のたびに自動でテストを実行し、
+        合格率が閾値を下回ったらマージをブロックすることで品質劣化を防ぐことです。
+        ソフトウェア開発の「回帰テスト」と同じ考え方をLLMアプリに適用したものです。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="quiz-item">
+    <span class="q-number">Q7</span>
+    <p class="q-text">ゴールデンデータセットを「育てる」際に最も効果的な方法はどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q7"> <span>定期的にデータセット全体を作り直す</span></label>
+      <label><input type="radio" name="q7"> <span>本番で問題になった誤答ケースを継続的に追加する</span></label>
+      <label><input type="radio" name="q7"> <span>テストケースは多ければ多いほどよいので手当たり次第に追加する</span></label>
+      <label><input type="radio" name="q7"> <span>データセットは初期構築後は変更しない</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(7)">答えを見る</button>
+    <div class="answer" id="answer-7" style="display:none;">
+      <div class="correct-label">✅ 正解：本番で問題になった誤答ケースを継続的に追加する</div>
+      <div class="explanation">
+        ゴールデンデータセットの最も効果的な育て方は、
+        本番環境で実際に問題になった誤答ケースをデータセットに追加し続けることです。
+        これにより「過去に失敗したことを繰り返さない」仕組みが構築できます。
+        ユーザーフィードバック・本番ログレビュー・新FAQ追加時の対応テストも重要です。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="quiz-item">
+    <span class="q-number">Q8</span>
+    <p class="q-text">ROUGE と埋め込みモデルを使ったコサイン類似度の違いとして正しいものはどれですか？</p>
+    <div class="options">
+      <label><input type="radio" name="q8"> <span>ROUGEは意味的な近さを評価でき、コサイン類似度は語彙レベルの一致を評価する</span></label>
+      <label><input type="radio" name="q8"> <span>ROUGEは語彙レベルの一致を評価し、コサイン類似度は意味的な近さを評価できる</span></label>
+      <label><input type="radio" name="q8"> <span>どちらも意味的な近さを評価するため実質的に同等である</span></label>
+      <label><input type="radio" name="q8"> <span>ROUGEのほうがコサイン類似度よりも常に精度が高い</span></label>
+    </div>
+    <button class="btn-answer" onclick="toggleAnswer(8)">答えを見る</button>
+    <div class="answer" id="answer-8" style="display:none;">
+      <div class="correct-label">✅ 正解：ROUGEは語彙レベルの一致を評価し、コサイン類似度は意味的な近さを評価できる</div>
+      <div class="explanation">
+        ROUGE（および BLEU）は n-gram の共起率（語彙レベルの一致）を測定します。
+        そのため意味が同じでも表現が違う場合（「有給を申請する」vs「年休を取る」）に低スコアになる弱点があります。
+        埋め込みモデルを使ったコサイン類似度は意味的な近さを評価できますが、
+        計算コストがかかります。用途に応じて使い分けることが重要です。
+      </div>
+    </div>
+  </div>
+
+  <div id="score-result" class="score-result"></div>
+  <button class="btn-show-all" onclick="showAllAnswers()">採点して答えを表示</button>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="lesson.html" class="btn-nav prev">&#8592; Lesson に戻る</a>
+    <a href="handson.html" class="btn-nav next-handson">Handson へ進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function toggleAnswer(num) {
+  var el = document.getElementById('answer-' + num);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function showAllAnswers() {
+  document.querySelectorAll('.answer').forEach(function(el) { el.style.display = 'block'; });
+  var total = 0, correctCount = 0;
+  document.querySelectorAll('.quiz-item').forEach(function(item) {
+    total++;
+    var correctLabel = item.querySelector('.correct-label');
+    if (!correctLabel) return;
+    var correctText = correctLabel.textContent.replace(/^[\u2705\s]*正解[:：]\s*/, '').trim();
+    var userAnsweredCorrectly = false;
+    item.querySelectorAll('.options label').forEach(function(label) {
+      var cloned = label.cloneNode(true);
+      var inp = cloned.querySelector('input[type="radio"]');
+      if (inp) { inp.remove(); }
+      var optionText = cloned.textContent.trim();
+      var isCorrectOption = (optionText === correctText);
+      var radio = label.querySelector('input[type="radio"]');
+      var isSelected = radio && radio.checked;
+      if (isCorrectOption) { label.classList.add('option-correct'); }
+      if (isSelected && !isCorrectOption) { label.classList.add('option-wrong'); }
+      if (isSelected && isCorrectOption) { userAnsweredCorrectly = true; }
+    });
+    if (userAnsweredCorrectly) { correctCount++; }
+  });
+  var scoreEl = document.getElementById('score-result');
+  var pct = Math.round(correctCount / total * 100);
+  var emoji = pct === 100 ? '🎉' : pct >= 70 ? '👍' : '📚';
+  scoreEl.innerHTML = emoji + ' 結果: <strong>' + correctCount + ' / ' + total + '</strong> 問正解（' + pct + '%）';
+  scoreEl.style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# =====================================================================
+# AI活用人材育成研修 設定ファイルテンプレート
+# このファイルを config.yaml にコピーして、環境に合わせて編集してください。
+# cp config.yaml.example config.yaml
+# =====================================================================
+
+OPENAI_CLIENT:
+  # Azure OpenAI / OpenAI API のエンドポイント
+  # 例（Azure）: https://your-resource.openai.azure.com/openai
+  # 例（OpenAI）: https://api.openai.com/v1
+  BASE_URL: "https://your-resource.openai.azure.com/openai"
+
+  # API キー（Azure の場合は Azure AD 認証を使う場合は不要）
+  # Azure AD 認証を使う場合はこの行をコメントアウトし、utils/azure_auth.py を設定してください
+  API_KEY: "your-api-key-here"
+
+  PARAMETERS:
+    # 使用するモデル名（デプロイ名）
+    MODEL: "gpt-4o"
+
+    # verbosity: low / medium / high（Responses API のみ）
+    VERBOSITY: "low"
+
+    # reasoning パラメータ（o シリーズモデルのみ有効）
+    REASONING:
+      EFFORT: "minimal"   # minimal / low / medium / high
+      SUMMARY: "auto"
+
+    # 最大出力トークン数（空文字列で無制限）
+    MAX_OUTPUT_TOKENS: ""

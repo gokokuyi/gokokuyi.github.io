@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>コードビューア | AI活用人材育成</title>
+
+  <!-- highlight.js (CDN) — VS Code Dark+ テーマ -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+  <style>
+    /* ── リセット / ベース ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── タイトルバー (VS Code 風) ────────────────────── */
+    .titlebar {
+      background: #3c3c3c;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #cccccc;
+      flex-shrink: 0;
+    }
+    .titlebar .site-name {
+      color: #858585;
+      font-size: 11px;
+    }
+    .titlebar .sep { color: #555; }
+
+    /* ── ツールバー ───────────────────────────────────── */
+    .toolbar {
+      background: #252526;
+      border-bottom: 1px solid #474747;
+      padding: 7px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .file-tab {
+      background: #1e1e1e;
+      border: 1px solid #474747;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: #cccccc;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .file-tab .lang-icon { font-size: 14px; }
+    .toolbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-tool.primary {
+      background: #0e639c;
+      color: #ffffff;
+      border-color: #0e639c;
+    }
+    .btn-tool.primary:hover { background: #1177bb; }
+    .btn-tool.secondary {
+      background: #3c3c3c;
+      color: #cccccc;
+      border-color: #6b6b6b;
+    }
+    .btn-tool.secondary:hover { background: #505050; }
+    .copy-ok {
+      font-size: 11px;
+      color: #4ec9b0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .copy-ok.show { opacity: 1; }
+
+    /* ── コードエリア ─────────────────────────────────── */
+    .code-area {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+    }
+
+    /* 行番号ガター */
+    .gutter {
+      background: #1e1e1e;
+      color: #5a5a5a;
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: right;
+      padding: 20px 10px 20px 16px;
+      -webkit-user-select: none;
+      user-select: none;
+      border-right: 1px solid #333;
+      min-width: 52px;
+      flex-shrink: 0;
+      white-space: pre;
+    }
+
+    /* コード本体 */
+    .code-block {
+      flex: 1;
+      overflow-x: auto;
+    }
+    .code-block pre {
+      margin: 0;
+      min-height: 100%;
+    }
+    .code-block pre code.hljs {
+      background: transparent;
+      padding: 20px 24px 20px 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    /* ── ステータスバー ───────────────────────────────── */
+    .statusbar {
+      background: #007acc;
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      padding: 2px 14px;
+      display: none;
+      align-items: center;
+      gap: 18px;
+      flex-shrink: 0;
+    }
+    .statusbar.visible { display: flex; }
+    .statusbar span { white-space: nowrap; }
+
+    /* ── ローディング / エラー ────────────────────────── */
+    .state-overlay {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #858585;
+    }
+    .state-overlay.error { color: #f48771; }
+
+    /* ── スクロールバー (Webkit) ──────────────────────── */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #1e1e1e; }
+    ::-webkit-scrollbar-thumb { background: #424242; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+  </style>
+</head>
+<body>
+
+<!-- タイトルバー -->
+<div class="titlebar">
+  <span class="site-name">📚 AI活用人材育成教材</span>
+  <span class="sep">›</span>
+  <span id="crumb-filename">コードビューア</span>
+</div>
+
+<!-- ツールバー -->
+<div class="toolbar">
+  <div class="file-tab">
+    <span class="lang-icon" id="lang-icon">🐍</span>
+    <span id="tab-filename">読み込み中...</span>
+  </div>
+  <div class="toolbar-right">
+    <span class="copy-ok" id="copy-ok">✓ コピー完了</span>
+    <button type="button" class="btn-tool secondary" onclick="copyCode()">📋 コピー</button>
+    <a class="btn-tool primary" id="dl-btn" href="#" download>⬇ ダウンロード</a>
+    <button type="button" class="btn-tool secondary" onclick="window.close()">✕ 閉じる</button>
+  </div>
+</div>
+
+<!-- メインエリア（JS が差し替える） -->
+<div class="state-overlay" id="state-overlay">⏳ ファイルを読み込み中...</div>
+
+<!-- ステータスバー -->
+<div class="statusbar" id="statusbar">
+  <span id="st-lines">— 行</span>
+  <span id="st-chars">— 文字</span>
+  <span>UTF-8</span>
+  <span id="st-lang">Python</span>
+</div>
+
+<!-- highlight.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  var rawContent = '';
+
+  /* ── ファイル種別の判定 ── */
+  var EXT_MAP = {
+    py:   { lang: 'python', icon: '🐍', label: 'Python' },
+    yaml: { lang: 'yaml',   icon: '📄', label: 'YAML'   },
+    yml:  { lang: 'yaml',   icon: '📄', label: 'YAML'   },
+    txt:  { lang: 'plaintext', icon: '📝', label: 'TEXT' },
+    md:   { lang: 'plaintext', icon: '📝', label: 'Markdown' },
+  };
+
+  function getFileInfo(filename) {
+    var ext = filename.split('.').pop().toLowerCase();
+    return EXT_MAP[ext] || { lang: 'plaintext', icon: '📄', label: ext.toUpperCase() };
+  }
+
+  /* ── URL パラメータ取得 ── */
+  function getParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+
+  /* ── コードのコピー ── */
+  function copyCode() {
+    if (!rawContent) { return; }
+    var ok = document.getElementById('copy-ok');
+    (navigator.clipboard
+      ? navigator.clipboard.writeText(rawContent)
+      : Promise.reject()
+    ).catch(function () {
+      var ta = document.createElement('textarea');
+      ta.value = rawContent;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }).then(function () {
+      ok.classList.add('show');
+      setTimeout(function () { ok.classList.remove('show'); }, 2000);
+    });
+  }
+  window.copyCode = copyCode;
+
+  /* ── コードのレンダリング ── */
+  function renderCode(content, filename) {
+    rawContent = content;
+    var lines = content.split('\n');
+    var info  = getFileInfo(filename);
+
+    /* ファイルタブ・ステータス更新 */
+    document.getElementById('lang-icon').textContent    = info.icon;
+    document.getElementById('tab-filename').textContent = filename;
+    document.getElementById('crumb-filename').textContent = filename;
+    document.title = filename + ' — コードビューア';
+    document.getElementById('st-lines').textContent = lines.length + ' 行';
+    document.getElementById('st-chars').textContent = content.length + ' 文字';
+    document.getElementById('st-lang').textContent  = info.label;
+
+    /* シンタックスハイライト */
+    var highlighted;
+    try {
+      highlighted = hljs.highlight(content, { language: info.lang }).value;
+    } catch (_) {
+      highlighted = hljs.highlightAuto(content).value;
+    }
+
+    /* 行番号ガター */
+    var gutter = document.createElement('div');
+    gutter.className = 'gutter';
+    gutter.textContent = lines.map(function (_, i) { return i + 1; }).join('\n');
+
+    /* コードブロック */
+    var codeBlock = document.createElement('div');
+    codeBlock.className = 'code-block';
+    var pre  = document.createElement('pre');
+    var code = document.createElement('code');
+    code.className = 'hljs language-' + info.lang;
+    code.innerHTML = highlighted;
+    pre.appendChild(code);
+    codeBlock.appendChild(pre);
+
+    /* コードエリアに差し替え */
+    var area = document.createElement('div');
+    area.className = 'code-area';
+    area.appendChild(gutter);
+    area.appendChild(codeBlock);
+
+    var overlay = document.getElementById('state-overlay');
+    overlay.parentNode.replaceChild(area, overlay);
+
+    document.getElementById('statusbar').classList.add('visible');
+  }
+
+  /* ── 初期化 ── */
+  var fileUrl = getParam('file');
+
+  if (!fileUrl) {
+    var ov = document.getElementById('state-overlay');
+    ov.textContent = '⚠️ ?file= パラメータが指定されていません';
+    ov.classList.add('error');
+    return;
+  }
+
+  var filename = decodeURIComponent(fileUrl.split('/').pop().split('?')[0]);
+  document.getElementById('tab-filename').textContent    = filename;
+  document.getElementById('crumb-filename').textContent  = filename;
+  document.title = filename + ' — コードビューア';
+
+  var dlBtn = document.getElementById('dl-btn');
+  dlBtn.href = fileUrl;
+  dlBtn.setAttribute('download', filename);
+
+  fetch(fileUrl)
+    .then(function (res) {
+      if (!res.ok) { throw new Error('HTTP ' + res.status); }
+      return res.text();
+    })
+    .then(function (content) { renderCode(content, filename); })
+    .catch(function (err) {
+      var ov = document.getElementById('state-overlay');
+      ov.textContent = '⚠️ 読み込みに失敗しました: ' + err.message +
+        '  （HTTP サーバー経由でアクセスしてください）';
+      ov.classList.add('error');
+    });
+}());
+</script>
+</body>
+</html>

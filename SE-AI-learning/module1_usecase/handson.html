@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 1 Handson: ユースケース選定</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <a href="lesson.html">Module 1</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">Handson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html" class="active-handson">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header handson">
+    <span class="module-badge">M1 HANDSON</span>
+    <h1>ユースケース選定 — ワークシート演習</h1>
+    <p class="subtitle">自部門の業務を頻度×単価×リスクでスコアリングし、最優先ユースケースを特定する</p>
+  </div>
+
+  <!-- 演習概要 -->
+  <div class="section">
+    <h2>🎯 この演習の目的</h2>
+    <p>このHandsonは、Lessonで学んだ「頻度×単価×リスク」フレームワークを使い、<strong>あなた自身の部門の業務</strong>に対してユースケース選定を実践する演習です。</p>
+    <ul>
+      <li>自部門の業務タスクをAI活用の観点で洗い出す</li>
+      <li>頻度・単価・リスクを数値化して優先度を算出する</li>
+      <li>最高スコアのユースケースに対して「成功基準」を定義する</li>
+    </ul>
+    <div class="info-box">
+      <strong>推奨実施形式：</strong> 個人ワーク（30分）→ グループ共有・議論（30分）。所要時間の目安: 合計60〜90分。<br>
+      <strong>準備するもの：</strong> 特に不要。自分の業務内容を把握していればOKです。
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="handson-step">
+    <span class="step-badge">Step 1</span>
+    <h3>自部門の業務から候補を5件書き出す</h3>
+    <p>あなたの部門で日常的に発生している業務タスクの中から、「AIを活用できそうなもの」を5件書き出してください。まずは広く洗い出し、絞り込みはStep 2で行います。</p>
+
+    <div class="info-box">
+      <strong>書き出すヒント：</strong><br>
+      「毎回同じようなことをやっている」「この作業、AIに任せられたら楽なのに」と感じたことがあるものを思い出してください。以下のカテゴリを参考にどうぞ：
+      <ul style="margin-top:8px;">
+        <li>ドキュメント作成（議事録・報告書・仕様書・メール）</li>
+        <li>情報収集・調査・まとめ</li>
+        <li>問い合わせ対応・サポート</li>
+        <li>コードの作成・レビュー・テスト</li>
+        <li>データ集計・分析のサポート</li>
+      </ul>
+    </div>
+
+    <h4>候補業務リスト（まず5件書き出す）</h4>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:5%;">#</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:35%;">タスク名（具体的に）</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:20%;">発生頻度（週・月）</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:20%;">1件あたりの工数</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:20%;">誤答時の影響（概要）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; text-align:center;">1</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: 社内問い合わせへの一次回答作成</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">週30件</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">30〜60分/件</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">担当者が確認するので修正可能（低）</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; text-align:center;">2</td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; text-align:center;">3</td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; text-align:center;">4</td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; text-align:center;">5</td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="handson-step">
+    <span class="step-badge">Step 2</span>
+    <h3>頻度×単価×リスクのスコアリング表に入力して優先度を算出する</h3>
+    <p>Step 1で書き出した5件のタスクに対して、以下のスコアリング基準を使って各軸1〜5点を付け、合計点で優先度を算出してください。</p>
+
+    <h4>スコアリング基準（再掲）</h4>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:8px 12px; text-align:left; border:1px solid #e2e8f0;">評価軸</th>
+          <th style="padding:8px 12px; text-align:center; border:1px solid #e2e8f0;">5点</th>
+          <th style="padding:8px 12px; text-align:center; border:1px solid #e2e8f0;">3点</th>
+          <th style="padding:8px 12px; text-align:center; border:1px solid #e2e8f0;">1点</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0;"><strong>頻度</strong></td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">週50件以上</td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">週10〜50件</td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">週10件未満</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:8px 12px; border:1px solid #e2e8f0;"><strong>単価</strong></td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">2時間以上/件</td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">30分〜2時間/件</td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">30分未満/件</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0;"><strong>リスク（逆転）</strong></td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">低リスク<br><small>（社内修正で完結）</small></td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">中リスク<br><small>（顧客影響あり、レビュー可）</small></td>
+          <td style="padding:8px 12px; border:1px solid #e2e8f0; text-align:center;">高リスク<br><small>（金融・医療・法的影響）</small></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>スコアリング表</h4>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 12px; text-align:left; border:1px solid #e2e8f0; width:30%;">タスク名</th>
+          <th style="padding:10px 12px; text-align:center; border:1px solid #e2e8f0; width:15%;">頻度<br><small>（1〜5点）</small></th>
+          <th style="padding:10px 12px; text-align:center; border:1px solid #e2e8f0; width:15%;">単価<br><small>（1〜5点）</small></th>
+          <th style="padding:10px 12px; text-align:center; border:1px solid #e2e8f0; width:15%;">リスク<br><small>（逆転: 1〜5点）</small></th>
+          <th style="padding:10px 12px; text-align:center; border:1px solid #e2e8f0; width:15%;">合計<br><small>（3〜15点）</small></th>
+          <th style="padding:10px 12px; text-align:center; border:1px solid #e2e8f0; width:10%;">優先度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 12px; border:1px solid #e2e8f0; color:#9aa0a6;">例: 社内問い合わせ一次回答</td>
+          <td style="padding:9px 12px; border:1px solid #e2e8f0; text-align:center; color:#9aa0a6;">3</td>
+          <td style="padding:9px 12px; border:1px solid #e2e8f0; text-align:center; color:#9aa0a6;">3</td>
+          <td style="padding:9px 12px; border:1px solid #e2e8f0; text-align:center; color:#9aa0a6;">5</td>
+          <td style="padding:9px 12px; border:1px solid #e2e8f0; text-align:center; color:#9aa0a6;"><strong>11</strong></td>
+          <td style="padding:9px 12px; border:1px solid #e2e8f0; text-align:center; color:#9aa0a6;">2位</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:35px 12px; border:1px solid #e2e8f0;"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button class="btn-hint" onclick="toggleHint('hint2')">スコアリングのコツを見る</button>
+    <div class="hint-box" id="hint2" style="display:none;">
+      <div class="hint-title">スコアリングのコツ</div>
+      <p class="hint-item"><strong>「頻度」が測りにくい場合:</strong> チケット管理システム（Jira等）やメール受信数で概算してください。「感覚」でよいのでまず数字を出すことが重要です。</p>
+      <p class="hint-item"><strong>「単価」が測りにくい場合:</strong> 「1件処理するのに何分かかるか」を時計で測ったことがなくても、「だいたい30分くらい」と感覚的に答えてよいです。後で計測する機会を作ることも大切です。</p>
+      <p class="hint-item"><strong>「リスク」の判断が難しい場合:</strong> 「この業務でAIが間違えた場合、誰がどのくらい困るか」をシンプルに考えてください。社内メモなら低リスク、顧客送付なら中リスク、金融・法的影響があれば高リスクです。</p>
+      <p class="hint-item"><strong>合計点が同点の場合:</strong> リスクの低い方を優先することを推奨します（安全な業務から始めて実績を積む）。</p>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="handson-step">
+    <span class="step-badge">Step 3</span>
+    <h3>最高スコアのユースケースの「成功基準」を定義する</h3>
+    <p>Step 2で最高スコアになったユースケースについて、「いつ成功と言えるか」を具体的に定義してください。定性的な感覚ではなく、<strong>測定可能な定量的指標</strong>を設定することが重要です。</p>
+
+    <div class="why-box">
+      <strong>なぜ成功基準が必要か：</strong><br>
+      成功基準がないと、「なんとなく便利になった気がする」という主観で判断し、本当に投資対効果があったかどうかわかりません。また、品質が劣化しても気づけません。数値で測れる基準を事前に決めることで、改善・継続・中止の判断が客観的にできるようになります。
+    </div>
+
+    <h4>対象ユースケース</h4>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:12px 0;">
+      <tr>
+        <td style="padding:10px 14px; border:1px solid #e2e8f0; width:30%; font-weight:bold; background:#f8f9fa;">ユースケース名</td>
+        <td style="padding:10px 14px; border:1px solid #e2e8f0; min-height:40px;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">合計スコア</td>
+        <td style="padding:10px 14px; border:1px solid #e2e8f0;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px; border:1px solid #e2e8f0; font-weight:bold; background:#f8f9fa;">現状の課題</td>
+        <td style="padding:50px 14px; border:1px solid #e2e8f0;"></td>
+      </tr>
+    </table>
+
+    <h4>成功基準シート</h4>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:30%;">指標カテゴリ</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:35%;">具体的な指標（定量）</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:20%;">目標値</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:15%;">測定方法</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">効率化</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: 1件あたりの処理時間</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: 60分→15分（75%削減）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: 作業ログで計測</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">品質</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: AI出力の承認率（修正なしで使える割合）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: 80%以上</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0; color:#9aa0a6;">例: レビュー担当者が記録</td>
+        </tr>
+        <tr>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+          <td style="padding:40px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>追加の確認事項</h4>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:35%;">確認事項</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0; width:65%;">回答</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:10px 14px; border:1px solid #e2e8f0;">このユースケースで入力するデータに機密情報は含まれますか？クラウドLLMへの送信は問題ありませんか？</td>
+          <td style="padding:50px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:10px 14px; border:1px solid #e2e8f0;">誤答が発生した場合、誰が責任を持ちますか？修正フローはどうなりますか？</td>
+          <td style="padding:50px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px; border:1px solid #e2e8f0;">「成功」と判断するまでの試験期間はどのくらいに設定しますか？</td>
+          <td style="padding:50px 14px; border:1px solid #e2e8f0;"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button class="btn-hint" onclick="toggleHint('hint3')">成功基準の設定例を見る</button>
+    <div class="hint-box" id="hint3" style="display:none;">
+      <div class="hint-title">成功基準の設定例（問い合わせ一次回答の場合）</div>
+      <p class="hint-item"><strong>効率化指標:</strong> 一次回答作成時間: 60分 → 15分（75%削減）/ 測定: チケット管理システムのタイムスタンプ</p>
+      <p class="hint-item"><strong>品質指標:</strong> AI生成ドラフトの無修正承認率: 80%以上 / 測定: レビュー担当者が週次で記録</p>
+      <p class="hint-item"><strong>ユーザー満足度:</strong> 問い合わせ者からの「回答が役に立った」評価: 4点以上/5点 / 測定: 回答後の1問アンケート</p>
+      <p class="hint-item"><strong>試験期間:</strong> 4週間（通常業務の中で100件以上を処理してからGo/NoGo判断）</p>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="checklist">
+    <h3>✅ 完了チェックリスト</h3>
+    <label><input type="checkbox"> Step 1: 自部門の業務候補を5件書き出した</label>
+    <label><input type="checkbox"> Step 2: 頻度・単価・リスクを数値化して合計スコアを算出し、優先順位をつけた</label>
+    <label><input type="checkbox"> Step 3: 最高スコアのユースケースについて、測定可能な成功基準を少なくとも2つ定義した</label>
+    <label><input type="checkbox"> 機密情報の扱い・責任範囲・試験期間の3項目を確認した</label>
+    <label><input type="checkbox"> グループで各自の最優先候補を共有し、類似点・相違点を議論した</label>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="quiz.html" class="btn-nav prev">&#8592; Quiz に戻る</a>
+    <a href="../module2_prompt/lesson.html" class="btn-nav next-module">Module 2 へ進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function toggleHint(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>

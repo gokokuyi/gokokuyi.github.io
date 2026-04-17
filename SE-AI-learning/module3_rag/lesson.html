@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 3 Lesson: RAG</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">&rsaquo;</span>
+  <a href="lesson.html">Module 3</a>
+  <span class="sep">&rsaquo;</span>
+  <span class="current">Lesson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html" class="active-lesson">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header lesson">
+    <span class="module-badge">M3 LESSON</span>
+    <h1>RAG（社内知識で正しさを作る）</h1>
+    <p class="subtitle">LLMの知識の限界を補い、社内文書・FAQを根拠にした信頼性の高い回答を実現する</p>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <h2>🔍 RAGとは何か ─ なぜ必要か</h2>
+    <p>RAG（Retrieval-Augmented Generation / 検索拡張生成）は、LLMの「知識の限界」を補うための設計パターンです。LLMは学習データの範囲内でしか回答できず、社内固有の情報や最新情報は持っていません。RAGはこの問題を解決します。</p>
+
+    <h3>LLMの「知識の限界」とは</h3>
+    <ul>
+      <li><strong>カットオフ日：</strong> 学習データには期限があり、それ以降の出来事を知らない</li>
+      <li><strong>社内情報の欠如：</strong> Axxx Japan固有の規程・製品・組織情報は学習されていない</li>
+      <li><strong>ハルシネーション：</strong> 知らないことに対して、もっともらしい誤答を生成してしまう</li>
+    </ul>
+
+    <h3>RAGの処理フロー</h3>
+    <p>RAGは「質問→検索→コンテキスト注入→回答生成」の4ステップで動作します。</p>
+
+    <pre><code><span class="comment"># RAGの基本フロー（概念コード）</span>
+<span class="comment"># 1. ユーザーの質問を受け取る</span>
+user_question = <span class="string">"Axxx Japanのテレワーク規程はどうなっていますか？"</span>
+
+<span class="comment"># 2. 質問を検索クエリに変換してベクターストアを検索</span>
+relevant_chunks = vector_store.search(user_question, top_k=<span class="keyword">3</span>)
+
+<span class="comment"># 3. 検索結果をコンテキストとしてプロンプトに注入</span>
+context = <span class="string">"\n\n"</span>.join([chunk.text <span class="keyword">for</span> chunk <span class="keyword">in</span> relevant_chunks])
+prompt = f<span class="string">"""
+以下の社内文書を参照して質問に答えてください。
+文書にない情報は「文書に記載がありません」と答えてください。
+
+## 参照文書
+{context}
+
+## 質問
+{user_question}
+"""</span>
+
+<span class="comment"># 4. LLMが参照文書に基づいて回答生成</span>
+answer = llm.generate(prompt)</code></pre>
+
+    <h3>RAGなし vs RAGありの回答品質比較</h3>
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">質問</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">RAGなし（LLM単体）</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">RAGあり</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「テレワーク手当はいくらですか？」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「一般的には月5,000〜10,000円程度...」（ハルシネーション）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「規程第15条に基づき月8,000円です（出典: 就業規則2026年版）」</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「システムAの障害報告手順は？」</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「一般的には、まずインシデント管理システムに...」（社内手順と異なる）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">「SystemAops手順書v3に従い、まずSlack #incident に報告...」</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="why-box">
+      <strong>RAGが「社内知識で正しさを作る」理由：</strong><br>
+      RAGはLLMに「根拠となる文書」を与えて回答させます。LLMは与えられた文書の範囲内で回答するよう誘導されるため、社内固有情報に基づいた回答が得られ、引用元を明示することでハルシネーションを大幅に低減できます。
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <h2>📐 ベクトル検索の基本</h2>
+    <p>RAGの「検索」部分を支えるのがベクトル検索です。キーワードの一致ではなく「意味的な近さ」でテキストを検索します。</p>
+
+    <h3>テキストのベクトル化（Embeddings）</h3>
+    <p>Embedding とは、テキストを数値のベクトル（高次元の数値列）に変換する技術です。意味が近いテキストほど、ベクトル空間で近い位置に配置されます。</p>
+
+    <pre><code><span class="comment"># Embedding の取得（OpenAI Embeddings API）</span>
+<span class="keyword">from</span> openai <span class="keyword">import</span> AzureOpenAI
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+client = AzureOpenAI(...)
+
+<span class="comment"># テキストをベクトルに変換</span>
+response = client.embeddings.create(
+    model=<span class="string">"text-embedding-3-small"</span>,
+    input=[<span class="string">"有給休暇の申請方法を教えてください"</span>]
+)
+embedding = response.data[<span class="keyword">0</span>].embedding  <span class="comment"># 1536次元のベクトル</span>
+print(f<span class="string">"ベクトルの次元数: {len(embedding)}"</span>)    <span class="comment"># → 1536</span></code></pre>
+
+    <h3>コサイン類似度による意味的な近さの計算</h3>
+    <p>2つのベクトルの「向き」の近さを計算することで、テキスト同士の意味的な類似度を数値化します。</p>
+
+    <pre><code><span class="comment"># コサイン類似度の計算</span>
+<span class="keyword">def</span> cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
+    a = np.array(vec_a)
+    b = np.array(vec_b)
+    <span class="keyword">return</span> float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+
+<span class="comment"># 類似度の範囲: -1（完全反対）〜 0（無関係）〜 1（同じ意味）</span>
+query = <span class="string">"有給休暇の取得方法"</span>
+documents = [
+    <span class="string">"年次有給休暇は人事システムから申請できます"</span>,  <span class="comment"># → 高い類似度</span>
+    <span class="string">"サーバーのメンテナンス手順について"</span>,          <span class="comment"># → 低い類似度</span>
+]</code></pre>
+
+    <h3>チャンキング戦略</h3>
+    <p>文書を検索可能な単位（チャンク）に分割する際の戦略は、RAGの品質に大きく影響します。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">チャンキング戦略</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">説明</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">向いている文書</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>固定サイズ</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">500トークンごとに分割（重複あり）</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">連続した説明文・マニュアル</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>文境界</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">句点・段落で分割</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">FAQ・プレスリリース</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>セクション単位</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">見出し（H1/H2）ごとに分割</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">規程書・仕様書・技術文書</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>チャンクサイズの目安：</strong>
+      <ul>
+        <li>小さすぎる（50トークン以下）: コンテキストが失われ、検索精度が低下する</li>
+        <li>大きすぎる（2,000トークン以上）: 関連部分が薄まり、LLMのコンテキスト窓を圧迫する</li>
+        <li>推奨: <strong>200〜500トークン</strong>（重複50トークンを持たせるとコンテキスト切れを防げる）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <h2>🏗️ RAGの実装パターン</h2>
+    <p>RAGには複数の実装パターンがあります。ユースケースや要求品質に応じて選択します。</p>
+
+    <h3>密ベクトル検索（Dense Retrieval）</h3>
+    <p>最も基本的なパターンです。文書をすべてベクトル化しておき、クエリのベクトルと最も近い文書を返します。</p>
+
+    <pre><code><span class="comment"># 密ベクトル検索の基本実装</span>
+<span class="keyword">class</span> SimpleVectorStore:
+    <span class="keyword">def</span> __init__(self):
+        self.chunks = []       <span class="comment"># テキストチャンク</span>
+        self.embeddings = []   <span class="comment"># 対応するベクトル</span>
+
+    <span class="keyword">def</span> add(self, text: str, embedding: list[float]):
+        self.chunks.append(text)
+        self.embeddings.append(np.array(embedding))
+
+    <span class="keyword">def</span> search(self, query_embedding: list[float], top_k: int = <span class="keyword">3</span>):
+        q = np.array(query_embedding)
+        scores = [
+            np.dot(q, e) / (np.linalg.norm(q) * np.linalg.norm(e))
+            <span class="keyword">for</span> e <span class="keyword">in</span> self.embeddings
+        ]
+        top_indices = np.argsort(scores)[::-<span class="keyword">1</span>][:top_k]
+        <span class="keyword">return</span> [(self.chunks[i], scores[i]) <span class="keyword">for</span> i <span class="keyword">in</span> top_indices]</code></pre>
+
+    <h3>再ランキング（Re-ranking）</h3>
+    <p>ベクトル検索で候補を絞り込んだ後、Cross-encoderで再評価して精度を上げる手法です。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">手法</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">速度</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">精度</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>密ベクトル検索のみ</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">速い</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">中</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">リアルタイム検索・大規模文書</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;"><strong>検索 + 再ランキング</strong></td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">やや遅い</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">高</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">高精度が求められる用途</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>引用の付け方</h3>
+    <p>RAGで生成した回答には「どのチャンクから来たか」を追跡し、引用として提示することが重要です。</p>
+
+    <pre><code><span class="comment"># 引用付き回答生成</span>
+system_prompt = <span class="string">"""
+以下の参照文書を使って質問に答えてください。
+回答の末尾に「参照: [文書名]」の形式で出典を必ず記載してください。
+参照文書にない情報は「文書に記載がありません」と答えてください。
+"""</span>
+
+<span class="comment"># コンテキストに文書名も含める</span>
+context_with_source = <span class="string">"\n\n"</span>.join([
+    f<span class="string">"[{chunk.source}]\n{chunk.text}"</span>
+    <span class="keyword">for</span> chunk <span class="keyword">in</span> retrieved_chunks
+])</code></pre>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <h2>⚖️ RAGで解ける問題 / 解けない問題</h2>
+    <p>RAGは万能ではありません。どのような問題に適しているかを正確に理解することが重要です。</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#e6f4ea;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #c3e6cb;" colspan="2">RAGで解ける問題</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>社内FAQ・マニュアルへの質問</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">「有給休暇の申請方法は？」「経費精算の上限は？」</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>仕様書・設計書の内容確認</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">「システムAのAPIエラーコード一覧は？」</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;"><strong>社内規程・ポリシーの照会</strong></td>
+          <td style="padding:9px 14px; border:1px solid #c3e6cb;">「情報セキュリティポリシー第3条の内容は？」</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#fce8e6;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #f5c6cb;" colspan="2">RAGで解けない問題</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>リアルタイム情報</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">「今日の株価は？」「現在のシステム障害状況は？」（DB直接参照が必要）</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>複雑な多段推論</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">「A部門とB部門の予算を比較して最適化案を提案して」（複数文書の統合・計算が必要）</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;"><strong>知識ベースにない情報</strong></td>
+          <td style="padding:9px 14px; border:1px solid #f5c6cb;">文書化されていない暗黙知・口頭で共有された情報</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>RAGの適用判断フロー：</strong><br>
+      ① 回答の根拠となる文書が存在するか？ → 存在しない場合はRAGではなく別の手段を検討<br>
+      ② 文書がデジタル化・テキスト化されているか？ → PDFや画像のみの場合はOCR・前処理が必要<br>
+      ③ 文書の更新頻度は？ → 頻繁に更新される場合は再インデックスの仕組みが必要
+    </div>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="section">
+    <h2>⚠️ よくある失敗パターン</h2>
+    <p>RAGシステムの構築で頻繁に遭遇する失敗パターンと対策を理解しましょう。</p>
+
+    <h3>失敗1: チャンク設計ミス</h3>
+    <ul>
+      <li><strong>大きすぎる：</strong> 1チャンク5,000文字以上 → 関連情報が薄まり、LLMのコンテキストを圧迫</li>
+      <li><strong>小さすぎる：</strong> 1チャンク50文字以下 → コンテキストが失われ、意味のある検索結果が得られない</li>
+      <li><strong>コンテキストが切れる：</strong> 「これは〜」という代名詞でチャンクが始まる → 参照先が不明になる</li>
+    </ul>
+    <div class="why-box">
+      <strong>対策：</strong> チャンクに前後の文脈（重複部分）を持たせる。見出しや文書名を各チャンクの先頭に付加して、単体で意味が通るようにする。
+    </div>
+
+    <h3>失敗2: 更新忘れ</h3>
+    <p>ベクターストアに一度登録した文書を更新しないと、古い情報を参照し続けます。</p>
+    <div class="info-box">
+      <strong>対策：</strong> 文書更新時に自動でベクターストアを再インデックスするパイプラインを設ける。文書に「最終更新日」を含め、RAGの回答にも更新日を表示する。
+    </div>
+
+    <h3>失敗3: 引用がない回答</h3>
+    <p>「どの文書から来たかわからない」回答は、検証が困難でハルシネーションのリスクがあります。</p>
+
+    <h3>失敗4: 権限制御の欠如</h3>
+    <p>全社員が同一のベクターストアにアクセスできると、他部門の機密文書（人事情報・M&A関連資料など）が混入するリスクがあります。</p>
+    <div class="info-box">
+      <strong>対策：</strong> ユーザーのロール・部門に応じてアクセス可能な文書を絞り込む「フィルタリング」機能を実装する。ベクターストアを部門ごとに分離することも有効。
+    </div>
+
+    <table style="width:100%; border-collapse:collapse; font-size:14px; margin:16px 0;">
+      <thead>
+        <tr style="background:#edf2f7;">
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">失敗パターン</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">症状</th>
+          <th style="padding:10px 14px; text-align:left; border:1px solid #e2e8f0;">対策</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">チャンク設計ミス</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">検索精度が低い・意味不明な回答</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">200〜500トークン・重複あり・見出し付加</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">更新忘れ</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">古い情報を堂々と提示する</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">自動再インデックスパイプライン</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">引用なし</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">根拠が確認できない</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">プロンプトで引用を必須にする</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">権限制御の欠如</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">機密情報が誰でも参照できる</td>
+          <td style="padding:9px 14px; border:1px solid #e2e8f0;">ロールベースのフィルタリング</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="../module2_prompt/handson.html" class="btn-nav prev">&#8592; Module 2 へ戻る</a>
+    <a href="quiz.html" class="btn-nav next-quiz">Quiz に進む &#8594;</a>
+  </div>
+
+</div><!-- /container -->
+</body>
+</html>

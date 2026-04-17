@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 6 Handson: 評価（Evals）実装演習</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="site-title">📚 AI活用人材育成教材</span>
+  <span class="sep">|</span>
+  <a href="../index.html">トップ</a>
+  <span class="sep">›</span>
+  <a href="lesson.html">Module 6</a>
+  <span class="sep">›</span>
+  <span class="current">Handson</span>
+</nav>
+
+<div class="module-tabs">
+  <a href="lesson.html">📖 Lesson</a>
+  <a href="quiz.html">❓ Quiz</a>
+  <a href="handson.html" class="active-handson">💻 Handson</a>
+</div>
+
+<div class="container">
+
+  <div class="page-header handson">
+    <span class="module-badge">M6 HANDSON</span>
+    <h1>評価（Evals）実装演習</h1>
+    <p class="subtitle">ルールベース評価・LLM-as-judge・回帰テストを段階的に実装する</p>
+  </div>
+
+  <!-- 演習ファイル -->
+  <div class="section">
+    <h2>📥 演習ファイル</h2>
+    <p>以下のファイルをダウンロードして <code>src/handson/</code> フォルダに配置してください。</p>
+    <div class="download-grid">
+      <div class="file-row">
+        <span class="file-name">module6_evals.py</span>
+        <span class="file-badge">演習ファイル</span>
+        <a href="../handson/module6_evals.py" download class="btn-download" title="ダウンロード">⬇</a>
+      </div>
+      <div class="file-row">
+        <span class="file-name">module6_evals.sample.py</span>
+        <span class="file-badge sample">解答例</span>
+        <a href="../handson/module6_evals.sample.py" download class="btn-download sample" title="ダウンロード">⬇</a>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>実行方法：</strong>
+      <code>cd src/handson &amp;&amp; python module6_evals.py --step 1</code><br>
+      <strong>前提：</strong> Step 1 はオフラインで実行できます。
+      Step 2・Step 3 は <code>config.yaml</code> に Azure OpenAI の接続設定が必要です。
+    </div>
+  </div>
+
+  <!-- 学習目標 -->
+  <div class="section">
+    <h2>🎯 学習目標</h2>
+    <ul>
+      <li>LLMが返すJSON出力が仕様通りかをルールベースで検証できる</li>
+      <li>LLM-as-judge パターンを使って回答品質を5段階で採点するプロンプトを設計・実装できる</li>
+      <li>ゴールデンデータセットを用いた回帰テストを実装し、PASS/FAIL を自動判定できる</li>
+    </ul>
+    <div class="info-box">
+      演習ファイル内の <code># EDIT HERE!</code> コメントが付いた箇所を実装してください。
+      各 Step は独立して実行できます。
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="handson-step">
+    <span class="step-badge">Step 1</span>
+    <h3>ルールベース評価 ─ JSON形式の出力が仕様通りかチェックする</h3>
+    <p>
+      <code>evaluate_json_output()</code> 関数を完成させてください。
+      LLMが返したJSON文字列が <code>EXPECTED_SCHEMA</code> の仕様を満たすかを検証します。
+      以下の4つのチェックを実装してください。
+    </p>
+
+    <ol>
+      <li><code>llm_output</code> が有効な JSON かどうか（<code>json.loads</code> でパース）</li>
+      <li><code>EXPECTED_SCHEMA</code> の <code>required_keys</code> がすべて存在するか</li>
+      <li><code>priority</code> が <code>priority_values</code> のいずれかか</li>
+      <li><code>action_items</code> が最低 <code>action_items_min_count</code> 件あるか</li>
+    </ol>
+
+<pre><code>EXPECTED_SCHEMA = {
+    <span class="string">"required_keys"</span>: [<span class="string">"summary"</span>, <span class="string">"priority"</span>, <span class="string">"action_items"</span>],
+    <span class="string">"priority_values"</span>: [<span class="string">"high"</span>, <span class="string">"medium"</span>, <span class="string">"low"</span>],
+    <span class="string">"action_items_min_count"</span>: 1,
+}
+
+<span class="keyword">def</span> evaluate_json_output(llm_output: str) -> dict:
+    result = {<span class="string">"passed"</span>: <span class="keyword">False</span>, <span class="string">"errors"</span>: [], <span class="string">"warnings"</span>: []}
+    <span class="edit-marker">    <span class="comment"># EDIT HERE! 4つのチェックを実装してください</span></span>
+    <span class="keyword">return</span> result</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint6-1')">ヒント</button>
+    <div class="hint-box" id="hint6-1" style="display:none;">
+      <div class="hint-title">ヒント</div>
+      <div class="hint-item">まず <code>json.loads(llm_output)</code> を <code>try/except json.JSONDecodeError</code> で囲みます。失敗したら <code>errors</code> に追加して <code>return result</code> します</div>
+      <div class="hint-item">required_keys のチェックは <code>for key in EXPECTED_SCHEMA["required_keys"]:</code> でループし、<code>key not in data</code> のときにエラーを追加します</div>
+      <div class="hint-item">priority_values チェックは <code>data.get("priority") not in EXPECTED_SCHEMA["priority_values"]</code> で判定します</div>
+      <div class="hint-item">すべてのチェックを通過したら <code>result["passed"] = True</code> にします</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol6-1')">解答を見る</button>
+    <div id="sol6-1" style="display:none; margin-top:12px;">
+<pre><code><span class="keyword">def</span> evaluate_json_output(llm_output: str) -> dict:
+    result = {<span class="string">"passed"</span>: <span class="keyword">False</span>, <span class="string">"errors"</span>: [], <span class="string">"warnings"</span>: []}
+
+    <span class="comment"># チェック1: 有効なJSONかどうか</span>
+    <span class="keyword">try</span>:
+        data = json.loads(llm_output)
+    <span class="keyword">except</span> json.JSONDecodeError <span class="keyword">as</span> e:
+        result[<span class="string">"errors"</span>].append(<span class="string">f"JSONパースエラー: {e}"</span>)
+        <span class="keyword">return</span> result
+
+    <span class="comment"># チェック2: 必須キーの存在確認</span>
+    <span class="keyword">for</span> key <span class="keyword">in</span> EXPECTED_SCHEMA[<span class="string">"required_keys"</span>]:
+        <span class="keyword">if</span> key <span class="keyword">not in</span> data:
+            result[<span class="string">"errors"</span>].append(<span class="string">f"必須キーが存在しない: {key}"</span>)
+
+    <span class="comment"># チェック3: priority の値が有効か確認</span>
+    <span class="keyword">if</span> <span class="string">"priority"</span> <span class="keyword">in</span> data:
+        <span class="keyword">if</span> data[<span class="string">"priority"</span>] <span class="keyword">not in</span> EXPECTED_SCHEMA[<span class="string">"priority_values"</span>]:
+            result[<span class="string">"errors"</span>].append(
+                <span class="string">f"priority の値が無効: {data['priority']} "
+                f"(有効値: {EXPECTED_SCHEMA['priority_values']})"</span>
+            )
+
+    <span class="comment"># チェック4: action_items の件数確認</span>
+    <span class="keyword">if</span> <span class="string">"action_items"</span> <span class="keyword">in</span> data:
+        min_count = EXPECTED_SCHEMA[<span class="string">"action_items_min_count"</span>]
+        <span class="keyword">if</span> len(data[<span class="string">"action_items"</span>]) < min_count:
+            result[<span class="string">"errors"</span>].append(<span class="string">f"action_items が {min_count} 件未満"</span>)
+
+    result[<span class="string">"passed"</span>] = len(result[<span class="string">"errors"</span>]) == 0
+    <span class="keyword">return</span> result</code></pre>
+    </div>
+
+    <h4>実行確認</h4>
+<pre><code>$ python module6_evals.py --step 1
+
+出力 1: {"summary": "インシデント要約", "priority": "high", "action_items"...
+  結果: ✅ PASS
+
+出力 2: {"summary": "要約のみ"}...
+  結果: ❌ FAIL
+  エラー: ['必須キーが存在しない: priority', '必須キーが存在しない: action_items']
+
+出力 3: {"summary": "要約", "priority": "critical", "action_items": ["対応"]}...
+  結果: ❌ FAIL
+  エラー: ["priority の値が無効: critical (有効値: ['high', 'medium', 'low'])"]
+
+出力 4: これはJSONではありません...
+  結果: ❌ FAIL
+  エラー: ['JSONパースエラー: Expecting value: line 1 column 1 (char 0)']</code></pre>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="handson-step">
+    <span class="step-badge">Step 2</span>
+    <h3>LLM-as-judge ─ 回答品質を別のLLMで5段階採点する</h3>
+    <p>
+      <code>llm_judge()</code> 関数を完成させてください。
+      <code>JUDGE_PROMPT_TEMPLATE</code> に質問と回答を埋め込み、
+      LLM に採点させて JSON 形式の評価結果を返します。
+    </p>
+
+<pre><code>JUDGE_PROMPT_TEMPLATE = <span class="string">"""
+# タスク
+以下のAI回答の品質を評価してください。
+
+# 評価基準
+- 正確性: 情報が正確か（1-5）
+- 簡潔性: 不要な情報がないか（1-5）
+- 実用性: ユーザーの問題を解決できるか（1-5）
+
+# 質問
+{question}
+
+# AI回答
+{answer}
+
+# 出力形式（必ずこのJSON形式で返してください）
+{{
+  "scores": {{"accuracy": &lt;1-5&gt;, "conciseness": &lt;1-5&gt;, "usefulness": &lt;1-5&gt;}},
+  "overall": &lt;1-5&gt;,
+  "reason": "&lt;評価の根拠を1-2文で&gt;"
+}}
+"""</span>
+
+<span class="keyword">def</span> llm_judge(client, model: str, question: str, answer: str) -> dict:
+    judge_prompt = JUDGE_PROMPT_TEMPLATE.format(question=question, answer=answer)
+    <span class="edit-marker">    <span class="comment"># EDIT HERE! client.responses.create() を呼び出して judge_prompt を input に渡し、</span>
+    <span class="comment">    # 返ってきた JSON をパースして返してください</span></span>
+    <span class="keyword">return</span> {}</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint6-2')">ヒント</button>
+    <div class="hint-box" id="hint6-2" style="display:none;">
+      <div class="hint-title">ヒント</div>
+      <div class="hint-item"><code>response = client.responses.create(model=model, input=judge_prompt)</code> でAPIを呼び出します</div>
+      <div class="hint-item"><code>response.output_text</code> に文字列が返ってきます。<code>json.loads()</code> でパースします</div>
+      <div class="hint-item">LLMが <code>```json ... ```</code> のようなコードブロックで返す場合があります。<code>re.search(r'\{.*\}', text, re.DOTALL)</code> でJSONを抽出する方法が有効です</div>
+      <div class="hint-item">パースエラーに備えて <code>try/except</code> で囲み、エラーの場合は空辞書を返しましょう</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol6-2')">解答を見る</button>
+    <div id="sol6-2" style="display:none; margin-top:12px;">
+<pre><code><span class="keyword">def</span> llm_judge(client, model: str, question: str, answer: str) -> dict:
+    judge_prompt = JUDGE_PROMPT_TEMPLATE.format(question=question, answer=answer)
+    <span class="keyword">try</span>:
+        response = client.responses.create(model=model, input=judge_prompt)
+        text = response.output_text
+        <span class="comment"># コードブロックで囲まれている場合に対応する</span>
+        match = re.search(<span class="string">r'\{.*\}'</span>, text, re.DOTALL)
+        <span class="keyword">if</span> match:
+            <span class="keyword">return</span> json.loads(match.group())
+        <span class="keyword">return</span> json.loads(text)
+    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+        print(<span class="string">f"llm_judge エラー: {e}"</span>)
+        <span class="keyword">return</span> {}</code></pre>
+    </div>
+
+    <h4>期待される出力例</h4>
+<pre><code>$ python module6_evals.py --step 2
+
+--- テストケース 1 ---
+Q: 有給休暇の申請方法を教えてください
+A: 有給休暇はワークフローシステムから申請できます。上司承認後、翌営業日から有効です。
+スコア: {'accuracy': 5, 'conciseness': 5, 'usefulness': 5} | 総合: 5
+根拠: 質問に対して正確かつ簡潔に回答しており、ユーザーが必要な行動を取れる実用的な情報を提供しています。
+
+--- テストケース 2 ---
+Q: 有給休暇の申請方法を教えてください
+A: 休暇は大切です。様々な種類の休暇があり、それぞれに特徴があります。
+スコア: {'accuracy': 2, 'conciseness': 2, 'usefulness': 1} | 総合: 1
+根拠: 質問に直接答えておらず、申請方法の具体的な情報が含まれていないため実用性がありません。</code></pre>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="handson-step">
+    <span class="step-badge">Step 3</span>
+    <h3>回帰テスト ─ 評価セットを作成して繰り返し自動テストを行う</h3>
+    <p>
+      <code>run_regression_test()</code> 関数を完成させてください。
+      <code>GOLDEN_DATASET</code> の各テストケースに対してLLMに回答させ、
+      <code>expected_keywords</code> が回答に含まれているかで PASS/FAIL を判定します。
+    </p>
+
+<pre><code>GOLDEN_DATASET = [
+    {<span class="string">"id"</span>: <span class="string">"T001"</span>, <span class="string">"question"</span>: <span class="string">"有給休暇は年間何日ですか？"</span>,
+     <span class="string">"expected_keywords"</span>: [<span class="string">"20日"</span>, <span class="string">"有給"</span>], <span class="string">"min_score"</span>: 3},
+    {<span class="string">"id"</span>: <span class="string">"T002"</span>, <span class="string">"question"</span>: <span class="string">"テレワークの申請はどうすればいいですか？"</span>,
+     <span class="string">"expected_keywords"</span>: [<span class="string">"申請"</span>, <span class="string">"システム"</span>], <span class="string">"min_score"</span>: 3},
+    {<span class="string">"id"</span>: <span class="string">"T003"</span>, <span class="string">"question"</span>: <span class="string">"経費精算の締め日はいつですか？"</span>,
+     <span class="string">"expected_keywords"</span>: [<span class="string">"締め日"</span>, <span class="string">"月末"</span>, <span class="string">"精算"</span>], <span class="string">"min_score"</span>: 3},
+]
+
+<span class="keyword">def</span> run_regression_test(client, model: str) -> dict:
+    results = {<span class="string">"total"</span>: len(GOLDEN_DATASET), <span class="string">"passed"</span>: 0, <span class="string">"failed"</span>: 0, <span class="string">"details"</span>: []}
+    <span class="keyword">for</span> case <span class="keyword">in</span> GOLDEN_DATASET:
+        <span class="edit-marker">        <span class="comment"># EDIT HERE! 各テストケースについて:</span>
+        <span class="comment">        # 1. client.responses.create() で質問に回答させる</span>
+        <span class="comment">        # 2. expected_keywords が回答に含まれるかチェック</span>
+        <span class="comment">        # 3. 含まれていれば passed++, なければ failed++</span>
+        <span class="comment">        # 4. results["details"] に結果を追加</span></span>
+        pass
+    <span class="keyword">return</span> results</code></pre>
+
+    <button class="btn-hint" onclick="toggleHint('hint6-3')">ヒント</button>
+    <div class="hint-box" id="hint6-3" style="display:none;">
+      <div class="hint-title">ヒント</div>
+      <div class="hint-item"><code>response = client.responses.create(model=model, input=case["question"])</code> で各質問に回答させます</div>
+      <div class="hint-item"><code>answer = response.output_text</code> で回答テキストを取得します</div>
+      <div class="hint-item"><code>passed = all(kw in answer for kw in case["expected_keywords"])</code> でキーワード包含チェックができます</div>
+      <div class="hint-item"><code>results["details"].append({"id": case["id"], "question": case["question"], "passed": passed, "expected_keywords": case["expected_keywords"]})</code> で詳細を記録します</div>
+    </div>
+
+    <button class="btn-solution" onclick="toggleSolution('sol6-3')">解答を見る</button>
+    <div id="sol6-3" style="display:none; margin-top:12px;">
+<pre><code><span class="keyword">def</span> run_regression_test(client, model: str) -> dict:
+    results = {<span class="string">"total"</span>: len(GOLDEN_DATASET), <span class="string">"passed"</span>: 0, <span class="string">"failed"</span>: 0, <span class="string">"details"</span>: []}
+    <span class="keyword">for</span> case <span class="keyword">in</span> GOLDEN_DATASET:
+        <span class="keyword">try</span>:
+            <span class="comment"># LLMに質問へ回答させる</span>
+            response = client.responses.create(model=model, input=case[<span class="string">"question"</span>])
+            answer = response.output_text
+
+            <span class="comment"># 期待キーワードが回答に含まれるか確認する</span>
+            passed = all(kw <span class="keyword">in</span> answer <span class="keyword">for</span> kw <span class="keyword">in</span> case[<span class="string">"expected_keywords"</span>])
+            results[<span class="string">"passed"</span> <span class="keyword">if</span> passed <span class="keyword">else</span> <span class="string">"failed"</span>] += 1
+
+            results[<span class="string">"details"</span>].append({
+                <span class="string">"id"</span>: case[<span class="string">"id"</span>],
+                <span class="string">"question"</span>: case[<span class="string">"question"</span>],
+                <span class="string">"passed"</span>: passed,
+                <span class="string">"expected_keywords"</span>: case[<span class="string">"expected_keywords"</span>],
+                <span class="string">"answer_preview"</span>: answer[:80],
+            })
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            results[<span class="string">"failed"</span>] += 1
+            results[<span class="string">"details"</span>].append({
+                <span class="string">"id"</span>: case[<span class="string">"id"</span>], <span class="string">"question"</span>: case[<span class="string">"question"</span>],
+                <span class="string">"passed"</span>: <span class="keyword">False</span>, <span class="string">"error"</span>: str(e)
+            })
+    <span class="keyword">return</span> results</code></pre>
+    </div>
+
+    <h4>期待される出力例</h4>
+<pre><code>$ python module6_evals.py --step 3
+
+総テスト数: 3
+✅ PASS: 2
+❌ FAIL: 1
+
+✅ T001: 有給休暇は年間何日ですか？
+✅ T002: テレワークの申請はどうすればいいですか？
+
+❌ T003: 経費精算の締め日はいつですか？
+   期待: ['締め日', '月末', '精算']</code></pre>
+  </div>
+
+  <!-- 発展課題 -->
+  <div class="section">
+    <h2>🚀 発展課題（余裕がある方向け）</h2>
+    <ul>
+      <li>Step 2 の評価プロンプトに「根拠（COT）を必ず含める」という指示を追加し、評価の透明性を高めてみましょう</li>
+      <li>Step 3 の <code>GOLDEN_DATASET</code> に Axxx Japan 社内FAQを参照したテストケースを追加してみましょう</li>
+      <li>ROUGE スコアを計算する評価関数を実装し、LLM-as-judge のスコアと比較してみましょう</li>
+      <li>Step 1・2・3 を組み合わせた総合評価パイプラインを実装し、CSV でレポートを出力してみましょう</li>
+    </ul>
+  </div>
+
+  <!-- チェックリスト -->
+  <div class="checklist">
+    <h3>✅ 完了チェックリスト</h3>
+    <label><input type="checkbox"> <code>evaluate_json_output()</code> を実装し、4種類の出力サンプルで PASS/FAIL が正しく判定されることを確認した</label>
+    <label><input type="checkbox"> <code>llm_judge()</code> を実装し、2つのテストケースでスコアの差が出ることを確認した</label>
+    <label><input type="checkbox"> <code>run_regression_test()</code> を実装し、ゴールデンデータセットに対して PASS/FAIL が自動判定されることを確認した</label>
+    <label><input type="checkbox"> PositionBias・LengthBias・SelfEnhancementBias の意味を説明できる</label>
+    <label><input type="checkbox"> ゴールデンデータセットを継続的に育てる重要性を説明できる</label>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-buttons">
+    <a href="quiz.html" class="btn-nav prev">&#8592; Quiz に戻る</a>
+    <a href="../index.html" class="btn-nav prev" style="margin-left:8px;">🏠 トップへ</a>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function toggleHint(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+<script src="../download.js"></script>
+</body>
+</html>
