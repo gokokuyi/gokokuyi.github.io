@@ -1,8 +1,8 @@
 // AI Learning Curriculum — Progress Tracker
 // Tracks lesson/quiz/handson completion per module using localStorage.
 
-const PROGRESS_KEY    = "ai_curriculum_progress";
-const CELEBRATED_KEY  = "ai_curriculum_celebrated";
+const PROGRESS_KEY   = "ai_curriculum_progress";
+const CELEBRATED_KEY = "ai_curriculum_celebrated";
 const MODULES    = ["module0","module1","module2","module3","module4","module5","module6"];
 const PAGE_TYPES = ["lesson","quiz","handson"];
 
@@ -11,9 +11,7 @@ const PAGE_TYPES = ["lesson","quiz","handson"];
 function getProgress() {
   const raw  = localStorage.getItem(PROGRESS_KEY);
   const data = raw ? JSON.parse(raw) : {};
-  MODULES.forEach(function(m) {
-    if (!data[m]) data[m] = { lesson: false, quiz: false, handson: false };
-  });
+  MODULES.forEach(m => { if (!data[m]) data[m] = { lesson: false, quiz: false, handson: false }; });
   return data;
 }
 
@@ -36,44 +34,37 @@ function resetProgress() {
 // ── Page detection ──────────────────────────────────────────────────
 
 function detectCurrentPage() {
-  const path = window.location.pathname.replace(/\\/g, "/");
-  var module = null, pageType = null;
-  // Match "module0" inside folder names like "module0_llm-basics"
-  MODULES.forEach(function(m) {
-    if (path.indexOf("/" + m) !== -1) module = m;
-  });
-  PAGE_TYPES.forEach(function(t) {
-    if (path.indexOf(t + ".html") !== -1) pageType = t;
-  });
-  return { module: module, pageType: pageType };
+  const path = globalThis.location.pathname.replaceAll("\\", "/");
+  let module = null, pageType = null;
+  MODULES.forEach(m  => { if (path.includes("/" + m))         module   = m; });
+  PAGE_TYPES.forEach(t => { if (path.includes(t + ".html"))   pageType = t; });
+  return { module, pageType };
 }
 
 function calcStats() {
-  var data = getProgress(), done = 0, total = MODULES.length * PAGE_TYPES.length;
-  MODULES.forEach(function(m) {
-    PAGE_TYPES.forEach(function(t) { if (data[m][t]) done++; });
-  });
-  return { done: done, total: total, pct: Math.round((done / total) * 100) };
+  const data = getProgress();
+  let done = 0;
+  const total = MODULES.length * PAGE_TYPES.length;
+  MODULES.forEach(m => PAGE_TYPES.forEach(t => { if (data[m][t]) done++; }));
+  return { done, total, pct: Math.round((done / total) * 100) };
 }
 
 // ── Auto-mark + button restore ──────────────────────────────────────
 
 function autoMarkOnLoad() {
-  var cur = detectCurrentPage();
+  const cur = detectCurrentPage();
   if (cur.module && cur.pageType && cur.pageType !== "handson") {
     setProgress(cur.module, cur.pageType, true);
     checkAndCelebrate();
   }
   if (cur.pageType === "handson") {
-    var data = getProgress();
-    if (cur.module && data[cur.module] && data[cur.module].handson) {
-      _setHandsonButtonCompleted();
-    }
+    const data = getProgress();
+    if (cur.module && data[cur.module]?.handson) _setHandsonButtonCompleted();
   }
 }
 
 function _setHandsonButtonCompleted() {
-  var btn = document.getElementById("btn-handson-complete");
+  const btn = document.getElementById("btn-handson-complete");
   if (btn) {
     btn.textContent = "✅ 完了済み";
     btn.disabled = true;
@@ -82,7 +73,7 @@ function _setHandsonButtonCompleted() {
 }
 
 function markHandsonComplete() {
-  var cur = detectCurrentPage();
+  const cur = detectCurrentPage();
   if (cur.module) {
     setProgress(cur.module, "handson", true);
     _setHandsonButtonCompleted();
@@ -94,59 +85,58 @@ function markHandsonComplete() {
 // ── Index page rendering ────────────────────────────────────────────
 
 function renderProgressBadges() {
-  var data = getProgress();
-  MODULES.forEach(function(m) {
-    var card = document.getElementById("card-" + m);
+  const data = getProgress();
+  MODULES.forEach(m => {
+    const card = document.getElementById("card-" + m);
     if (!card) return;
-    var d = data[m];
-    var completed = (d.lesson ? 1 : 0) + (d.quiz ? 1 : 0) + (d.handson ? 1 : 0);
-    var badge = card.querySelector(".progress-badge");
-    if (badge) {
-      badge.textContent = completed + " / 3";
-      badge.className = "progress-badge " +
-        (completed === 3 ? "done" : completed > 0 ? "in-progress" : "not-started");
-    }
+    const d = data[m];
+    const completed = (d.lesson ? 1 : 0) + (d.quiz ? 1 : 0) + (d.handson ? 1 : 0);
+    const badge = card.querySelector(".progress-badge");
+    if (!badge) return;
+    badge.textContent = completed + " / 3";
+    const state = completed === 3 ? "done" : completed > 0 ? "in-progress" : "not-started";
+    badge.className = "progress-badge " + state;
   });
 }
 
 function renderOverallProgress() {
-  var stats = calcStats();
-  var bar   = document.getElementById("progress-bar-inner");
-  var pctEl = document.getElementById("progress-pct");
-  if (bar)   bar.style.width    = stats.pct + "%";
-  if (pctEl) pctEl.textContent  = stats.pct + "%";
+  const { pct } = calcStats();
+  const bar   = document.getElementById("progress-bar-inner");
+  const pctEl = document.getElementById("progress-pct");
+  if (bar)   bar.style.width   = pct + "%";
+  if (pctEl) pctEl.textContent = pct + "%";
 }
 
 // ── Floating widget (module subpages) ──────────────────────────────
 
 function renderFloatWidget() {
-  var floatEl = document.getElementById("progress-float-widget");
+  const floatEl = document.getElementById("progress-float-widget");
   if (!floatEl) return;
-  var stats = calcStats();
-  var barEl = document.getElementById("progress-float-bar");
-  var pctEl = document.getElementById("progress-float-pct");
-  if (barEl) barEl.style.width = stats.pct + "%";
-  if (pctEl) pctEl.textContent = stats.done + " / " + stats.total;
 
-  var cur   = detectCurrentPage();
-  var modEl = document.getElementById("progress-float-module");
-  if (modEl) {
-    if (cur.module) {
-      var d = getProgress()[cur.module];
-      modEl.textContent =
-        "L\u00a0" + (d.lesson  ? "\u2705" : "\u2b1c") + "\u3000" +
-        "Q\u00a0" + (d.quiz    ? "\u2705" : "\u2b1c") + "\u3000" +
-        "H\u00a0" + (d.handson ? "\u2705" : "\u2b1c");
-      modEl.style.display = "";
-    } else {
-      modEl.style.display = "none";
-    }
+  const { done, total, pct } = calcStats();
+  const barEl = document.getElementById("progress-float-bar");
+  const pctEl = document.getElementById("progress-float-pct");
+  if (barEl) barEl.style.width = pct + "%";
+  if (pctEl) pctEl.textContent = done + " / " + total;
+
+  const { module } = detectCurrentPage();
+  const modEl = document.getElementById("progress-float-module");
+  if (!modEl) return;
+  if (module) {
+    const d = getProgress()[module];
+    modEl.textContent =
+      "L\u00a0" + (d.lesson  ? "\u2705" : "\u2b1c") + "\u3000" +
+      "Q\u00a0" + (d.quiz    ? "\u2705" : "\u2b1c") + "\u3000" +
+      "H\u00a0" + (d.handson ? "\u2705" : "\u2b1c");
+    modEl.style.display = "";
+  } else {
+    modEl.style.display = "none";
   }
 }
 
 function injectFloatWidget() {
-  if (!detectCurrentPage().module) return; // index.html — skip
-  var el = document.createElement("div");
+  if (!detectCurrentPage().module) return;
+  const el = document.createElement("div");
   el.id = "progress-float-widget";
   el.innerHTML =
     '<a href="../index.html" class="progress-float-home" title="ホームへ戻る">&#8592; ホーム</a>' +
@@ -160,15 +150,15 @@ function injectFloatWidget() {
 // ── Celebration (100% complete) ─────────────────────────────────────
 
 function checkAndCelebrate() {
-  var stats = calcStats();
-  if (stats.done === stats.total && !localStorage.getItem(CELEBRATED_KEY)) {
+  const { done, total } = calcStats();
+  if (done === total && !localStorage.getItem(CELEBRATED_KEY)) {
     localStorage.setItem(CELEBRATED_KEY, "1");
     setTimeout(showCelebration, 400);
   }
 }
 
 function showCelebration() {
-  var overlay = document.createElement("div");
+  const overlay = document.createElement("div");
   overlay.id = "celebration-overlay";
   overlay.innerHTML =
     '<div id="celebration-card">' +
@@ -198,62 +188,90 @@ function showCelebration() {
   document.body.appendChild(overlay);
   spawnConfetti();
   spawnStars();
+  _trackCelebration();
 }
 
 function closeCelebration() {
-  var overlay = document.getElementById("celebration-overlay");
+  const overlay = document.getElementById("celebration-overlay");
   if (!overlay) return;
   overlay.style.animation = "overlay-out 0.35s ease forwards";
-  setTimeout(function() {
-    document.querySelectorAll(".confetti-piece, .star-piece").forEach(function(el) { el.remove(); });
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  setTimeout(() => {
+    document.querySelectorAll(".confetti-piece, .star-piece").forEach(el => el.remove());
+    overlay.remove();
   }, 350);
 }
 
 function spawnConfetti() {
-  var colors = [
+  const colors = [
     "#f94144","#f3722c","#f8961e","#f9c74f","#90be6d",
     "#43aa8b","#577590","#a8dadc","#e63946","#ffd700",
-    "#ff6b6b","#4ecdc4","#c77dff","#48cae4"
+    "#ff6b6b","#4ecdc4","#c77dff","#48cae4",
   ];
-  for (var i = 0; i < 140; i++) {
-    var p = document.createElement("div");
+  for (let i = 0; i < 140; i++) {
+    const p = document.createElement("div");
     p.className = "confetti-piece";
     p.style.left              = Math.random() * 100 + "vw";
-    p.style.animationDelay    = (Math.random() * 3)   + "s";
+    p.style.animationDelay    = (Math.random() * 3) + "s";
     p.style.animationDuration = (2.5 + Math.random() * 2.5) + "s";
     p.style.background        = colors[Math.floor(Math.random() * colors.length)];
-    var w = 6 + Math.random() * 9;
-    p.style.width  = w + "px";
-    p.style.height = w * (0.4 + Math.random() * 0.8) + "px";
+    const w = 6 + Math.random() * 9;
+    p.style.width        = w + "px";
+    p.style.height       = w * (0.4 + Math.random() * 0.8) + "px";
     p.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
     document.body.appendChild(p);
   }
 }
 
 function spawnStars() {
-  var emojis = ["⭐","🌟","✨","💫","🎊","🎉"];
-  for (var i = 0; i < 18; i++) {
-    var s = document.createElement("div");
-    s.className   = "star-piece";
-    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    s.style.left              = (5 + Math.random() * 90) + "vw";
-    s.style.bottom            = "10vh";
-    s.style.animationDelay    = (Math.random() * 2) + "s";
+  const emojis = ["⭐","🌟","✨","💫","🎊","🎉"];
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement("div");
+    s.className             = "star-piece";
+    s.textContent           = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left            = (5 + Math.random() * 90) + "vw";
+    s.style.bottom          = "10vh";
+    s.style.animationDelay  = (Math.random() * 2) + "s";
     s.style.animationDuration = (1.8 + Math.random() * 1.5) + "s";
-    s.style.fontSize          = (18 + Math.random() * 24) + "px";
+    s.style.fontSize        = (18 + Math.random() * 24) + "px";
     document.body.appendChild(s);
   }
 }
 
+// ── GoatCounter analytics ───────────────────────────────────────────
+
+function _loadGoatCounter(callback) {
+  if (globalThis.goatcounter?.count) { callback(); return; }
+  if (document.querySelector("script[data-goatcounter]")) {
+    const poll = setInterval(() => {
+      if (globalThis.goatcounter?.count) { clearInterval(poll); callback(); }
+    }, 100);
+    return;
+  }
+  const s = document.createElement("script");
+  s.setAttribute("data-goatcounter", "https://gokokuyi.goatcounter.com/count");
+  s.async = true;
+  s.src   = "https://gc.zgo.at/count.js";
+  s.onload = callback;
+  document.head.appendChild(s);
+}
+
+function _trackCelebration() {
+  _loadGoatCounter(() => {
+    globalThis.goatcounter.count({
+      path:  "completion/celebration",
+      title: "修了セレブレーション",
+      event: true,
+    });
+  });
+}
+
 // ── Boot ────────────────────────────────────────────────────────────
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", () => {
   autoMarkOnLoad();
   injectFloatWidget();
   renderFloatWidget();
   renderProgressBadges();
   renderOverallProgress();
-  // Show celebration on index if already 100% but not yet celebrated
   checkAndCelebrate();
 });
