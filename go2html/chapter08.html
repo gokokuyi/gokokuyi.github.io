@@ -1,0 +1,641 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第8章 HTMLネイティブな仕事術 | 生成AI時代は、なんでもHTML！</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="book-nav">
+    <a href="index.html" class="nav-brand">📖 なんでもHTML！</a>
+    <span class="nav-chapter-title">第8章 HTMLネイティブな仕事術</span>
+    <div class="nav-arrows">
+      <a href="chapter07.html" class="nav-prev">← 前</a>
+      <a href="final.html" class="nav-next">次 →</a>
+    </div>
+  </nav>
+  <div class="book-layout">
+    <aside class="toc-sidebar">
+      <div class="toc-title">目次</div>
+      <nav>
+        <a href="intro.html">はじめに</a>
+        <a href="chapter01.html">第1章 なぜ今OfficeではなくHTMLなのか</a>
+        <a href="chapter02.html">第2章 HTMLは"ホームページを作る技術"ではない</a>
+        <a href="chapter03.html">第3章 生成AIと一緒にHTMLを作る</a>
+        <a href="chapter04.html">第4章 資料をHTMLにすると何が変わるか</a>
+        <a href="chapter05.html">第5章 Excel的な仕事をHTMLで再発明する</a>
+        <a href="chapter06.html">第6章 図解・フロー図・概念図をHTML+SVGで扱う</a>
+        <a href="chapter07.html">第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る</a>
+        <a href="chapter08.html">第8章 HTMLネイティブな仕事術</a>
+        <a href="final.html">終章 あなたの仕事は、どこからHTML化できるか</a>
+        <a href="appendix_a.html">付録A プロンプト集</a>
+        <a href="appendix_b.html">付録B HTMLの遊び場</a>
+      </nav>
+    </aside>
+    <main class="chapter-main">
+
+<h1>第8章　HTMLネイティブな仕事術</h1>
+
+<blockquote class="sample-ref">
+  <strong>本章のサンプルファイル</strong>: <code>ch08_template.html</code><br>
+  ブラウザで開くと、本章で解説するHTMLコンテンツを実際に操作できます。<br>
+  本書サポートサイトからダウンロードしてください。
+</blockquote>
+
+<hr>
+
+<h2>本章を読む前に</h2>
+
+<p>ここまで7章を通じて、HTMLというフォーマットのさまざまな使い方を見てきました。提案書・報告書・ダッシュボード・図解・社内ポータル——それぞれの場面でHTMLがどう機能するかを学んできたはずです。</p>
+
+<p>しかし、本書の最終章でお伝えしたいのは「技術」ではありません。</p>
+
+<p>「どうやってHTMLを作るか」よりも大切なのは、「いつHTMLを選ぶかを判断できるようになること」です。それはツールの習得ではなく、思考の習慣の変化です。</p>
+
+<p>この章では、HTMLを「たまに使うツール」ではなく「仕事の設計思想」として仕事に組み込むための考え方をお伝えします。</p>
+
+<hr>
+
+<h2>8-1　「HTMLファースト」の思考プロセス</h2>
+
+<h3>あなたは今日の成果物を、何で作ると決めていますか？</h3>
+
+<p>月次報告の依頼が来たとき、あなたの頭の中で何が起きていますか。おそらく「PowerPointで作るか、Excelにするか」という二択が自動的に浮かぶのではないでしょうか。</p>
+
+<p>これは決して悪いことではありません。慣れたツールで素早く動くのは、プロフェッショナルとしての判断です。しかし、「ツールを先に決める」思考の習慣には、一つ落とし穴があります。<strong>本来は「読み手の体験」を起点に成果物の形式を決めるべきなのに、ツールが形式を決めてしまっている</strong>という点です。</p>
+
+<p>PowerPointを先に開くと、自然とスライド形式の成果物を作ろうとします。Excelを先に開くと、表とグラフの成果物になります。しかし本当に問うべき最初の問いは「この報告、誰がどこで読むんだろう？」ではないでしょうか。</p>
+
+<hr>
+
+<h3>成果物の形式を最初に問い直す習慣</h3>
+
+<p>「HTMLファースト」というのは、「すべてをHTMLで作れ」という意味ではありません。「成果物を作る前に、HTMLが最適かどうかを一度考える」という習慣のことです。</p>
+
+<p>具体的には、新しいタスクを受け取ったとき、次の問いを頭の中でくぐらせます。</p>
+
+<ol>
+  <li><strong>誰が読むか？</strong>——上司だけか、チーム全員か、外部の顧客か</li>
+  <li><strong>どこで読むか？</strong>——会議室のPC画面か、出先のスマートフォンか、印刷物として手元に置くか</li>
+  <li><strong>いつ読むか？</strong>——今回一度だけか、定期的に更新して参照し続けるか</li>
+  <li><strong>どう使うか？</strong>——読むだけか、数字をフィルタリングするか、印刷して持ち歩くか</li>
+</ol>
+
+<p>この4つの問いに答えた上で、「この成果物はHTMLに向いているか？」を判断します。そうすることで、ツールが思考を縛る状況を脱せます。</p>
+
+<p>HTMLに向いているのは、こういう場合です。</p>
+
+<ul>
+  <li>複数の人にURLで共有して、それぞれのデバイスで読んでほしい</li>
+  <li>定期的に更新して、常に最新版を届けたい</li>
+  <li>グラフ・表・リンクを一体化したリッチな表示をしたい</li>
+  <li>インタラクティブな操作（フィルタリング・タブ切り替えなど）が必要</li>
+</ul>
+
+<p>逆に、HTMLが向いていないのはこういう場合です。</p>
+
+<ul>
+  <li>最終的に印刷して紙で配布・保管する</li>
+  <li>複雑な数値計算や集計処理を行う（計算はExcelの仕事です）</li>
+  <li>プレゼンテーションの場でスライドを送りながら話す（PowerPointが向いています）</li>
+  <li>長文の編集・校正作業が中心（Wordのほうが協調編集に向いています）</li>
+</ul>
+
+<hr>
+
+<h3>読み手の体験から逆算して形式を選ぶ</h3>
+
+<p>あるコンサルタントが、こんな体験を話してくれました。</p>
+
+<p>「クライアントから月次進捗報告の依頼を受けたんです。以前はいつもPowerPointを作っていたんですが、ふと考えてみたら、このクライアントの担当者は移動中にスマートフォンで確認することが多い。PowerPointのスライドをスマホで見るのって、正直つらいですよね。それで一度、HTMLで作ってみたんです。URLを送ったら『これ、スマホで全部見られて便利！』と言われて。内容は同じなのに、反応がぜんぜん違いました」</p>
+
+<p>これが「読み手の体験から逆算する」ということです。</p>
+
+<p>コンテンツの質は同じでも、フォーマットの選択で読み手の体験は大きく変わります。どれだけ優れた分析結果が書いてあっても、読み手が「見づらい」と感じれば、その情報は半分も伝わりません。</p>
+
+<p>「どうやって作るか」より「誰が・どこで・どう読むか」を最初に問う。それがHTMLファーストの思考プロセスの核心です。</p>
+
+<hr>
+
+<h2>8-2　HTMLを使いこなすチームの作り方</h2>
+
+<h3>「うちのチームは誰もHTMLを使わない」という状況から始めるには</h3>
+
+<p>「HTMLが有効だとはわかったけれど、自分一人が使っても、チームの全員はOfficeを使い続けている。意味があるのだろうか？」</p>
+
+<p>この疑問は正直な問いかけです。チーム全員が一斉に新しい方法に移行することはほぼ起きません。変化はいつも、一人の先行者から始まります。</p>
+
+<p>ここで大切なのは、「チームを変えようと意気込まないこと」です。変化を起こそうとアプローチすると、人は防衛的になります。効果的なのは、「自分が作った良いものを、ひっそり使えるようにしておく」ことです。</p>
+
+<hr>
+
+<h3>一人の先行者がチームを変える</h3>
+
+<p>あるIT企業のプロジェクトマネージャー、田中さん（仮名）の話をします。</p>
+
+<p>田中さんは、週次の進捗報告をExcelで作っていましたが、「データが多くてチームメンバーが自分に関係のある部分だけを見づらがっている」という課題を感じていました。ある日、生成AIを使ってフィルタリング機能付きのHTML進捗ダッシュボードを作り、「こんなのも作ってみました。Excel版と内容は同じです」とSlackで共有しました。</p>
+
+<p>強制でも、説明会でもありませんでした。ただ「あったらいいなと思って作りました」と置いておいたのです。</p>
+
+<p>一週間後、チームメンバーの一人が「田中さん、このHTML版のダッシュボード、すごく見やすくて助かってます。自分のタスクだけフィルターできるのがいいです」と言いました。</p>
+
+<p>その会話を聞いた別のメンバーが「どうやって作るんですか？」と聞いてきました。田中さんは「Claudeに頼んだら作ってくれたんですよ。プロンプトはこれです」とメモを共有しました。</p>
+
+<p>三ヶ月後、チームでは3人がHTMLを使ったレポートやダッシュボードを作るようになっていました。田中さんが「HTMLをやろう」と一度も言っていないにもかかわらず。</p>
+
+<hr>
+
+<h3>テンプレートを共有して再利用を促す</h3>
+
+<p>変化を広めるもうひとつの有効な方法が「テンプレートの共有」です。</p>
+
+<p>良いHTMLを一人で使い続けるのではなく、「チームの共有フォルダのtemplatesというフォルダにHTMLテンプレートを入れておきました。自由に使ってください」とSlackに一言投げておきます。すると、「ゼロから作る」というハードルがなくなり、「テンプレートを使えばいい」という気軽さで試す人が増えます。</p>
+
+<p>テンプレートとして共有するのに向いているHTMLは、次のようなものです。</p>
+
+<ul>
+  <li><strong>チームの月次報告テンプレート</strong>：ヘッダー・KPIカード・テーブル・まとめセクションが揃ったもの</li>
+  <li><strong>プロジェクト提案書テンプレート</strong>：表紙・背景・提案内容・スケジュール・費用の構成が揃ったもの</li>
+  <li><strong>FAQページテンプレート</strong>：アコーディオン形式の質問リストが10問分空欄になっているもの</li>
+</ul>
+
+<p>テンプレートがあることで、「内容を入れればすぐ使える」という状態になります。HTMLの経験がないメンバーでも、テンプレートの文字を書き換えるだけで十分に使えます（わからない部分は生成AIに聞けばいいだけです）。</p>
+
+<p>以下は、チームで使い回せる基本的なHTMLテンプレートの骨格です。</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;!-- ページのタイトルをここに入れる --&gt;
+  &lt;title&gt;ページタイトル&lt;/title&gt;
+  &lt;style&gt;
+    /* ========================================
+       チーム共通テンプレート CSS
+       このブロックは変更せず使い回してください
+       ======================================== */
+    :root {
+      --brand-color: #1a56a0;
+      --bg-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --text-sub: #666666;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.7;
+    }
+
+    /* ヘッダー */
+    .site-header {
+      background: var(--brand-color);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-header h1 { font-size: 1.4rem; }
+    .site-header .meta { font-size: 0.8rem; opacity: 0.75; }
+
+    /* メインコンテンツ */
+    .main-content {
+      max-width: 960px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* カード */
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 5px rgba(0,0,0,.07);
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      color: var(--brand-color);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e5eaf2;
+    }
+    .card p { color: var(--text-sub); }
+
+    /* フッター */
+    .site-footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      border-top: 1px solid #e0e0e0;
+      margin-top: 32px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;!-- ヘッダー：タイトルと作成情報を入れる --&gt;
+&lt;header class="site-header"&gt;
+  &lt;h1&gt;ページタイトルをここに入れる&lt;/h1&gt;
+  &lt;div class="meta"&gt;作成日：〇〇年〇月〇日 ／ 担当：氏名&lt;/div&gt;
+&lt;/header&gt;
+
+&lt;!-- メインコンテンツ --&gt;
+&lt;main class="main-content"&gt;
+
+  &lt;!-- セクション1 --&gt;
+  &lt;div class="card"&gt;
+    &lt;h2&gt;セクション1のタイトル&lt;/h2&gt;
+    &lt;p&gt;ここに本文を入れます。&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- セクション2 --&gt;
+  &lt;div class="card"&gt;
+    &lt;h2&gt;セクション2のタイトル&lt;/h2&gt;
+    &lt;p&gt;ここに本文を入れます。&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- セクション3（必要に応じて追加・削除してください） --&gt;
+  &lt;div class="card"&gt;
+    &lt;h2&gt;セクション3のタイトル&lt;/h2&gt;
+    &lt;p&gt;ここに本文を入れます。&lt;/p&gt;
+  &lt;/div&gt;
+
+&lt;/main&gt;
+
+&lt;footer class="site-footer"&gt;
+  このページに関する問い合わせ：担当者名（メールアドレスまたはTeams）
+&lt;/footer&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>このテンプレートをチームの共有フォルダに <code>report-template.html</code> として保存しておくだけで、誰でも「テンプレートを開いて中身を書き換える」だけでHTML文書を作れます。CSSの知識がなくても、<code>h2</code> のテキストを変えて <code>p</code> のテキストを変えるだけで、統一感のあるHTMLページが完成します。</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】チームで使い回せる月次報告書のHTMLテンプレートを作りたい<br>
+  【含める要素】ブランドカラーを反映したヘッダー、KPIカード（3つ）、本文セクション（3枠）、担当者・作成日を表示するフッター<br>
+  【スタイル】モダンでシンプル。スマートフォンでも読みやすいレスポンシブデザイン<br>
+  【出力形式】完全なHTMLファイルとして出力してください。テンプレートとして再利用しやすいようにコメントを随所に入れてください<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<h3>「触れる環境」を整える</h3>
+
+<p>チームにHTMLを広めるとき、もうひとつ大切なことがあります。<strong>試せる環境を整えること</strong>です。</p>
+
+<p>「試してみたいけど、どこで試せばいいかわからない」という方は多いです。HTMLを作る環境として、以下のようなものを共有しておくと、チームのメンバーが気軽に試せるようになります。</p>
+
+<ul>
+  <li><strong>Visual Studio Code（無料）</strong>：テキストエディタとして最もポピュラーで、HTMLの色分け表示や補完機能があります。「VSCodeでHTMLを書いて、ブラウザで確認」という最小環境を構築する手順を1ページにまとめておくと親切です。</li>
+  <li><strong>CodePen・JSFiddle（ブラウザ上で試せる）</strong>：インストール不要でブラウザ上でHTMLを書いて結果を確認できるサービスです。「まず試してみる」用途に向いています。</li>
+  <li><strong>生成AIへのアクセス</strong>：ClaudeやChatGPTに「このHTMLを修正してほしい」と依頼できる環境さえあれば、HTMLの知識がなくても実践できます。</li>
+</ul>
+
+<p>「試せる場所がある」という安心感が、一歩を踏み出しやすくする環境を作ります。</p>
+
+<hr>
+
+<h2>8-3　HTMLとOfficeの「共存」を設計する</h2>
+
+<h3>「OfficeをやめてHTMLに移行すべきか」という誤った問い</h3>
+
+<p>本書のタイトルは「生成AI時代は、なんでもHTML！」ですが、これは「Officeを捨ててHTMLに全部移行せよ」という意味ではありません。</p>
+
+<p>Officeが圧倒的に強い領域はあります。Excelの数値計算能力と関数の柔軟性は、HTMLで代替できません。Wordの文書校正・変更追跡機能は、複数人での編集作業に適しています。PowerPointの視覚的なスライド作成は、プレゼンテーションの場で有効です。</p>
+
+<p>OfficeとHTMLを「どちらが良いか」という対立で考えるのは適切ではありません。<strong>用途に応じた最適解を選ぶこと</strong>——それが本書の主張の本質です。</p>
+
+<hr>
+
+<h3>「出口としてのHTML」という考え方</h3>
+
+<p>OfficeとHTMLを共存させる最も実践的なパターンは、「作業はOffice、出力はHTML」というハイブリッドワークフローです。</p>
+
+<p>具体例を挙げます。</p>
+
+<p><strong>週次KPIダッシュボード</strong>の場合：</p>
+<ol>
+  <li><strong>Excel</strong>でデータを集計・計算する（Excelが最強の仕事）</li>
+  <li>集計結果を<strong>JSON形式でエクスポート</strong>する（JSONとは、データをシンプルな文字列として表現する形式です。<code>[{"name":"東京", "sales":1200}, {"name":"大阪", "sales":980}]</code> のように書きます）</li>
+  <li><strong>HTML + JavaScript</strong> でそのJSONを読み込み、グラフと表で表示する</li>
+</ol>
+
+<p>この流れを生成AIに設計させることができます。「Excelの集計データを読み込んで表示するHTMLダッシュボードを作ってほしい。データはJSONで持ちたい」とプロンプトに書くと、JavaScriptのコードを含むHTMLが生成されます。以後、Excelのデータを更新してJSONを更新するだけで、ダッシュボードの表示が自動的に更新されます。</p>
+
+<pre><code>&lt;!-- HTML+JavaScriptでJSONデータを読み込む基本パターン --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;週次KPIダッシュボード&lt;/title&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    canvas { margin-top: 24px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;週次KPIダッシュボード&lt;/h1&gt;
+  &lt;canvas id="salesChart" width="760" height="300"&gt;&lt;/canvas&gt;
+
+  &lt;script&gt;
+    // ここにExcelからエクスポートしたデータを貼り付ける
+    // （または別ファイルのJSONをfetch()で読み込む）
+    const salesData = [
+      { month: "1月", sales: 1200 },
+      { month: "2月", sales: 1350 },
+      { month: "3月", sales: 980 },
+      { month: "4月", sales: 1580 },
+      { month: "5月", sales: 1420 },
+      { month: "6月", sales: 1690 }
+    ];
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: salesData.map(d =&gt; d.month),
+        datasets: [{
+          label: '月次売上（万円）',
+          data: salesData.map(d =&gt; d.sales),
+          backgroundColor: '#4a90d9',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>この例では、<code>salesData</code> の部分にExcelからエクスポートしたデータを貼り付けるだけで、棒グラフが表示されます。データが変わったら <code>salesData</code> の数値を書き換えるか、JSONファイルを差し替えるだけです。</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】Excelで集計した月次売上データをHTMLダッシュボードとして可視化したい<br>
+  【含める要素】棒グラフ（月別売上）、部門別フィルタリング機能、KPIサマリーカード（売上合計・前月比・目標達成率）<br>
+  【スタイル】シンプルなビジネス向けデザイン。Chart.jsを使用してグラフを描画してください<br>
+  【出力形式】完全なHTMLファイルとして出力してください。データ部分はJavaScript内のJSON配列として記述し、Excelの値を貼り替えるだけで更新できる構造にしてください<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<h3>全部を変えない——用途別の最適解</h3>
+
+<p>もう少し整理すると、OfficeとHTMLの使い分けはこのように考えられます。</p>
+
+<table class="content-table">
+  <thead>
+    <tr>
+      <th>シーン</th>
+      <th>向いているツール</th>
+      <th>理由</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>データ計算・集計</td>
+      <td>Excel / スプレッドシート</td>
+      <td>関数・ピボット・条件付き書式が強い</td>
+    </tr>
+    <tr>
+      <td>複数人での文書編集・校正</td>
+      <td>Word / Google Docs</td>
+      <td>変更追跡・コメント機能が有効</td>
+    </tr>
+    <tr>
+      <td>プレゼンテーション（対面・投影）</td>
+      <td>PowerPoint</td>
+      <td>スライド進行・アニメーションが適切</td>
+    </tr>
+    <tr>
+      <td>URL共有・スマホ対応が必要な報告</td>
+      <td>HTML</td>
+      <td>どのデバイスでも閲覧できる</td>
+    </tr>
+    <tr>
+      <td>定期更新して参照するダッシュボード</td>
+      <td>HTML</td>
+      <td>更新したら全員に最新版が届く</td>
+    </tr>
+    <tr>
+      <td>インタラクティブな表・フィルタリング</td>
+      <td>HTML</td>
+      <td>ブラウザ上での操作が可能</td>
+    </tr>
+    <tr>
+      <td>社内FAQ・ナレッジポータル</td>
+      <td>HTML</td>
+      <td>URLで常に最新版を参照できる</td>
+    </tr>
+    <tr>
+      <td>印刷して配布・保管する資料</td>
+      <td>Word / Excel</td>
+      <td>印刷レイアウトに最適化できる</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>「Officeをやめる」のではなく、「出口を選ぶ判断力を持つ」——それがハイブリッドワークフローの考え方です。</p>
+
+<hr>
+
+<h2>8-4　これからのビジネスパーソンに求められるリテラシー</h2>
+
+<h3>「コードが書けること」は目標ではない</h3>
+
+<p>本書を読んで「HTMLが書けるようにならないといけないのか」と不安になった方がいるかもしれません。結論から言えば、その必要はありません。</p>
+
+<p>生成AIが実装を担う時代において、コードを書く技術よりも重要なのは<strong>「読んでわかる」レベルの理解</strong>と<strong>「何を作るか」を決める判断力</strong>です。</p>
+
+<p>「読んでわかる」とはどういう状態か、具体例で考えます。</p>
+
+<p>生成AIが以下のようなコードを出力したとします。</p>
+
+<pre><code>&lt;h1 style="font-size: 2rem; color: #1a56a0;"&gt;月次報告書&lt;/h1&gt;</code></pre>
+
+<p>このコードが読める方は「<code>h1</code> が見出し、<code>font-size: 2rem</code> が文字サイズ、<code>color: #1a56a0</code> が文字色の設定」と理解できます。そして「文字サイズを少し小さくしてほしい」という場合に「<code>font-size</code> の値を変えてください」と的確に依頼できます。</p>
+
+<p>一方、「読んでわからない」状態の方は、生成AIに「なんか違う気がする」とだけ伝えることしかできません。すると生成AIは何が問題かわからず、全体をリデザインしようとすることがあります。</p>
+
+<p>「どこを変えれば何が変わるか」を読み取れる能力——これが「読んでわかる」レベルのHTMLリテラシーです。書ける必要はありませんが、読めるといいでしょう。</p>
+
+<hr>
+
+<h3>HTMLリテラシーの五段階</h3>
+
+<p>ビジネスパーソンとして目指すべきHTMLの理解レベルを、五段階で整理します。</p>
+
+<table class="content-table">
+  <thead>
+    <tr>
+      <th>レベル</th>
+      <th>状態</th>
+      <th>何ができるか</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>まったく読めない</td>
+      <td>HTMLを見ると「記号の羅列」にしか見えない</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>大まかに読める</td>
+      <td>タグの意味はわからなくても、「ここが見出し、ここが本文らしい」と類推できる</td>
+    </tr>
+    <tr>
+      <td><strong>3</strong></td>
+      <td><strong>読んでわかる</strong></td>
+      <td><strong>どのタグがどの表示要素に対応するか理解できる。生成AIへの修正依頼を的確に出せる</strong></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>書ける（基礎）</td>
+      <td>既存のHTMLを参考に、簡単な追加・修正をみずから行える</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>書ける（応用）</td>
+      <td>JavaScriptも含めてゼロから作成・設計できる</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure class="chapter-figure">
+  <img src="images/fig_ch08_literacy.svg" alt="ビジネスパーソンに求められるHTMLリテラシーの五段階" class="figure-img">
+  <figcaption>図8-1　ビジネスパーソンに求められるHTMLリテラシーの五段階</figcaption>
+</figure>
+
+<p>ビジネスパーソンの目標は<strong>レベル3</strong>です。エンジニアのようにレベル5を目指す必要はありません。しかし、レベル1・2では「生成AIと協力して成果物を磨く」という体験ができません。</p>
+
+<p>「何となく読める」から「読んでわかる」への橋渡しは、実は本書を通じてかなりの部分ができています。各章のコードサンプルを「写経」するつもりで一度読んでみてください。「あ、<code>h2</code> が中見出しで、<code>p</code> が段落テキストで……」という読み方ができるようになると、生成AIとの対話の質が格段に上がります。</p>
+
+<hr>
+
+<h3>生成AIと「共同編集者」として働く</h3>
+
+<p>生成AIを「答えを出してくれる機械」として使うか、「一緒に作品を作るパートナー」として使うかで、アウトプットの質は大きく変わります。</p>
+
+<p>「共同編集者」として生成AIを使うとはどういうことか。具体例で説明します。</p>
+
+<p><strong>機械として使う場合</strong>：<br>
+「月次報告書のHTMLを作ってください」<br>
+→ 生成AIが何かを作る → 「これでいいや」か「全然違う、やり直し」</p>
+
+<p><strong>共同編集者として使う場合</strong>：<br>
+「月次報告書のHTMLを作ってください。読み手はマネジメント層で、スマートフォンで見ることが多いです。KPIを3つ大きく表示して、詳細データは折りたたみで見せる構成にしてください」<br>
+→ 生成AIが具体的な構成を提案する<br>
+→ 「KPIカードのデザインはいいのですが、折りたたみの部分をアコーディオンではなくタブ切り替えにしてもらえますか？」と対話しながら修正する<br>
+→ 「このタブのラベルを『概要』『詳細』『前月比』に変えてください」と細部を詰める</p>
+
+<p>この対話の過程で、生成AIは「実装の技術者」の役割を担い、あなたは「プロデューサー」の役割を担います。何を作るか、どんな体験を提供するか、読み手にとって何が大切かを判断するのは人間の役割です。</p>
+
+<p>HTMLリテラシー（読んでわかるレベル）があることで、この対話がよりスムーズになります。「<code>padding</code>（余白）を少し大きくしてほしい」「フォントサイズが大きすぎる」「グラフの色を会社のブランドカラーに合わせてほしい」——こうした具体的な指示が出せると、数回の対話でほぼ思い通りの成果物が完成します。</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】チームのHTML活用を広めるため、「誰でもHTMLを試せる入門ページ」を社内共有用に作りたい<br>
+  【含める要素】「HTMLとは何か」の1分説明、生成AIへの依頼テンプレート（コピペ用）、VSCode・CodePen・Claude/ChatGPTへのリンクカード、よくある質問（FAQ）アコーディオン<br>
+  【スタイル】親しみやすいトーン。難しそうに見えないシンプルなデザイン<br>
+  【出力形式】完全なHTMLファイルとして出力してください。社内フォルダに置くだけで誰でも開ける自己完結型にしてください<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<h3>情報発信力がキャリアの武器になる時代</h3>
+
+<p>少し視野を広げて、個人のキャリアの話をします。</p>
+
+<p>HTMLで作ったコンテンツが持つ最大の特性は「届く力」です。URLがあれば、誰にでも、どこにいても、どのデバイスからでも届けられます。</p>
+
+<p>社内での話をすると、こんなことが起きています。</p>
+
+<p>ある会社のHR部門の若手社員が、「新卒社員向けのオンボーディング情報が毎年まとまっていなくて、新人が困っている」という問題を感じていました。彼女は、生成AIを使ってオンボーディングHTMLページを作り、社内SharePointに公開しました。最初は自分のチームだけに共有しましたが、「これわかりやすい」と別の部署からも活用されるようになりました。</p>
+
+<p>翌年、人事部門のマネージャーから「新人教育の仕組みを整備するプロジェクトにアサインしてほしい」と声がかかりました。「わかりやすい情報をまとめる人」というイメージが、自然と認知されていたからです。</p>
+
+<p>彼女が特別なITスキルを持っていたわけではありません。「問題を見つけて、HTMLページという形で解決策を作り、共有した」——それだけです。</p>
+
+<p>コンテンツを作る能力と届ける能力を組み合わせた「情報発信力」は、これからのビジネスパーソンにとって重要な武器になります。会議で発言することも発信ですが、URLひとつで多くの人に届くHTMLページを作る能力は、それとは異なる種類の影響力を生み出します。</p>
+
+<hr>
+
+<figure class="chapter-figure">
+  <img src="../screenshots/ch08_template.png" alt="HTMLテンプレートページ" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+  <figcaption>図：サンプル：ch08_template.html — 再利用可能なHTMLテンプレート</figcaption>
+</figure>
+
+<section class="sample-download">
+  <span class="sample-download-icon">📂</span>
+  <div class="sample-download-body">
+    <strong>本章のサンプルファイル：<code>ch08_template.html</code></strong>
+    <p>本書サポートサイトよりダウンロードし、ブラウザで開いてご確認ください。</p>
+  </div>
+</section>
+
+<h2>まとめ</h2>
+
+<p>本章では、HTMLを「たまに使うツール」ではなく「仕事の設計思想」として取り込むためのマインドセットを見てきました。</p>
+
+<p><strong>HTMLネイティブな仕事術の本質は、次の3つに集約されます。</strong></p>
+
+<ol>
+  <li><strong>成果物の形式を最初に問い直す習慣</strong>：「何で作るか」を反射的に決めるのではなく、「誰がどこでどう使うか」を起点に形式を選ぶ。この一瞬の問い直しが、成果物の品質と届き方を変えます。</li>
+  <li><strong>一人が始めれば、チームは変わる</strong>：全員を一度に変えようとしません。良いものを作って共有し、テンプレートとして置いておく。変化は強制ではなく、「便利さの伝播」によって広がります。</li>
+  <li><strong>「読んでわかる」レベルのリテラシーが生成AIとの協働を強化する</strong>：コードを書く必要はありませんが、読めると対話の質が上がります。生成AIを「機械」ではなく「共同編集者」として使うための土台がHTMLリテラシーです。</li>
+</ol>
+
+<blockquote>
+  <strong>あなたが今日作る成果物を、HTMLで作ったとしたら何が変わりますか。まずそれを想像することから、HTMLネイティブな仕事術は始まります。</strong>
+</blockquote>
+
+<hr>
+
+<blockquote>
+  <h4>コラム：ツールリテラシーとは何か——使える・読める・選べるの三段階</h4>
+  <p>あるツールを「リテラシーがある」と言える状態には、三段階があると筆者は考えています。</p>
+  <p><strong>第一段階：使える</strong><br>
+  ツールを使って成果物を作ることができます。ただし、他の選択肢があることや、なぜそのツールを使うのかを意識していない段階です。</p>
+  <p><strong>第二段階：読める</strong><br>
+  他の人が作った成果物（コード・設定・構造）を見て、「何がどうなっているか」を理解できる段階です。修正依頼や改善の提案が的確にできます。</p>
+  <p><strong>第三段階：選べる</strong><br>
+  複数の選択肢を比較して、「この用途にはこのツールが最適」という判断ができる段階です。ツールが目的を規定するのではなく、目的に応じてツールを選べます。</p>
+  <p>本書が目指してきたのは、HTMLに対してこの「第三段階：選べる」状態になることです。HTMLを常に使うのではなく、HTMLが最適な場面でHTMLを選べる。そして、その判断を仕事の設計に組み込める。</p>
+  <p>これはHTMLという特定技術のリテラシーではなく、「成果物の形式を問い直す習慣」というメタリテラシー（より上位の思考習慣）です。このメタリテラシーがあれば、HTMLの次に新しいフォーマットが登場したときにも、同じ思考プロセスで適応できます。</p>
+</blockquote>
+
+<hr>
+
+<p>第8章では、HTMLを「ツール」としてではなく「仕事の設計思想」として取り込むための考え方を学びました。一人の先行者から始まるチームへの変化、OfficeとHTMLの共存設計、そして「読んでわかる」リテラシーが生成AIとの協働を強化するという話をしてきました。</p>
+
+<p>本書の最後、終章では「あなたの仕事はどこからHTML化できるか」という問いに立ち返ります。第1章から第8章の学びを振り返り、あなた自身の仕事の文脈で「最初の一歩」を踏み出すためのセルフチェックと、ドキュメントの民主化が進む未来への展望でしめくくります。</p>
+
+<p><strong>あなたの仕事は、どこからHTML化できるでしょうか。</strong></p>
+
+    </main>
+  </div>
+  <script src="book.js"></script>
+</body>
+</html>

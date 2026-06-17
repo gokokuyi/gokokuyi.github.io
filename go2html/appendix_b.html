@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>付録B HTMLの遊び場 | 生成AI時代は、なんでもHTML！</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="book-nav">
+    <a href="index.html" class="nav-brand">📖 なんでもHTML！</a>
+    <span class="nav-chapter-title">付録B HTMLの遊び場</span>
+    <div class="nav-arrows">
+      <a href="appendix_a.html" class="nav-prev">← 前</a>
+    </div>
+  </nav>
+  <div class="book-layout">
+    <aside class="toc-sidebar">
+      <div class="toc-title">目次</div>
+      <nav>
+        <a href="intro.html">はじめに</a>
+        <a href="chapter01.html">第1章 なぜ今OfficeではなくHTMLなのか</a>
+        <a href="chapter02.html">第2章 HTMLは"ホームページを作る技術"ではない</a>
+        <a href="chapter03.html">第3章 生成AIと一緒にHTMLを作る</a>
+        <a href="chapter04.html">第4章 資料をHTMLにすると何が変わるか</a>
+        <a href="chapter05.html">第5章 Excel的な仕事をHTMLで再発明する</a>
+        <a href="chapter06.html">第6章 図解・フロー図・概念図をHTML+SVGで扱う</a>
+        <a href="chapter07.html">第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る</a>
+        <a href="chapter08.html">第8章 HTMLネイティブな仕事術</a>
+        <a href="final.html">終章 あなたの仕事は、どこからHTML化できるか</a>
+        <a href="appendix_a.html">付録A プロンプト集</a>
+        <a href="appendix_b.html">付録B HTMLの遊び場</a>
+      </nav>
+    </aside>
+    <main class="chapter-main">
+
+      <h1>付録B　HTMLの遊び場 ── ここまでできる</h1>
+
+      <hr>
+
+      <h2>はじめに</h2>
+
+      <p>本書はここまで、業務報告書の作成、提案書のデザイン、データの可視化など、一貫してビジネスの文脈でHTMLを語ってきました。HTMLは難しいプログラミング言語ではなく、「文章に役割を伝えるタグを付けるだけ」の道具だと、ご理解いただけたかと思います。</p>
+
+      <p>しかし最後に、少しだけ寄り道をさせてください。「HTMLで一体どこまでできるのか」──その可能性の端っこを、実際に手を動かしながら体験してほしいのです。本付録では、同梱のサンプルファイルとして収録した4本のゲームを通じて、ブラウザという舞台の広さを感じてもらいます。</p>
+
+      <hr>
+
+      <h2>ゲームがビジネスにつながる理由</h2>
+
+      <p>「ゲームをビジネスで使う」と聞いて、不思議に思う方もいるかもしれません。しかし、ゲームの本質は<strong>「目標・ルール・フィードバック・報酬」</strong>の組み合わせです。そしてこれは、研修設計や業務改善にそのまま応用できます。</p>
+
+      <p>たとえば、新入社員向けの<strong>コンプライアンス研修</strong>を考えてみてください。厚い冊子を読むだけの研修より、○×形式のクイズゲームで「正解なら〇点、間違えたら解説が表示される」仕組みにした方が、理解度も定着率も上がることが多くの企業で報告されています。</p>
+
+      <p><strong>社内ポイント制度</strong>への応用もあります。日報の提出、会議への早めの出席、アイデアの投稿といった行動にポイントを付与し、蓄積状況をHTMLページで可視化する。カードをめくるような演出を加えれば、毎朝ページを開くのが楽しみになります。</p>
+
+      <p>また、<strong>オンボーディング（入社時研修）</strong>をミッション形式にする企業も増えています。「社内ツールにログインしたらクリア」「上司に自己紹介したらポイント獲得」──スネークゲームのように段階的に難易度が上がる設計にすれば、新入社員は自然と次のステップへ進んでいきます。</p>
+
+      <p>HTMLと少しのJavaScriptがあれば、こうした仕組みを外部サービスに頼らず、社内で自作できます。本付録のゲームは、そのアイデアの「種」として読んでいただければ幸いです。</p>
+
+      <hr>
+
+      <h2>4本のゲーム紹介</h2>
+
+      <h3>1. 三目並べ（<code>appendix_tictactoe.html</code>）</h3>
+
+      <p>AIへのプロンプト例：「3×3グリッドの○×ゲームを作ってください。プレイヤーは○、CPUは×でランダムに打ちます。勝敗・引き分けを判定してメッセージを表示し、もう一度ボタンでリセットできるようにしてください。」</p>
+
+      <p>三目並べは、HTMLゲームの入門として最適な題材です。グリッド9マスの状態管理、勝敗の判定ロジック、CPUの手番処理──これらはすべて、業務アプリでも頻繁に登場する「状態の変化を追う」という考え方と同じです。</p>
+
+      <p>ビジネス応用としては、<strong>研修後の確認クイズ</strong>が代表例です。「正しいものを選んでください」という選択問題を○×の2択に変換し、正解・不正解でフィードバックを出す。3問すべて正解したら「合格！」と表示するだけで、受講者のモチベーションは大きく変わります。製品知識の定期テストや、セキュリティポリシーの理解度チェックにも転用できます。</p>
+
+      <hr>
+
+      <h3>2. 神経衰弱（<code>appendix_memory_card.html</code>）</h3>
+
+      <p>AIへのプロンプト例：「4×4グリッドの神経衰弱ゲームを作ってください。絵柄は絵文字を使い、カードのめくりはCSS 3Dアニメーションで実装してください。めくった回数のカウンターとタイマーも表示してください。」</p>
+
+      <p>カードが180度回転してめくれるアニメーションは、CSSの <code>transform: rotateY(180deg)</code> だけで実現しています。「HTMLでこんな動きができるの？」と驚かれることの多い機能ですが、AIにプロンプトを投げれば1分で書いてくれます。</p>
+
+      <p>ビジネス展開として面白いのは、<strong>製品・サービスの記憶定着</strong>への応用です。新製品の名前と特徴を神経衰弱形式で覚える研修ツール、社員証の顔写真と名前を一致させる「顔と名前合わせゲーム」など、記憶を楽しく助けるツールとして活用できます。絵文字の代わりに商品写真や社員の顔写真を使えば、そのまま業務ツールとして機能します。</p>
+
+      <hr>
+
+      <h3>3. スネークゲーム（<code>appendix_snake.html</code>）</h3>
+
+      <p>AIへのプロンプト例：「Canvas APIを使ったスネークゲームを作ってください。矢印キーとスワイプ操作に対応し、10点ごとにスピードが上がる仕様にしてください。ゲームオーバー画面とリスタートボタンも実装してください。」</p>
+
+      <p>スネークは <strong>Canvas API</strong> という、HTMLのキャンバス（画布）に自由に絵を描ける機能を使っています。グラフの描画、フロアマップの表示、動く図形の作成──Canvasができることは、ゲーム以外にも無限に広がります。</p>
+
+      <p>組織内への応用例として、<strong>KPIの進捗可視化</strong>があります。月次目標に対して日々の達成数を積み上げていくと、蛇のように伸びていくグラフが表示される。スピードが上がる（目標が高まる）という演出を、四半期の目標更新タイミングに合わせる。こうした遊び心のあるダッシュボードは、チームの士気向上に意外なほど効果的です。</p>
+
+      <hr>
+
+      <h3>4. マインスイーパー（<code>appendix_minesweeper.html</code>）</h3>
+
+      <p>AIへのプロンプト例：「9×9グリッドで地雷10個のマインスイーパーを作ってください。左クリックでマスを開き、右クリックで旗を立てます。数字の色分けと、初回クリックでは地雷が当たらない仕様を実装してください。」</p>
+
+      <p>マインスイーパーは本書のゲームの中で最も複雑な実装を持ちます。「初回クリックでは地雷が当たらない」という仕様は、ユーザー体験を最優先した設計思想の表れです。この「最初の1クリックで理不尽に失敗させない」という考え方は、業務アプリのUX設計でも重要なヒントになります。</p>
+
+      <p>ビジネス応用としては、<strong>リスクマップの可視化</strong>が考えられます。プロジェクトのタスクをグリッドに並べ、完了・未着手・リスクあり・ブロック中といった状態を色とアイコンで表示する。クリックすると詳細が展開されるインタラクティブなステータスボードを、このゲームのコードをベースに作ることができます。</p>
+
+      <hr>
+
+      <h2>おわりに</h2>
+
+      <p>本付録の4本のゲームはすべて、HTMLとJavaScript、そしてCSSだけで完結しています。外部のサービスへの登録も、専用ソフトのインストールも必要ありません。ブラウザさえあれば動きます。</p>
+
+      <p>プログラマーになる必要はありません。「こんなものが欲しい」というアイデアを言葉にして、AIに伝えるだけでいいのです。本書でお伝えしてきた通り、AIへの依頼はプロンプトという形の「日本語の指示」です。ゲームのコードが怖そうに見えても、それはAIが書いたものであり、あなたは動くかどうかをブラウザで確かめるだけでいい。</p>
+
+      <p>大切なのは、「HTMLでここまでできる」という体験を持つことです。その体験が、次の提案書を作るときの発想を変え、研修ツールのアイデアを生み、チームに共有したい情報のかたちを変えていきます。</p>
+
+      <p>あなたのアイデアを形にする道具として、HTMLとAIをぜひ使い続けてください。</p>
+
+      <figure class="chapter-figure">
+        <img src="../screenshots/appendix_tictactoe.png" alt="三目並べゲーム" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+        <figcaption>サンプル：appendix_tictactoe.html — 三目並べ</figcaption>
+      </figure>
+      <figure class="chapter-figure">
+        <img src="../screenshots/appendix_memory_card.png" alt="神経衰弱ゲーム" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+        <figcaption>サンプル：appendix_memory_card.html — 神経衰弱</figcaption>
+      </figure>
+      <figure class="chapter-figure">
+        <img src="../screenshots/appendix_snake.png" alt="スネークゲーム" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+        <figcaption>サンプル：appendix_snake.html — スネークゲーム</figcaption>
+      </figure>
+      <figure class="chapter-figure">
+        <img src="../screenshots/appendix_minesweeper.png" alt="マインスイーパー" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+        <figcaption>サンプル：appendix_minesweeper.html — マインスイーパー</figcaption>
+      </figure>
+
+      <section class="sample-download">
+        <span class="sample-download-icon">📂</span>
+        <div class="sample-download-body">
+          <strong>ゲームサンプルファイル一覧</strong>
+          <ul>
+            <li><code>appendix_tictactoe.html</code> — 〇×ゲーム</li>
+            <li><code>appendix_memory_card.html</code> — メモリーカード（神経衰弱）</li>
+            <li><code>appendix_snake.html</code> — スネークゲーム</li>
+            <li><code>appendix_minesweeper.html</code> — マインスイーパー</li>
+          </ul>
+          <p>本書サポートサイトよりダウンロードし、ブラウザで開いてご確認ください。</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <script src="book.js"></script>
+</body>
+</html>

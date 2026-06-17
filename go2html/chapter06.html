@@ -1,0 +1,597 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第6章 図解・フロー図・概念図をHTML+SVGで扱う | 生成AI時代は、なんでもHTML！</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="book-nav">
+    <a href="index.html" class="nav-brand">📖 なんでもHTML！</a>
+    <span class="nav-chapter-title">第6章 図解・フロー図・概念図をHTML+SVGで扱う</span>
+    <div class="nav-arrows">
+      <a href="chapter05.html" class="nav-prev">← 前</a>
+      <a href="chapter07.html" class="nav-next">次 →</a>
+    </div>
+  </nav>
+  <div class="book-layout">
+    <aside class="toc-sidebar">
+      <div class="toc-title">目次</div>
+      <nav>
+        <a href="intro.html">はじめに</a>
+        <a href="chapter01.html">第1章 なぜ今OfficeではなくHTMLなのか</a>
+        <a href="chapter02.html">第2章 HTMLは"ホームページを作る技術"ではない</a>
+        <a href="chapter03.html">第3章 生成AIと一緒にHTMLを作る</a>
+        <a href="chapter04.html">第4章 資料をHTMLにすると何が変わるか</a>
+        <a href="chapter05.html">第5章 Excel的な仕事をHTMLで再発明する</a>
+        <a href="chapter06.html">第6章 図解・フロー図・概念図をHTML+SVGで扱う</a>
+        <a href="chapter07.html">第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る</a>
+        <a href="chapter08.html">第8章 HTMLネイティブな仕事術</a>
+        <a href="final.html">終章 あなたの仕事は、どこからHTML化できるか</a>
+        <a href="appendix_a.html">付録A プロンプト集</a>
+        <a href="appendix_b.html">付録B HTMLの遊び場</a>
+      </nav>
+    </aside>
+    <main class="chapter-main">
+      <h1>第6章　図解・フロー図・概念図をHTML＋SVGで扱う</h1>
+
+      <blockquote class="sample-ref">
+        <strong>📂 本章のサンプルファイル</strong>: <code>ch06_animated_flow.html</code><br>
+        ブラウザで開くと、本章で解説するHTMLコンテンツを実際に操作できます。<br>
+        本書サポートサイトからダウンロードしてください。
+      </blockquote>
+
+      <hr>
+
+      <h2>6-1　「図を描く」ツールの現状と限界</h2>
+
+      <h3>その図は、いつ描かれたものですか</h3>
+
+      <p>あなたの組織で、業務フロー図や組織図が壁に貼られていたり、社内のドキュメントフォルダに保存されていたりするとします。そのとき、ひとつ確認してみてください。その図はいつ描かれ、最後に更新されたのはいつでしょうか。</p>
+
+      <p>多くの場合、答えは「わからない」か「ずいぶん前」のどちらかです。</p>
+
+      <p>新人が入社したとき、先輩が「これを見ておいて」と渡してくれた採用プロセスの図。印刷されてファイルに挟まれているか、PowerPointファイルとしてフォルダに眠っているその図は、果たして今も正確でしょうか。半年前に変わった承認フローは反映されていますか。担当者が異動して別の人になったことは、どこかに書かれていますか。</p>
+
+      <p>こうした「情報の腐敗」は、図というフォーマットの宿命的な問題です。</p>
+
+      <hr>
+
+      <h3>PowerPoint・Visio・draw.io——それぞれの強みと制約</h3>
+
+      <p>現在のビジネスで使われる図解ツールを整理してみましょう。</p>
+
+      <p><strong>PowerPoint</strong>は最もよく使われる図解ツールです。図形の挿入、矢印の配置、テキストボックスの追加——直感的な操作でそれなりの図が作れます。しかし、これはあくまでプレゼンテーションのためのスライドツールです。図形の整列が手作業で面倒だったり、バージョン管理ができなかったりと、「図を管理する」という観点では限界があります。</p>
+
+      <p><strong>Microsoft Visio</strong>は専門的な図解ツールで、業務フローや組織図を丁寧に描くための機能を持っています。ただしライセンスが高価で、Visioを持っていない方は図を開くことすらできません。共有の観点で言えば、これは致命的な問題です。</p>
+
+      <p><strong>draw.io（diagrams.net）</strong>は無料で使えるWebベースの図解ツールで、フローチャートやUMLなど多様な図形ライブラリを持っています。Googleドライブと連携できる点も便利です。ただし、作成した図を書き出すと画像ファイルになり、そこからは「更新できない静的な絵」になってしまいます。</p>
+
+      <hr>
+
+      <h3>図は「ファイル」である限り更新が届かない</h3>
+
+      <p>PowerPoint、Visio、draw.ioに共通する本質的な問題は、<strong>図が「ファイル」として存在している</strong>という点です。</p>
+
+      <p>ファイルには三つの問題があります。</p>
+
+      <p>第一に、<strong>バージョンが分散する</strong>という問題です。図を更新した人は最新版を持っていますが、一度共有した相手のパソコンにある古いバージョンは変わりません。「どれが最新ですか」という質問が定期的に飛び交うのは、この問題の典型的な症状です。</p>
+
+      <p>第二に、<strong>更新のモチベーションが下がる</strong>という問題です。図を修正するには、元のファイルを開き、図形を選択し、テキストを書き直し、矢印を調整し、また保存して共有し直す——この手順の多さが、「少し変わったけどまあいいか」という判断を生み出します。</p>
+
+      <p>第三に、<strong>図がコンテキストから切り離される</strong>という問題です。PowerPointのフロー図を説明するためには、会議を開いてスクリーンに映すか、ファイルをメールで送るかしかありません。図が他の情報（マニュアル・手順書・ダッシュボード）と連携する方法がありません。</p>
+
+      <p>では、図をHTMLの一部にしたらどうなるでしょうか。URLで共有できる、いつでも最新版を誰でも見られる、他の情報と一緒に表示できる——この三つが自然に解決されます。</p>
+
+      <hr>
+
+      <h2>6-2　SVGとは何か——なぜHTML時代の図解に向いているか</h2>
+
+      <h3>「画像」と「数式で描いた図」の違い</h3>
+
+      <p>図をHTMLに組み込む方法として、まず思いつくのは「画像を貼り付ける」ことでしょう。PNGやJPEGの画像ファイルをHTMLに埋め込むことは確かにできます。しかしこれでは、前節で説明した「ファイルの問題」を解決することはできません。</p>
+
+      <p><strong>SVG</strong>（Scalable Vector Graphics：スケーラブル・ベクター・グラフィックス）は、これとは根本的に異なる仕組みを持つ画像形式です。</p>
+
+      <p>普通の画像（PNGやJPEG）は、画面上のドット（ピクセル）の集合体として情報を持っています。200ピクセルの画像を400ピクセルに引き伸ばせば、ドットが引き伸ばされてぼやけます。これを「ビットマップ画像」と呼びます。</p>
+
+      <p>SVGは異なります。「中心から30ピクセルのところに半径10ピクセルの円を描く」「(10, 20)から(200, 20)に向かって矢印を引く」という<strong>命令の集合体</strong>として図形を記述します。どんなサイズに拡大しても、命令に従って新たに描き直すため、常にシャープな表示になります。プレゼンを大型スクリーンに映しても、スマートフォンの小さな画面で見ても、SVGの図は粗くなりません。</p>
+
+      <hr>
+
+      <h3>HTMLに直接埋め込めるSVGの特性</h3>
+
+      <p>SVGの最大の特徴は、<strong>HTMLファイルの中にそのままコードとして書ける</strong>ことです。画像ファイルのように外部ファイルを参照する必要がなく、HTMLの一部として図が存在します。</p>
+
+      <p>これが何を意味するかというと、CSS（スタイルシート）でスタイルを変えられること、JavaScriptで動きを付けられること、そして図の内容がHTMLのテキストと同じように検索できること——この三つです。</p>
+
+      <p>たとえば、組織図をSVGで描いた場合、企業のブランドカラーが変わったときにCSSの一行を変えるだけで、組織図全体の色が更新されます。ダークモード対応も、CSS変数を使えば自動的に行われます。</p>
+
+      <p>SVGのコードを初めて見ると難しそうに見えますが、基本的な構造はシンプルです。</p>
+
+      <pre><code>&lt;svg width="300" height="150" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;!-- 四角形（箱） --&gt;
+  &lt;rect x="10" y="10" width="120" height="50"
+        fill="#ebf4ff" stroke="#2c5282" stroke-width="2" rx="6"/&gt;
+  &lt;!-- テキスト --&gt;
+  &lt;text x="70" y="42" text-anchor="middle" font-size="14" fill="#2c5282"&gt;
+    申請
+  &lt;/text&gt;
+  &lt;!-- 矢印 --&gt;
+  &lt;line x1="130" y1="35" x2="170" y2="35"
+        stroke="#4a5568" stroke-width="2"
+        marker-end="url(#arrow)"/&gt;
+  &lt;!-- 矢印の定義 --&gt;
+  &lt;defs&gt;
+    &lt;marker id="arrow" markerWidth="10" markerHeight="7"
+            refX="10" refY="3.5" orient="auto"&gt;
+      &lt;polygon points="0 0, 10 3.5, 0 7" fill="#4a5568"/&gt;
+    &lt;/marker&gt;
+  &lt;/defs&gt;
+  &lt;!-- 二つ目の箱 --&gt;
+  &lt;rect x="170" y="10" width="120" height="50"
+        fill="#ebf4ff" stroke="#2c5282" stroke-width="2" rx="6"/&gt;
+  &lt;text x="230" y="42" text-anchor="middle" font-size="14" fill="#2c5282"&gt;
+    審査
+  &lt;/text&gt;
+&lt;/svg&gt;</code></pre>
+
+      <p>このSVGをHTMLファイルの中に貼り付けると、「申請 → 審査」という簡単なフロー図が表示されます。</p>
+
+      <p>もちろん、このコードを自分で書く必要はありません。「矢印でつながった二つのボックス、左に『申請』右に『審査』と書いて」と生成AIに依頼するだけで、同等のSVGが生成されます。</p>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】業務フローをSVGアニメーション付きのフロー図として作りたい<br>
+        【含める要素】5ステップ（受付→確認→審査→承認→完了）、横並び矢印でつなぐ、各ステップをクリックすると詳細がポップアップ表示、ステップが左から順番に光るアニメーション<br>
+        【スタイル】ライトブルー背景・濃いブルーテキスト、最終ステップはグリーン、矢印はグレー<br>
+        【出力形式】完全なHTMLファイルとして出力してください<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <h3>生成AIにSVGを描いてもらう</h3>
+
+      <p>SVGについて知っていただきたいのは、仕組みの詳細ではなく「<strong>生成AIが非常に得意とする分野</strong>」だということです。</p>
+
+      <p>SVGはテキスト（コード）で記述されるため、生成AIが自然言語の指示から生成するのに向いています。「PowerPointで図形を手で並べる」という作業と「生成AIにSVGコードを生成してもらう」という作業を比べたとき、後者のほうが速く、修正も容易で、バージョン管理もしやすいという優位性があります。</p>
+
+      <p>たとえば次のような依頼が可能です。</p>
+
+      <p>「5ステップの業務フロー図をSVGで作って。ステップは『受付 → 確認 → 審査 → 承認 → 完了』の順番。横並びで矢印でつなぎ、各ボックスはライトブルーの背景に濃いブルーのテキスト」</p>
+
+      <p>この依頼に対して生成AIが生成するSVGコードは、そのままHTMLに貼り付けて使えます。細部が気に入らなければ「承認ボックスを黄色にして」「ステップの下に担当部門名も入れて」と修正指示を続けるだけです。</p>
+
+      <hr>
+
+      <h2>6-3　業務で使う図解パターン</h2>
+
+      <h3>業務フロー図・プロセス図</h3>
+
+      <p>業務フロー図は、業務の手順や承認の流れを可視化するための図です。「誰が」「何をして」「次の誰に渡すか」を順序立てて表現します。</p>
+
+      <p>HTMLとSVGを組み合わせると、業務フロー図に次のような表現を追加できます。</p>
+
+      <ul>
+        <li><strong>各ステップをクリックすると詳細が表示される</strong>：フロー図の各ボックスをクリックしたとき、そのステップの担当者・所要時間・注意事項などの詳細情報がポップアップや下部エリアに表示されます</li>
+        <li><strong>ステップにマウスを乗せると色が変わる</strong>：フロー図を見ながら「今どこを説明しているか」を視覚的に示すためのハイライト効果です</li>
+      </ul>
+
+      <p>以下は、発注プロセスの業務フロー図をHTML+SVGで実装した例です。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;発注承認フロー&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; padding: 24px; background: #f7fafc; }
+    h1 { font-size: 1.3rem; color: #2d3748; margin-bottom: 20px; }
+    svg text { font-family: sans-serif; }
+    .step-box { cursor: pointer; }
+    .step-box rect { transition: fill 0.2s; }
+    .step-box:hover rect { fill: #bee3f8; }
+    #detail {
+      margin-top: 20px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 60px;
+      color: #4a5568;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;発注承認フロー（ステップをクリックして詳細確認）&lt;/h1&gt;
+  &lt;svg width="700" height="120" xmlns="http://www.w3.org/2000/svg"&gt;
+    &lt;defs&gt;
+      &lt;marker id="arr" markerWidth="8" markerHeight="6"
+              refX="8" refY="3" orient="auto"&gt;
+        &lt;polygon points="0 0, 8 3, 0 6" fill="#718096"/&gt;
+      &lt;/marker&gt;
+    &lt;/defs&gt;
+    &lt;!-- ステップボックスと矢印 --&gt;
+    &lt;g class="step-box" onclick="showDetail('受付', '購買担当が発注依頼書を受領。内容の形式チェックと必要書類の確認を行います。所要時間：1営業日')"&gt;
+      &lt;rect x="10" y="30" width="110" height="50" rx="6" fill="#ebf4ff" stroke="#4299e1" stroke-width="1.5"/&gt;
+      &lt;text x="65" y="60" text-anchor="middle" font-size="13" fill="#2b6cb0"&gt;受付&lt;/text&gt;
+    &lt;/g&gt;
+    &lt;line x1="120" y1="55" x2="150" y2="55" stroke="#718096" stroke-width="1.5" marker-end="url(#arr)"/&gt;
+
+    &lt;g class="step-box" onclick="showDetail('内容確認', '発注内容・金額・仕様が要件を満たしているか確認します。不備がある場合は差し戻し。所要時間：2営業日')"&gt;
+      &lt;rect x="150" y="30" width="110" height="50" rx="6" fill="#ebf4ff" stroke="#4299e1" stroke-width="1.5"/&gt;
+      &lt;text x="205" y="60" text-anchor="middle" font-size="13" fill="#2b6cb0"&gt;内容確認&lt;/text&gt;
+    &lt;/g&gt;
+    &lt;line x1="260" y1="55" x2="290" y2="55" stroke="#718096" stroke-width="1.5" marker-end="url(#arr)"/&gt;
+
+    &lt;g class="step-box" onclick="showDetail('上長承認', '50万円以上の発注は部長承認が必要。承認システム上で電子署名を行います。所要時間：3営業日以内')"&gt;
+      &lt;rect x="290" y="30" width="110" height="50" rx="6" fill="#ebf4ff" stroke="#4299e1" stroke-width="1.5"/&gt;
+      &lt;text x="345" y="60" text-anchor="middle" font-size="13" fill="#2b6cb0"&gt;上長承認&lt;/text&gt;
+    &lt;/g&gt;
+    &lt;line x1="400" y1="55" x2="430" y2="55" stroke="#718096" stroke-width="1.5" marker-end="url(#arr)"/&gt;
+
+    &lt;g class="step-box" onclick="showDetail('発注実行', '承認後、購買システムから発注書を発行。取引先にメールで送付します。所要時間：当日中')"&gt;
+      &lt;rect x="430" y="30" width="110" height="50" rx="6" fill="#ebf4ff" stroke="#4299e1" stroke-width="1.5"/&gt;
+      &lt;text x="485" y="60" text-anchor="middle" font-size="13" fill="#2b6cb0"&gt;発注実行&lt;/text&gt;
+    &lt;/g&gt;
+    &lt;line x1="540" y1="55" x2="570" y2="55" stroke="#718096" stroke-width="1.5" marker-end="url(#arr)"/&gt;
+
+    &lt;g class="step-box" onclick="showDetail('完了', '発注書番号を依頼者に通知。納期管理は物流担当へ引き継ぎます。')"&gt;
+      &lt;rect x="570" y="30" width="110" height="50" rx="6" fill="#c6f6d5" stroke="#276749" stroke-width="1.5"/&gt;
+      &lt;text x="625" y="60" text-anchor="middle" font-size="13" fill="#276749"&gt;完了&lt;/text&gt;
+    &lt;/g&gt;
+  &lt;/svg&gt;
+
+  &lt;div id="detail"&gt;← ステップをクリックすると、このエリアに詳細が表示されます。&lt;/div&gt;
+
+  &lt;script&gt;
+    function showDetail(step, desc) {
+      document.getElementById('detail').innerHTML =
+        '&lt;strong&gt;【' + step + '】&lt;/strong&gt;&lt;br&gt;' + desc;
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p>このフロー図は、PowerPointで作ったフロー図と見た目では大きな差がないように思えるかもしれません。しかし重要な違いがあります。各ステップをクリックするたびに詳細が表示されるインタラクション、URLで誰でも開ける共有性、ブラウザ上でそのまま閲覧できる環境非依存性——これらはPowerPointにはない特性です。</p>
+
+      <hr>
+
+      <h3>組織図・関係図</h3>
+
+      <p>組織図は「誰が誰の上司で、どのチームに属しているか」を示す図です。人事異動のたびに更新が必要で、かつ更新されないまま古くなりやすい、業務現場の「腐りやすい図」の代表格です。</p>
+
+      <p>HTMLとSVGで組織図を作ることの最大のメリットは、<strong>人事データと連動させられる</strong>点です。社員名簿のデータをJSONとして用意し、JavaScriptがそれを読み込んで組織図を動的に生成する構造を取れば、人事異動時には人事担当者がJSONファイルを更新するだけで、組織図も自動的に更新されます。図を「描き直す」という作業が不要になるのです。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;部門組織図&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; padding: 24px; background: #f7fafc; }
+    h1 { font-size: 1.3rem; color: #2d3748; margin-bottom: 16px; }
+    .org-node {
+      display: inline-block;
+      background: white;
+      border: 2px solid #4299e1;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      color: #2c5282;
+      font-weight: bold;
+    }
+    .children {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #bee3f8;
+    }
+    .org-branch { text-align: center; }
+    .org-branch .org-node {
+      border-color: #68d391;
+      color: #276749;
+      font-weight: normal;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;営業本部 組織図&lt;/h1&gt;
+  &lt;div style="text-align:center;"&gt;
+    &lt;div class="org-node"&gt;営業本部長 ／ 鈴木 一郎&lt;/div&gt;
+    &lt;div class="children"&gt;
+      &lt;div class="org-branch"&gt;
+        &lt;div class="org-node"&gt;東日本営業部&lt;br&gt;部長：田中 明子&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="org-branch"&gt;
+        &lt;div class="org-node"&gt;西日本営業部&lt;br&gt;部長：佐藤 健一&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="org-branch"&gt;
+        &lt;div class="org-node"&gt;オンライン営業部&lt;br&gt;部長：山田 花子&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p>このHTMLの組織図は、シンプルなCSSだけで実現しています。複雑なSVGコードを書かなくても、HTMLとCSSの組み合わせで基本的な組織図は表現できます。より複雑な階層構造には、生成AIに依頼してSVGベースの組織図を生成してもらうのが効率的です。</p>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】部署の組織図をMermaid.jsで作りたい<br>
+        【含める要素】本部長→3部長→各部長に2名の課長という3階層、各ノードに氏名と役職を表示、ノードをクリックすると担当業務の説明がポップアップ<br>
+        【スタイル】上から下に流れるレイアウト、本部長はブルー、部長はライトブルー、課長はホワイト背景<br>
+        【出力形式】完全なHTMLファイルとして出力してください（Mermaid.jsはCDN読み込みで）<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <h3>概念図・マインドマップ的な図解</h3>
+
+      <p>業務フロー図や組織図が「決まった構造」を持つのに対し、概念図は「関係性の表現」です。KPIツリー、戦略マップ、プロジェクトの相関図——抽象的な概念の結びつきを視覚化するために使われます。</p>
+
+      <p>HTMLとSVGで概念図を作る際、生成AIへの依頼は「ノードとエッジ」という概念を使うと伝わりやすくなります（ノードとは図の中の各要素、エッジとはそれをつなぐ線のことです）。</p>
+
+      <p>「以下の3要素をノードとして、関係性をエッジ（矢印）で結んだ概念図をSVGで作って：顧客満足度（中心）← 品質（左）、スピード（右上）、価格（右下）」</p>
+
+      <p>こうした依頼に対して生成AIが作成するSVGを、そのままHTMLに埋め込んで使います。</p>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】KPIの因果関係を概念図（SVG）で視覚化したい<br>
+        【含める要素】中心ノードに「顧客満足度」、左に「品質」「スピード」、右に「価格」「サポート」を配置、矢印の太さで影響度の強弱を表現、各ノードにマウスを乗せると数値目標がツールチップ表示<br>
+        【スタイル】ノードは角丸の四角形、背景は薄いグラデーション、矢印はブルー系<br>
+        【出力形式】完全なHTMLファイルとして出力してください<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <h3>データを元に自動生成される図</h3>
+
+      <p>ここまで紹介した図は、内容をあらかじめ決めて作る「静的な図」でした。しかしHTMLとSVGの組み合わせが最もその力を発揮するのは、<strong>データが変わると図も変わる</strong>という動的な図解です。</p>
+
+      <p>例として、売上データを元にSVGで棒グラフを自動生成するコードを見てみましょう。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;SVG棒グラフ（自動生成）&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; padding: 24px; background: #f7fafc; }
+    h1 { font-size: 1.3rem; color: #2d3748; margin-bottom: 20px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;部門別売上（SVG自動生成）&lt;/h1&gt;
+  &lt;svg id="chart" width="500" height="280" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;/svg&gt;
+  &lt;script&gt;
+    // ← このデータを変えるだけでグラフが変わる
+    const data = [
+      { label: "東日本", value: 532 },
+      { label: "西日本", value: 461 },
+      { label: "オンライン", value: 237 },
+      { label: "海外", value: 189 },
+    ];
+
+    const svg = document.getElementById('chart');
+    const maxVal = Math.max(...data.map(d =&gt; d.value));
+    const barWidth = 80;
+    const gap = 20;
+    const chartHeight = 200;
+    const topPadding = 20;
+    const leftPadding = 30;
+    const colors = ['#4299e1', '#48bb78', '#ed8936', '#9f7aea'];
+
+    data.forEach((d, i) =&gt; {
+      const x = leftPadding + i * (barWidth + gap);
+      const barH = (d.value / maxVal) * chartHeight;
+      const y = topPadding + (chartHeight - barH);
+
+      // バー
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', x);
+      rect.setAttribute('y', y);
+      rect.setAttribute('width', barWidth);
+      rect.setAttribute('height', barH);
+      rect.setAttribute('fill', colors[i]);
+      rect.setAttribute('rx', '4');
+      svg.appendChild(rect);
+
+      // 数値ラベル
+      const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      valText.setAttribute('x', x + barWidth / 2);
+      valText.setAttribute('y', y - 6);
+      valText.setAttribute('text-anchor', 'middle');
+      valText.setAttribute('font-size', '12');
+      valText.setAttribute('fill', '#4a5568');
+      valText.textContent = d.value + '万円';
+      svg.appendChild(valText);
+
+      // ラベル
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', x + barWidth / 2);
+      label.setAttribute('y', topPadding + chartHeight + 20);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('font-size', '13');
+      label.setAttribute('fill', '#2d3748');
+      label.textContent = d.label;
+      svg.appendChild(label);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p>このコードのポイントは、<code>data</code> という配列の中身を変えるだけで、グラフ全体が自動的に再描画されることです。新しい部門を追加したければ、配列にオブジェクトを一行追加するだけです。「グラフを描き直す」という作業が「データを更新する」という作業に変わります。</p>
+
+      <hr>
+
+      <h2>6-4　Mermaid.jsという選択肢</h2>
+
+      <h3>テキストで図を書く——という発想の転換</h3>
+
+      <p>ここまでSVGについて説明してきましたが、SVGのコードを生成AIなしに書くのはやはり一定のハードルがあります。そこで、もっとシンプルに「テキストで図を宣言する」方法を紹介します。それが<strong>Mermaid.js</strong>（マーメイド・ジェイエス）です。</p>
+
+      <p>Mermaid.jsは、テキストで書いた指示から図を自動生成するJavaScriptライブラリです。</p>
+
+      <p>たとえば、次のテキストを書くと：</p>
+
+      <pre><code>graph LR
+  A[受付] --&gt; B[確認]
+  B --&gt; C{承認可否}
+  C --&gt;|承認| D[発注実行]
+  C --&gt;|差戻| A
+  D --&gt; E[完了]</code></pre>
+
+      <p>このテキストが自動的に、ボックスと矢印と分岐を持つフローチャートに変換されます。</p>
+
+      <hr>
+
+      <h3>Mermaid.jsの文法と特徴</h3>
+
+      <p>Mermaid.jsの特徴は、その<strong>宣言型の文法</strong>にあります。「AからBに矢印を引く」という命令ではなく、「AはBにつながる」という関係を宣言するだけで、レイアウトを自動的に計算して図を配置してくれます。図形の位置を手動で調整する必要がないのです。</p>
+
+      <p>また、フローチャートだけでなく、シーケンス図（処理の時系列を示す図）、クラス図（データ構造を示す図）、ガントチャート（工程管理表）など多様な図の種類に対応しています。</p>
+
+      <p>以下は、HTML内でMermaid.jsを使うための完全なコード例です。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;業務フロー（Mermaid.js）&lt;/title&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"&gt;&lt;/script&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; padding: 24px; background: #f7fafc; }
+    h1 { font-size: 1.3rem; color: #2d3748; margin-bottom: 20px; }
+    .mermaid { background: white; padding: 24px; border-radius: 10px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;採用プロセスフロー&lt;/h1&gt;
+  &lt;div class="mermaid"&gt;
+graph LR
+  A([応募受付]) --&gt; B[書類選考]
+  B --&gt; C{通過？}
+  C --&gt;|合格| D[一次面接]
+  C --&gt;|不合格| Z([不採用通知])
+  D --&gt; E{通過？}
+  E --&gt;|合格| F[最終面接]
+  E --&gt;|不合格| Z
+  F --&gt; G{採用判定}
+  G --&gt;|内定| H([内定通知])
+  G --&gt;|見送り| Z
+  &lt;/div&gt;
+  &lt;script&gt;
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p><code>&lt;script src="...mermaid.min.js"&gt;</code> の一行でMermaid.jsを読み込み、<code>&lt;div class="mermaid"&gt;</code> の中にテキストで図を書くだけで、ブラウザが美しいフローチャートを描画してくれます。</p>
+
+      <hr>
+
+      <h3>生成AIにMermaid.jsコードを生成させる</h3>
+
+      <p>Mermaid.jsと生成AIの組み合わせは、特に相性が良いと言えます。</p>
+
+      <p>Mermaid.jsのコードはテキストなので、生成AIが自然言語の説明からコードを生成するのが非常に得意です。たとえば：</p>
+
+      <p>「採用プロセスを Mermaid.js のフローチャートで作って。ステップは：応募 → 書類選考（通過/不合格で分岐）→ 一次面接（通過/不合格で分岐）→ 最終面接 → 内定/不採用。左から右に流れる方向で」</p>
+
+      <p>この依頼に対して生成AIが出力するMermaid.jsコードは、そのままHTMLに貼り付けるだけで動作します。</p>
+
+      <p>プロセスが変わったときも、生成AIへの修正依頼は直感的です。「一次面接の後に『適性検査』のステップを追加して」と言えば、既存のフローに適切にステップが挿入されたコードが返ってきます。PowerPointで矢印と図形を手動で追加し直す作業と比べて、何倍も速く、美しい結果が得られます。</p>
+
+      <hr>
+
+      <h3>Mermaid.jsが使われている場所</h3>
+
+      <p>Mermaid.jsの普及度は、ビジネスツールとしての信頼性を示す一つの指標です。</p>
+
+      <p><strong>GitHub</strong>では、README.mdやIssueの中にMermaid.jsのコードを書くと、自動的に図として表示されます。技術ドキュメントでの利用が一般的になっています。</p>
+
+      <p><strong>Notion</strong>では、「コードブロック」にMermaid.jsの言語を指定すると、フロー図が表示されます。</p>
+
+      <p><strong>GitLab</strong>、<strong>Confluence</strong>、<strong>Obsidian</strong>など多くのナレッジ管理ツールでも対応が進んでいます。</p>
+
+      <p>ビジネスで使われているツールの多くがMermaid.jsに対応しているということは、あなたが学んだ「テキストで図を書く」というスキルが、多様な場面で活用できることを意味します。</p>
+
+      <hr>
+
+      <blockquote class="column-box">
+        <h4>〔コラム〕　図解は「描く」ものから「宣言する」ものへ</h4>
+        <p>図を「描く」とはどういうことでしょうか。PowerPointで図形を一つひとつ配置し、矢印を引いて整列する——この作業は、本質的には「どこに何を置くか」という座標の管理作業です。</p>
+        <p>Mermaid.jsが提案するのは全く異なる哲学です。「AはBにつながる」という関係性を宣言するだけで、配置はシステムが計算します。人間がすることは「何と何がどういう関係にあるか」を言語化することだけです。</p>
+        <p>この発想の転換は、プログラミングの世界で「宣言型プログラミング」と呼ばれる概念に近いものです。「どうやって描くか（手順）」ではなく「何を描くか（宣言）」に集中する——これは図解だけでなく、仕事全般に広げられる思考様式かもしれません。</p>
+        <p>生成AIに「このプロセスをフロー図にして」と依頼することも、同じ哲学の延長です。「どう描くか」を考えるエネルギーを「何を伝えるか」に集中させる。それがこれからの図解の姿です。</p>
+      </blockquote>
+
+      <hr>
+
+      <blockquote class="column-box">
+        <h4>読者への問いかけ</h4>
+        <p>あなたの組織で、作った当初のまま古くなっている図解はありますか。その図は最後に誰が更新しましたか。もし「業務フロー図がいつでも最新版を自動表示してくれる」としたら、それはあなたのチームのコミュニケーションをどう変えるでしょうか。</p>
+        <p>Mermaid.jsで図を「描く」のではなく「宣言する」というアプローチを、一度だけ試してみてください。生成AIに「私のチームの〇〇プロセスをMermaid.jsのフロー図で作って」と依頼する——それだけで体験は始まります。</p>
+      </blockquote>
+
+      <hr>
+
+      <figure class="chapter-figure">
+        <img src="../screenshots/ch06_animated_flow.png" alt="SVGアニメーションフロー図" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+        <figcaption>図：サンプル：ch06_animated_flow.html — SVGアニメーションフロー図</figcaption>
+      </figure>
+
+      <section class="sample-download">
+        <span class="sample-download-icon">📂</span>
+        <div class="sample-download-body">
+          <strong>本章のサンプルファイル：<code>ch06_animated_flow.html</code></strong>
+          <p>本書サポートサイトよりダウンロードし、ブラウザで開いてご確認ください。</p>
+        </div>
+      </section>
+
+      <h2>まとめ</h2>
+
+      <p>この章では、「図をファイルとして持つ」という従来の常識を問い直し、図をHTMLの一部にすることで得られる新しい可能性を探りました。</p>
+
+      <p>主なポイントを振り返ります。</p>
+
+      <ul>
+        <li><strong>ファイルとしての図の限界</strong>：PowerPoint・Visio・draw.ioで作った図は、配布した瞬間から「更新が届かない静的な絵」になります。このライフサイクル管理の問題が、職場の「古い図問題」の根本原因です</li>
+        <li><strong>SVGはHTMLに直接埋め込める</strong>：画像ではなくコードとして図を持つことで、CSSで色を変え、JavaScriptでインタラクションを加え、データと連動させることが可能になります</li>
+        <li><strong>生成AIがSVGの書き方を代替する</strong>：SVGのコードを自分で書く必要はありません。「このフローをSVGで」という指示で生成AIが描いてくれます</li>
+        <li><strong>業務フロー・組織図・概念図・データ駆動図</strong>：それぞれの図解パターンに応じたHTMLとSVGの活用方法があります</li>
+        <li><strong>Mermaid.jsはテキストで図を宣言する</strong>：SVGより高いレベルの抽象度で、「関係性を記述する」だけで図が生成されます。GitHubやNotionなど多くのツールで標準対応が進んでいます</li>
+      </ul>
+
+      <p>図解の仕事を「手で描く作業」から「関係性を言語化する作業」に変える——これは、技術の問題ではなく認識の転換です。その転換の先に、常に最新版が保たれ、URLで共有でき、データと連動して変化する「生きた図」が待っています。</p>
+
+      <hr>
+
+      <h2>次章への橋渡し</h2>
+
+      <p>この章では、図解という情報の表現方法をHTMLとSVGで扱う方法を探りました。表もグラフも図も、HTMLという一つのファイルの中に統合できることがわかったと思います。</p>
+
+      <p>次の第7章では、こうした表・グラフ・図解を組み合わせたHTMLページを「チームや組織の情報インフラ」として活用する方法を考えます。</p>
+
+      <p>社内ポータル、ナレッジ共有ページ、オンボーディング資料——これらは従来、SharePointや社内Wikiなど専用ツールの領域でした。しかし生成AIでHTMLが作れるようになった今、個人やチームが自分たちのニーズに合ったページを自分で作れる時代が来ています。誰もが「ミニ社内ポータル」を持てるとしたら、職場の情報共有はどう変わるでしょうか。次章で一緒に考えていきましょう。</p>
+
+    </main>
+  </div>
+  <script src="book.js"></script>
+</body>
+</html>

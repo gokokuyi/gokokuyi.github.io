@@ -1,0 +1,456 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生成AI時代は、なんでもHTML！ — デジタルブック</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* インデックスページ専用の上書き */
+    body { margin-top: 0; }
+
+    /* ヒーローカバー */
+    .hero {
+      background: linear-gradient(150deg, #0d2540 0%, #1a3a5c 55%, #1e4a72 100%);
+      color: #fff;
+      padding: 4rem 2rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(224,123,57,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--book-accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .hero-title span { color: #f9a85a; }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-intro {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem;
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: rgba(255,255,255,0.88);
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* TOCセクション */
+    .index-body {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* 章ブロック */
+    .toc-block {
+      border: 1px solid var(--book-border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+      background: #fff;
+      transition: box-shadow 0.2s;
+    }
+    .toc-block:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+
+    a.toc-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      border-left: 4px solid transparent;
+      transition: border-color 0.2s, background 0.15s;
+    }
+    a.toc-row:hover {
+      background: #faf7f3;
+      border-left-color: var(--book-accent);
+      text-decoration: none;
+    }
+
+    .toc-row-badge {
+      flex-shrink: 0;
+      background: var(--book-primary);
+      color: #fff;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      letter-spacing: 0.04em;
+      min-width: 52px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .toc-row-badge.accent { background: var(--book-accent); }
+    .toc-row-badge.gray   { background: #888; }
+
+    .toc-row-body { flex: 1; min-width: 0; }
+    .toc-row-title {
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: var(--book-primary);
+      margin-bottom: 0.15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toc-row-summary {
+      font-size: 0.8rem;
+      color: #777;
+      line-height: 1.4;
+    }
+
+    .toc-arrow {
+      flex-shrink: 0;
+      color: #bbb;
+      font-size: 1rem;
+    }
+
+    /* グループラベル */
+    .toc-group-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      padding: 1.5rem 0 0.4rem;
+      margin-bottom: 0;
+    }
+
+    /* サンプルグリッド調整 */
+    .sample-grid-wrap .sample-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+
+    @media (max-width: 600px) {
+      .hero-title { font-size: 2rem; }
+      .toc-row-summary { display: none; }
+      .sample-grid-wrap .sample-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ヒーローカバー -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">デジタルブック版</span>
+    <h1 class="hero-title">生成AI時代は、<span>なんでも</span><span>HTML！</span></h1>
+    <p class="hero-subtitle">非エンジニアのための新しい資料・図解・可視化仕事術</p>
+
+    <div class="hero-intro">
+      <p>毎日Wordで報告書を書き、ExcelにKPIを並べ、PowerPointでスライドを作る——その「当たり前」を、少しだけ疑ってみませんか。</p>
+      <p>生成AIの登場でHTMLを作るハードルは劇的に下がりました。コードを書く必要はありません。必要なのは「何を伝えたいか」を言語化する力だけ。本書はHTML技術書ではなく、<strong style="color:#f9a85a">「働き方の認識転換」</strong>を提供する一冊です。</p>
+      <p>ファイルを送る時代から、URLを届ける時代へ。さあ、生成AI時代の「なんでもHTML！」を一緒に体験しにいきましょう。</p>
+    </div>
+
+    <p class="hero-meta">全8章＋はじめに＋終章＋付録A・B　／　サンプルHTML 12本収録</p>
+  </div>
+</header>
+
+<!-- メインコンテンツ -->
+<main class="index-body">
+
+  <!-- ===== 目次 ===== -->
+  <section>
+    <h2 class="section-heading">目次</h2>
+
+    <!-- はじめに -->
+    <p class="toc-group-label">導入</p>
+
+    <div class="toc-block">
+      <a href="intro.html" class="toc-row">
+        <span class="toc-row-badge gray">はじめに</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">「当たり前」を問い直すために</div>
+          <div class="toc-row-summary">ファイル添付の摩擦・生成AIの登場・本書の読み方</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- 本編 -->
+    <p class="toc-group-label">本編</p>
+
+    <div class="toc-block">
+      <a href="chapter01.html" class="toc-row">
+        <span class="toc-row-badge">第1章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">なぜ今OfficeではなくHTMLなのか</div>
+          <div class="toc-row-summary">静的文書の限界・HTMLがビジネス共通言語になる理由・生成AIが変えた入り口</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter02.html" class="toc-row">
+        <span class="toc-row-badge">第2章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">HTMLは"ホームページを作る技術"ではない</div>
+          <div class="toc-row-summary">HTMLの本質・OfficeとHTMLの構造的な違い・ビジネスシーンでの活用一覧</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter03.html" class="toc-row">
+        <span class="toc-row-badge">第3章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">生成AIと一緒にHTMLを作る</div>
+          <div class="toc-row-summary">プロンプトの書き方・用途別パターン・生成AIとの対話で品質を上げる</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter04.html" class="toc-row">
+        <span class="toc-row-badge">第4章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">資料をHTMLにすると何が変わるか</div>
+          <div class="toc-row-summary">提案書・報告書・マニュアル・プレゼンのHTML化で得られるもの</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter05.html" class="toc-row">
+        <span class="toc-row-badge">第5章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">Excel的な仕事をHTMLで再発明する</div>
+          <div class="toc-row-summary">一覧・フィルター・ダッシュボード・Chart.js・データと表示の分離</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter06.html" class="toc-row">
+        <span class="toc-row-badge">第6章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">図解・フロー図・概念図をHTML＋SVGで扱う</div>
+          <div class="toc-row-summary">SVGの特性・業務フロー図・Mermaid.js・生成AIで図を描く</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter07.html" class="toc-row">
+        <span class="toc-row-badge">第7章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">社内ポータル・ナレッジ共有・説明ページをHTMLで作る</div>
+          <div class="toc-row-summary">チームダッシュボード・オンボーディング・FAQ・URLで共有する文化</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="chapter08.html" class="toc-row">
+        <span class="toc-row-badge">第8章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">HTMLネイティブな仕事術</div>
+          <div class="toc-row-summary">HTMLファーストの思考・チームへの広げ方・OfficeとHTMLの共存設計</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- 終章 -->
+    <p class="toc-group-label">まとめ</p>
+
+    <div class="toc-block">
+      <a href="final.html" class="toc-row">
+        <span class="toc-row-badge accent">終章</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">あなたの仕事は、どこからHTML化できるか</div>
+          <div class="toc-row-summary">全章の振り返り・セルフチェック・ドキュメントの民主化と未来の展望</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- 付録 -->
+    <p class="toc-group-label">付録</p>
+
+    <div class="toc-block">
+      <a href="appendix_a.html" class="toc-row">
+        <span class="toc-row-badge gray">付録A</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">AIへの依頼プロンプト集</div>
+          <div class="toc-row-summary">全章のプロンプト例をそのままコピーして使える一覧集</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="toc-block">
+      <a href="appendix_b.html" class="toc-row">
+        <span class="toc-row-badge gray">付録B</span>
+        <div class="toc-row-body">
+          <div class="toc-row-title">HTMLの遊び場 ── ここまでできる</div>
+          <div class="toc-row-summary">ブラウザだけで動く4本のゲームでHTMLの可能性の端っこを体験</div>
+        </div>
+        <span class="toc-arrow">›</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== サンプルHTMLファイル一覧 ===== -->
+  <section style="margin-top: 3rem;">
+    <h2 class="section-heading">📂 サンプルHTMLファイル一覧</h2>
+    <p style="font-size:0.9rem; color:#666; margin-bottom:1.25rem;">
+      本書で解説した内容を実際に動かして確認できるサンプルファイルです。
+      ブラウザでそのまま開いて試してください。
+    </p>
+
+    <div class="sample-grid-wrap">
+      <div class="sample-grid">
+
+        <a href="samples/ch01_before_after.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🔄</div>
+          <div class="sample-card-name">ch01_before_after.html</div>
+          <div class="sample-card-desc">Office文書とHTML版のビフォー・アフター比較</div>
+        </a>
+
+        <a href="samples/ch02_structure.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🏗️</div>
+          <div class="sample-card-name">ch02_structure.html</div>
+          <div class="sample-card-desc">HTMLの構造（骨格・皮膚・動き）を体感するデモ</div>
+        </a>
+
+        <a href="samples/ch03_report.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">📄</div>
+          <div class="sample-card-name">ch03_report.html</div>
+          <div class="sample-card-desc">生成AIで作った月次報告書HTMLサンプル</div>
+        </a>
+
+        <a href="samples/ch04_animated_slides.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🎞️</div>
+          <div class="sample-card-name">ch04_animated_slides.html</div>
+          <div class="sample-card-desc">スクロール型提案書・アニメーションスライド</div>
+        </a>
+
+        <a href="samples/ch05_dashboard.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">📊</div>
+          <div class="sample-card-name">ch05_dashboard.html</div>
+          <div class="sample-card-desc">KPIカード＋Chart.jsグラフのダッシュボード</div>
+        </a>
+
+        <a href="samples/ch06_animated_flow.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🔀</div>
+          <div class="sample-card-name">ch06_animated_flow.html</div>
+          <div class="sample-card-desc">SVGアニメーションで描く業務フロー図</div>
+        </a>
+
+        <a href="samples/ch07_voice_portal.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🗣️</div>
+          <div class="sample-card-name">ch07_voice_portal.html</div>
+          <div class="sample-card-desc">音声読み上げ対応の社内ポータルページ</div>
+        </a>
+
+        <a href="samples/ch08_template.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">📋</div>
+          <div class="sample-card-name">ch08_template.html</div>
+          <div class="sample-card-desc">チームで再利用できるHTMLテンプレート</div>
+        </a>
+
+        <a href="samples/appendix_memory_card.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🃏</div>
+          <div class="sample-card-name">appendix_memory_card.html</div>
+          <div class="sample-card-desc">付録B：神経衰弱ゲーム（HTML/CSS/JS）</div>
+        </a>
+
+        <a href="samples/appendix_minesweeper.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">💣</div>
+          <div class="sample-card-name">appendix_minesweeper.html</div>
+          <div class="sample-card-desc">付録B：マインスイーパー（HTML/CSS/JS）</div>
+        </a>
+
+        <a href="samples/appendix_snake.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">🐍</div>
+          <div class="sample-card-name">appendix_snake.html</div>
+          <div class="sample-card-desc">付録B：スネークゲーム（Canvas）</div>
+        </a>
+
+        <a href="samples/appendix_tictactoe.html" class="sample-card" target="_blank">
+          <div class="sample-card-icon">⭕</div>
+          <div class="sample-card-name">appendix_tictactoe.html</div>
+          <div class="sample-card-desc">付録B：三目並べ（HTML/CSS/JS）</div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ナビゲーション補助 ===== -->
+  <section style="margin-top:3rem; text-align:center;">
+    <a href="intro.html" style="
+      display:inline-block;
+      background:var(--book-primary);
+      color:#fff;
+      font-weight:700;
+      font-size:1rem;
+      padding:0.85rem 2.5rem;
+      border-radius:6px;
+      text-decoration:none;
+      transition:background 0.2s;
+    " onmouseover="this.style.background='var(--book-accent)'" onmouseout="this.style.background='var(--book-primary)'">
+      はじめに から読む →
+    </a>
+  </section>
+
+</main>
+
+<!-- フッター -->
+<footer class="book-footer">
+  <p>『生成AI時代は、なんでもHTML！』デジタルブック版　&copy; 2024 著者</p>
+</footer>
+
+<script src="book.js"></script>
+</body>
+</html>

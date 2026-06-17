@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!--
+==================================================
+このページを生成したAIへのプロンプト例:
+「HTMLとJavaScriptでマインスイーパーを作ってください。
+9×9グリッドで地雷10個の初級モードです。
+左クリックでマスを開く、右クリックで旗を立てる操作にしてください。
+数字の色分け（1=青、2=緑、3=赤など）、タイマー、地雷カウンターを表示してください。
+初回クリックでは地雷が当たらない仕様にしてください。」
+==================================================
+-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マインスイーパー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #232526, #414345);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #e0e0e0;
+    }
+
+    .game-container {
+      text-align: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 28px 32px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      font-size: 22px;
+      letter-spacing: 0.1em;
+      margin-bottom: 18px;
+    }
+
+    /* コントロールバー */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 18px;
+      border: 2px solid #444;
+      gap: 8px;
+    }
+
+    .lcd {
+      font-family: 'Courier New', monospace;
+      font-size: 22px;
+      font-weight: bold;
+      color: #ff4444;
+      background: #000;
+      padding: 4px 10px;
+      border-radius: 4px;
+      min-width: 56px;
+      letter-spacing: 0.1em;
+    }
+
+    .lcd.timer { color: #44ff44; }
+
+    .btn-reset {
+      font-size: 26px;
+      background: #c8c8c8;
+      border: 3px solid;
+      border-color: #fff #888 #888 #fff;
+      border-radius: 4px;
+      width: 42px;
+      height: 42px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.05s;
+      user-select: none;
+    }
+
+    .btn-reset:active {
+      border-color: #888 #fff #fff #888;
+    }
+
+    /* グリッド */
+    .board {
+      display: inline-grid;
+      grid-template-columns: repeat(9, 38px);
+      grid-template-rows:    repeat(9, 38px);
+      gap: 2px;
+      background: #888;
+      border: 3px solid;
+      border-color: #fff #888 #888 #fff;
+      padding: 2px;
+      margin-bottom: 12px;
+    }
+
+    /* セル */
+    .cell {
+      width: 38px;
+      height: 38px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #888 #888 #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.08s;
+    }
+
+    .cell:hover:not(.open):not(.flagged) {
+      background: #d0d0d0;
+    }
+
+    .cell:active:not(.open):not(.flagged) {
+      border-color: #888 #fff #fff #888;
+      background: #bbb;
+    }
+
+    .cell.open {
+      border: 1px solid #aaa;
+      border-color: #aaa;
+      background: #c0c0c0;
+      cursor: default;
+    }
+
+    .cell.mine-hit {
+      background: #ff4444 !important;
+    }
+
+    .cell.mine-wrong {
+      background: #ffaaaa;
+    }
+
+    /* 数字の色 */
+    .n1 { color: #0000ff; }
+    .n2 { color: #008000; }
+    .n3 { color: #ff0000; }
+    .n4 { color: #000080; }
+    .n5 { color: #800000; }
+    .n6 { color: #008080; }
+    .n7 { color: #000000; }
+    .n8 { color: #808080; }
+
+    /* ヒント */
+    .hint {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* メッセージ */
+    .message {
+      font-size: 15px;
+      font-weight: bold;
+      height: 22px;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+
+    .message.win  { color: #44ff44; }
+    .message.lose { color: #ff4444; }
+  </style>
+</head>
+<body>
+
+<div class="game-container">
+  <h1>💣 マインスイーパー</h1>
+
+  <div class="controls">
+    <div class="lcd" id="mine-count">010</div>
+    <button class="btn-reset" id="btn-reset" title="リセット">🙂</button>
+    <div class="lcd timer" id="timer">000</div>
+  </div>
+
+  <div class="message" id="message">&nbsp;</div>
+
+  <div class="board" id="board"></div>
+
+  <p class="hint">左クリック: 開く　|　右クリック: 旗を立てる</p>
+</div>
+
+<script>
+  const ROWS  = 9;
+  const COLS  = 9;
+  const MINES = 10;
+
+  let grid       = [];      // 各セルのデータ
+  let cells      = [];      // DOM要素の配列
+  let mineCount  = MINES;
+  let gameOver   = false;
+  let gameWon    = false;
+  let firstClick = true;
+  let timerVal   = 0;
+  let timerInt   = null;
+  let openCount  = 0;
+
+  const boardEl     = document.getElementById('board');
+  const mineCountEl = document.getElementById('mine-count');
+  const timerEl     = document.getElementById('timer');
+  const messageEl   = document.getElementById('message');
+  const btnReset    = document.getElementById('btn-reset');
+
+  // セルデータ初期化
+  function initGrid() {
+    grid = [];
+    for (let r = 0; r < ROWS; r++) {
+      grid[r] = [];
+      for (let c = 0; c < COLS; c++) {
+        grid[r][c] = {
+          mine:    false,
+          open:    false,
+          flagged: false,
+          number:  0,    // 周囲の地雷数
+        };
+      }
+    }
+  }
+
+  // 地雷を配置（初回クリック座標は除外）
+  function placeMines(safeR, safeC) {
+    const safeZone = new Set();
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = safeR + dr, nc = safeC + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS)
+          safeZone.add(`${nr},${nc}`);
+      }
+
+    let placed = 0;
+    while (placed < MINES) {
+      const r = Math.floor(Math.random() * ROWS);
+      const c = Math.floor(Math.random() * COLS);
+      if (!grid[r][c].mine && !safeZone.has(`${r},${c}`)) {
+        grid[r][c].mine = true;
+        placed++;
+      }
+    }
+
+    // 数字を計算
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
+        if (!grid[r][c].mine)
+          grid[r][c].number = countAround(r, c);
+  }
+
+  function countAround(r, c) {
+    let cnt = 0;
+    eachNeighbor(r, c, (nr, nc) => { if (grid[nr][nc].mine) cnt++; });
+    return cnt;
+  }
+
+  function eachNeighbor(r, c, fn) {
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) fn(nr, nc);
+      }
+  }
+
+  // セルを開く（再帰的フラッド）
+  function openCell(r, c) {
+    const cell = grid[r][c];
+    if (cell.open || cell.flagged) return;
+    cell.open = true;
+    openCount++;
+    renderCell(r, c);
+
+    // 0なら周囲も開く
+    if (cell.number === 0 && !cell.mine) {
+      eachNeighbor(r, c, (nr, nc) => openCell(nr, nc));
+    }
+  }
+
+  // セルのDOM更新
+  function renderCell(r, c) {
+    const cell = grid[r][c];
+    const el   = cells[r][c];
+
+    el.className = 'cell';
+
+    if (cell.flagged && !cell.open) {
+      el.textContent = '🚩';
+      el.classList.add('flagged');
+      return;
+    }
+
+    if (!cell.open) {
+      el.textContent = '';
+      return;
+    }
+
+    el.classList.add('open');
+
+    if (cell.mine) {
+      el.textContent = '💣';
+      return;
+    }
+
+    if (cell.number > 0) {
+      el.textContent = cell.number;
+      el.classList.add(`n${cell.number}`);
+    } else {
+      el.textContent = '';
+    }
+  }
+
+  // クリックハンドラ
+  function onLeftClick(r, c) {
+    if (gameOver || gameWon) return;
+    const cell = grid[r][c];
+    if (cell.open || cell.flagged) return;
+
+    if (firstClick) {
+      firstClick = false;
+      placeMines(r, c);
+      startTimer();
+    }
+
+    if (cell.mine) {
+      revealAll(r, c);
+      return;
+    }
+
+    openCell(r, c);
+    checkWin();
+  }
+
+  function onRightClick(e, r, c) {
+    e.preventDefault();
+    if (gameOver || gameWon) return;
+    const cell = grid[r][c];
+    if (cell.open) return;
+
+    cell.flagged = !cell.flagged;
+    mineCount += cell.flagged ? -1 : 1;
+    mineCountEl.textContent = String(mineCount).padStart(3, '0');
+    renderCell(r, c);
+    checkWin();
+  }
+
+  // 全地雷を公開（ゲームオーバー）
+  function revealAll(hitR, hitC) {
+    gameOver = true;
+    stopTimer();
+    btnReset.textContent = '😵';
+    messageEl.textContent = 'ゲームオーバー 💥';
+    messageEl.className  = 'message lose';
+
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) {
+        const cell = grid[r][c];
+        const el   = cells[r][c];
+        if (r === hitR && c === hitC) {
+          cell.open = true;
+          renderCell(r, c);
+          el.classList.add('mine-hit');
+        } else if (cell.mine && !cell.flagged) {
+          cell.open = true;
+          renderCell(r, c);
+        } else if (!cell.mine && cell.flagged) {
+          el.textContent = '❌';
+          el.classList.add('mine-wrong');
+        }
+      }
+  }
+
+  // 勝利チェック
+  function checkWin() {
+    // 全ての非地雷セルが開いているか
+    const safeTotal = ROWS * COLS - MINES;
+    if (openCount >= safeTotal) {
+      gameWon = true;
+      stopTimer();
+      btnReset.textContent = '😎';
+      messageEl.textContent = 'クリア！ 🎉';
+      messageEl.className  = 'message win';
+      // 残りの地雷に旗を立てる
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (grid[r][c].mine && !grid[r][c].flagged) {
+            grid[r][c].flagged = true;
+            renderCell(r, c);
+          }
+      mineCountEl.textContent = '000';
+    }
+  }
+
+  // タイマー
+  function startTimer() {
+    timerInt = setInterval(() => {
+      timerVal = Math.min(999, timerVal + 1);
+      timerEl.textContent = String(timerVal).padStart(3, '0');
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInt);
+    timerInt = null;
+  }
+
+  // ボードDOM構築
+  function buildBoard() {
+    boardEl.innerHTML = '';
+    cells = [];
+    for (let r = 0; r < ROWS; r++) {
+      cells[r] = [];
+      for (let c = 0; c < COLS; c++) {
+        const el = document.createElement('div');
+        el.className = 'cell';
+        el.addEventListener('click',       ()  => onLeftClick(r, c));
+        el.addEventListener('contextmenu', (e) => onRightClick(e, r, c));
+        boardEl.appendChild(el);
+        cells[r][c] = el;
+      }
+    }
+  }
+
+  // ゲームリセット
+  function resetGame() {
+    stopTimer();
+    initGrid();
+    buildBoard();
+    mineCount  = MINES;
+    gameOver   = false;
+    gameWon    = false;
+    firstClick = true;
+    timerVal   = 0;
+    openCount  = 0;
+    mineCountEl.textContent = String(MINES).padStart(3, '0');
+    timerEl.textContent     = '000';
+    messageEl.textContent   = ' ';
+    messageEl.className     = 'message';
+    btnReset.textContent    = '🙂';
+  }
+
+  btnReset.addEventListener('click', resetGame);
+
+  // 初期起動
+  resetGame();
+</script>
+</body>
+</html>

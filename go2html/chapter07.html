@@ -1,0 +1,934 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る | 生成AI時代は、なんでもHTML！</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="book-nav">
+    <a href="index.html" class="nav-brand">📖 なんでもHTML！</a>
+    <span class="nav-chapter-title">第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る</span>
+    <div class="nav-arrows">
+      <a href="chapter06.html" class="nav-prev">← 前</a>
+      <a href="chapter08.html" class="nav-next">次 →</a>
+    </div>
+  </nav>
+  <div class="book-layout">
+    <aside class="toc-sidebar">
+      <div class="toc-title">目次</div>
+      <nav>
+        <a href="intro.html">はじめに</a>
+        <a href="chapter01.html">第1章 なぜ今OfficeではなくHTMLなのか</a>
+        <a href="chapter02.html">第2章 HTMLは"ホームページを作る技術"ではない</a>
+        <a href="chapter03.html">第3章 生成AIと一緒にHTMLを作る</a>
+        <a href="chapter04.html">第4章 資料をHTMLにすると何が変わるか</a>
+        <a href="chapter05.html">第5章 Excel的な仕事をHTMLで再発明する</a>
+        <a href="chapter06.html">第6章 図解・フロー図・概念図をHTML+SVGで扱う</a>
+        <a href="chapter07.html">第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る</a>
+        <a href="chapter08.html">第8章 HTMLネイティブな仕事術</a>
+        <a href="final.html">終章 あなたの仕事は、どこからHTML化できるか</a>
+        <a href="appendix_a.html">付録A プロンプト集</a>
+        <a href="appendix_b.html">付録B HTMLの遊び場</a>
+      </nav>
+    </aside>
+    <main class="chapter-main">
+
+<h1>第7章　社内ポータル・ナレッジ共有・説明ページをHTMLで作る</h1>
+
+<blockquote class="sample-ref">
+  <strong>本章のサンプルファイル</strong>: <code>ch07_voice_portal.html</code><br>
+  ブラウザで開くと、本章で解説するHTMLコンテンツを実際に操作できます。<br>
+  本書サポートサイトからダウンロードしてください。
+</blockquote>
+
+<hr>
+
+<h2>本章を読む前に</h2>
+
+<p>あなたのチームに、こんなことはありませんか。</p>
+
+<p>「新しいメンバーが入るたびに、同じ質問を何度も受ける」「どこかにまとめてあるはずだけど、どこにあるかわからない」「更新したマニュアルを全員に配るのが面倒で、結局古い版が使われている」</p>
+
+<p>情報共有の問題は、多くの職場で慢性的な悩みです。ツールを導入しても、運用が続かない。最初は頑張って整備しても、やがて誰も更新しなくなる。情報は古くなり、読まれなくなる。</p>
+
+<p>この章では、そうした「社内情報共有の問題」に対して、HTMLというアプローチがどんな解決策になり得るかを考えていきます。</p>
+
+<hr>
+
+<h2>7-1　社内情報共有の現状と課題</h2>
+
+<h3>「どこにある？」問題——情報が分散する職場</h3>
+
+<p>「あの資料、どこにありましたっけ？」</p>
+
+<p>この質問を、あなたは今週何回聞きましたか。あるいは何回答えましたか。</p>
+
+<p>現代の職場では、情報が複数の場所に分散して存在しています。Teamsのチャンネルに流れたメッセージ、SharePointのどこかにあるフォルダ、社内wikiに誰かが書いたページ、古いメール、共有ドライブの深いフォルダ、誰かのPC上のローカルファイル——それぞれのツールに、それぞれの情報が散在しています。</p>
+
+<p>問題は「ツールが多すぎること」ではありません。むしろ根本的な問題は、「情報が届く設計になっていないこと」です。</p>
+
+<p>ファイルを共有ドライブに置いても、見つけられなければ存在しないも同然です。Teamsに投稿しても、流れてしまえば誰も見返しません。wikiにまとめても、誰もそのURLを知らなければ読まれません。</p>
+
+<p>特に新入社員にとって、この「情報の迷路」は深刻です。「社内ルールを教えてほしい」「業務手順を確認したい」「誰に聞けばいい？」——こうした基本的な問いに対して、多くの組織では「詳しい人に聞く」しか方法がありません。その結果、詳しい人の時間が奪われ続けます。</p>
+
+<hr>
+
+<h3>更新されないwiki、読まれないマニュアル</h3>
+
+<p>「うちにもwikiはあります。でも誰も更新しないし、誰も読まない」</p>
+
+<p>社内情報共有ツールが形骸化する光景は、どの業界でも見られます。なぜそうなるのでしょうか。</p>
+
+<p>理由はいくつかあります。まず「書く場所」と「読む場所」が一致していない問題です。Confluenceに書かれた手順書も、業務中に参照するのはTeams経由というケースが多く、「どこに書いてあったか」が定着しません。</p>
+
+<p>次に、更新が「誰かがやる仕事」になっていないことです。最初に熱心に書いた担当者が異動してしまうと、更新する人がいなくなります。情報は腐っていき、誰かが「これ古いな」と気づいても、更新する権限と意欲がなければ放置されます。</p>
+
+<p>そして最も本質的な問題として、「情報のアーキテクチャ」が設計されていないことがあります。wikiは「書けば貯まる」道具ですが、「読む人が何を必要としているか」から逆算して設計されていなければ、貯まるほど混沌とします。</p>
+
+<p>HTMLページがすべてを解決するわけではありませんが、「誰かのために、特定の目的で作られた1ページ」という単位で情報を整理する習慣は、上記の問題を解消するひとつの答えになります。URLひとつで届く、常に最新版が見られる、検索できる——そうした特性が、社内情報共有の慢性的な問題を和らげます。</p>
+
+<hr>
+
+<h2>7-2　チームのためのHTMLページを作る</h2>
+
+<h3>あなたのチームに「入口」はありますか？</h3>
+
+<p>唐突な問いかけですが、あなたのチームには「このページを見れば、チームのことが一通りわかる」という場所がありますか？</p>
+
+<p>メンバー全員の名前・役割・連絡先。進行中のプロジェクトの状況。よく使うツールやシステムのリンク。チームのルールや慣習。——こうした情報が1ページにまとまっていれば、新しいメンバーが加わるたびに長時間のオリエンテーションをする必要がありません。他部署の方がコラボする際にも、「まずこれを見てください」とURLひとつ送れば済みます。</p>
+
+<p>これが「チームダッシュボード」という発想です。</p>
+
+<hr>
+
+<h3>「チームダッシュボード」という発想</h3>
+
+<p>プロジェクトチームや部署のためのHTMLページを作るとき、まず考えるべきは「誰が何のために見るか」です。</p>
+
+<p>典型的なチームダッシュボードには、次のような要素が入ります。</p>
+
+<ul>
+  <li><strong>チーム概要</strong>：チームの役割・ミッション・主な業務</li>
+  <li><strong>メンバーリスト</strong>：氏名・役割・専門領域・連絡先（もしくはTeamsアカウントへのリンク）</li>
+  <li><strong>プロジェクト一覧</strong>：現在進行中のプロジェクト名・ステータス・担当者</li>
+  <li><strong>リンク集</strong>：よく使うシステムのURL、共有フォルダへのリンク、Teamsチャンネルへのリンク</li>
+  <li><strong>重要なお知らせ</strong>：変更事項、締め切り、注意点</li>
+</ul>
+
+<p>これを毎回PowerPointで作ってメール送信していたとしたら、「最新版はどこ？」問題は永遠に解決しません。しかしHTMLにしてURLを固定してしまえば、更新するたびに全員の手元に最新版が届きます。</p>
+
+<p>以下は、チームダッシュボードの基本的なHTMLの骨格です。生成AIに「チームダッシュボードページを作ってください。メンバーリスト・進行中プロジェクト・よく使うリンク集を含む構成で」と依頼すれば、このようなコードが生成されます。</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;〇〇チーム ホームページ&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      color: #333;
+    }
+    header {
+      background: #1a56a0;
+      color: white;
+      padding: 24px 40px;
+    }
+    header h1 { margin: 0; font-size: 1.8rem; }
+    header p  { margin: 4px 0 0; opacity: 0.8; }
+
+    .container {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+    }
+
+    /* カード共通 */
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 1rem;
+      color: #1a56a0;
+      border-bottom: 2px solid #e5eaf2;
+      padding-bottom: 8px;
+    }
+
+    /* メンバーリスト */
+    .member {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .member:last-child { border-bottom: none; }
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: #d0e2f7;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; color: #1a56a0; font-size: 0.9rem;
+    }
+    .member-info .name { font-weight: bold; font-size: 0.9rem; }
+    .member-info .role { font-size: 0.8rem; color: #777; }
+
+    /* プロジェクト一覧 */
+    .project-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-title { font-weight: bold; font-size: 0.9rem; }
+    .status-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+    }
+    .status-active   { background: #d4edda; color: #155724; }
+    .status-review   { background: #fff3cd; color: #856404; }
+    .status-complete { background: #e2e3e5; color: #383d41; }
+
+    /* リンク集 */
+    .link-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .link-grid a {
+      display: block;
+      padding: 10px 12px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #1a56a0;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .link-grid a:hover { background: #d0e2f7; }
+
+    /* 右エリアのグリッド */
+    .right-area { display: flex; flex-direction: column; gap: 24px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;header&gt;
+  &lt;h1&gt;〇〇チーム ホームページ&lt;/h1&gt;
+  &lt;p&gt;最終更新：2025年6月15日　｜　更新担当：田中&lt;/p&gt;
+&lt;/header&gt;
+
+&lt;div class="container"&gt;
+
+  &lt;!-- 左カラム：メンバーリスト --&gt;
+  &lt;aside&gt;
+    &lt;div class="card"&gt;
+      &lt;h2&gt;メンバー&lt;/h2&gt;
+
+      &lt;div class="member"&gt;
+        &lt;div class="avatar"&gt;田&lt;/div&gt;
+        &lt;div class="member-info"&gt;
+          &lt;div class="name"&gt;田中 一郎&lt;/div&gt;
+          &lt;div class="role"&gt;チームリーダー&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class="member"&gt;
+        &lt;div class="avatar"&gt;鈴&lt;/div&gt;
+        &lt;div class="member-info"&gt;
+          &lt;div class="name"&gt;鈴木 花子&lt;/div&gt;
+          &lt;div class="role"&gt;プロジェクト管理&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class="member"&gt;
+        &lt;div class="avatar"&gt;佐&lt;/div&gt;
+        &lt;div class="member-info"&gt;
+          &lt;div class="name"&gt;佐藤 健&lt;/div&gt;
+          &lt;div class="role"&gt;データ分析&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class="member"&gt;
+        &lt;div class="avatar"&gt;山&lt;/div&gt;
+        &lt;div class="member-info"&gt;
+          &lt;div class="name"&gt;山田 美咲&lt;/div&gt;
+          &lt;div class="role"&gt;コンテンツ担当&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/aside&gt;
+
+  &lt;!-- 右エリア --&gt;
+  &lt;div class="right-area"&gt;
+
+    &lt;!-- プロジェクト一覧 --&gt;
+    &lt;div class="card"&gt;
+      &lt;h2&gt;進行中のプロジェクト&lt;/h2&gt;
+      &lt;div class="project-item"&gt;
+        &lt;span class="project-title"&gt;新CRMシステム導入&lt;/span&gt;
+        &lt;span class="status-badge status-active"&gt;進行中&lt;/span&gt;
+        &lt;div style="font-size:0.8rem;color:#777;margin-top:4px;"&gt;担当：田中・鈴木　完了予定：2025年9月&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="project-item"&gt;
+        &lt;span class="project-title"&gt;四半期業務報告書&lt;/span&gt;
+        &lt;span class="status-badge status-review"&gt;レビュー中&lt;/span&gt;
+        &lt;div style="font-size:0.8rem;color:#777;margin-top:4px;"&gt;担当：佐藤　提出期限：2025年6月30日&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="project-item"&gt;
+        &lt;span class="project-title"&gt;社内研修コンテンツ整備&lt;/span&gt;
+        &lt;span class="status-badge status-complete"&gt;完了&lt;/span&gt;
+        &lt;div style="font-size:0.8rem;color:#777;margin-top:4px;"&gt;担当：山田　完了日：2025年5月&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- リンク集 --&gt;
+    &lt;div class="card"&gt;
+      &lt;h2&gt;よく使うリンク&lt;/h2&gt;
+      &lt;div class="link-grid"&gt;
+        &lt;a href="#"&gt;共有ドライブ&lt;/a&gt;
+        &lt;a href="#"&gt;Teams チャンネル&lt;/a&gt;
+        &lt;a href="#"&gt;チーム共有カレンダー&lt;/a&gt;
+        &lt;a href="#"&gt;経費精算システム&lt;/a&gt;
+        &lt;a href="#"&gt;議事録フォルダ&lt;/a&gt;
+        &lt;a href="#"&gt;ITヘルプデスク&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>このコードを見て「複雑すぎる」と感じた方も、安心してください。このコードはすべて生成AIに作成してもらったものです。あなたがすべきことは、「何を表示したいか」を言葉で伝えることだけです。メンバーの名前・役割の情報をプロンプトに含めて「チームホームページを作ってください」と依頼すれば、このようなページが出力されます。</p>
+
+<p>ポイントは、このページを作ったら<strong>URL（ファイルのパス）をSlackやTeamsでチーム全員に共有し、ブックマークしてもらうこと</strong>です。「このページが常に最新のチーム情報の入口です」と定義してしまえば、自然と参照されるようになります。</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】チームのホームページ（ダッシュボード）を作りたい<br>
+  【含める要素】ヘッダーにチーム名と最終更新日、左カラムにメンバーリスト（氏名・役職・アイコン）、右エリアに進行中プロジェクト一覧（ステータスバッジ付き）とよく使うリンク集（グリッド表示）<br>
+  【スタイル】コーポレートブルー系、白背景カード、2カラムレイアウト、スマートフォン対応<br>
+  【出力形式】完全なHTMLファイルとして出力してください（外部ライブラリ不使用）<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<h3>オンボーディングページをHTMLで作る</h3>
+
+<p>新しいメンバーが加わるとき、あなたのチームでは何をしていますか。口頭で説明する、メールでリンクを送る、Teamsで「よろしくお願いします」と投稿する——その都度説明する時間と、新人が「覚えられなかった」と感じる不安が生まれています。</p>
+
+<p>オンボーディングページとは、「ようこそ、こんなチームです。まずこれを読んでください」という情報を一枚のHTMLページにまとめたものです。</p>
+
+<p>典型的な構成はこうです。</p>
+
+<pre><code>┌─────────────────────────────────────┐
+│  ようこそ！〇〇チームへ               │
+│  このチームのミッションと雰囲気        │
+├─────────────────────────────────────┤
+│  まず最初にやること（チェックリスト）  │
+│  □ Teamsチャンネルに参加             │
+│  □ 共有ドライブへのアクセス申請       │
+│  □ 各種システムのアカウント取得       │
+├─────────────────────────────────────┤
+│  よく使うツール・システム一覧          │
+│  (リンク付き)                         │
+├─────────────────────────────────────┤
+│  チームのルール・慣習                 │
+│  (会議のルール・連絡方法・休暇申請等)  │
+├─────────────────────────────────────┤
+│  よくある質問（FAQ）                  │
+└─────────────────────────────────────┘</code></pre>
+
+<figure class="chapter-figure">
+  <img src="images/fig_ch07_onboarding.svg" alt="オンボーディングページの5セクション構成" class="figure-img">
+  <figcaption>図7-1　オンボーディングページの5セクション構成</figcaption>
+</figure>
+
+<p>このようなページをHTMLで用意しておくと、新人が入るたびに「URLを送るだけ」で基本情報の伝達が完了します。もちろん、人と話す時間は大切ですが、「説明し忘れた」「言ったけど覚えていなかった」という問題が大幅に減ります。</p>
+
+<p>さらに重要なのは、<strong>このページは更新できる</strong>ということです。組織改編で連絡先が変わっても、システムのURLが変わっても、ページを更新するだけで全員の手元の情報が最新になります。「古いマニュアルを印刷して配ってしまった」という問題が起きません。</p>
+
+<hr>
+
+<h3>FAQページ・ナレッジページの構築</h3>
+
+<p>「同じ質問を何度も受ける」という経験は、どの職場でもあります。人事部なら「有給休暇の申請方法は？」「育休の取り方は？」、IT部門なら「パスワードを忘れた場合は？」「新しいPCのセットアップ手順は？」——こうした繰り返し発生する質問に、毎回丁寧に答える時間は無駄とは言い切れませんが、その時間をより創造的な仕事に使えるとしたら、チームの生産性は上がります。</p>
+
+<p>FAQページをHTMLで作ることの最大のメリットは、<strong>アコーディオン形式のUI（ユーザーインターフェース）</strong>です。アコーディオンとは、「質問が最初は折りたたまれていて、クリックすると回答が展開される」という表示形式のことです（実際にはWebサイトでよく見かける「▶ クリックで開く」のあの表示です）。</p>
+
+<p>アコーディオン形式のFAQページが便利な理由は、「質問の一覧が見渡せる」という点にあります。回答が全部開いた状態だと、ページが長くなりすぎて「自分の知りたい答えはどこ？」と迷います。アコーディオンにすることで、まず質問一覧を見渡し、該当する質問を開いて確認するという使い方ができます。</p>
+
+<p>以下は、アコーディオン形式のシンプルなFAQページのコードです。</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;チームFAQ&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 24px;
+      color: #333;
+      background: #f9f9f9;
+    }
+    h1 { color: #1a56a0; margin-bottom: 8px; }
+    .subtitle { color: #777; margin-bottom: 32px; }
+
+    details {
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      overflow: hidden;
+    }
+    summary {
+      cursor: pointer;
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: '＋';
+      color: #1a56a0;
+      font-size: 1.2rem;
+      transition: transform 0.2s;
+    }
+    details[open] summary::after {
+      content: '－';
+    }
+    .answer {
+      padding: 0 20px 16px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #555;
+      border-top: 1px solid #f0f0f0;
+    }
+    .category {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #1a56a0;
+      text-transform: uppercase;
+      margin: 24px 0 8px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;チームFAQ&lt;/h1&gt;
+  &lt;p class="subtitle"&gt;よくある質問をまとめました。質問をクリックすると回答が表示されます。&lt;/p&gt;
+
+  &lt;div class="category"&gt;入社・オンボーディング&lt;/div&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;最初にやることは何ですか？&lt;/summary&gt;
+    &lt;div class="answer"&gt;
+      まず以下の手順を順番に進めてください。&lt;br&gt;
+      ① Teamsの「〇〇チーム」チャンネルに参加する&lt;br&gt;
+      ② 共有ドライブのアクセス申請（ITヘルプデスクへメール）&lt;br&gt;
+      ③ 経費精算システムのアカウント取得&lt;br&gt;
+      不明点は田中（内線：1234）に連絡してください。
+    &lt;/div&gt;
+  &lt;/details&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;チームの定例会議はいつですか？&lt;/summary&gt;
+    &lt;div class="answer"&gt;
+      毎週月曜日 10:00〜10:30 にTeamsで実施しています。&lt;br&gt;
+      カレンダー招待は田中から送られますので、確認してください。
+      議事録は&lt;a href="#"&gt;議事録フォルダ&lt;/a&gt;に保存されています。
+    &lt;/div&gt;
+  &lt;/details&gt;
+
+  &lt;div class="category"&gt;業務・申請&lt;/div&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;経費精算の締め切りはいつですか？&lt;/summary&gt;
+    &lt;div class="answer"&gt;
+      毎月末日が締め切りです。翌月5日までに申請が完了していない場合は、
+      翌々月の精算になります。申請は&lt;a href="#"&gt;経費精算システム&lt;/a&gt;から行ってください。
+    &lt;/div&gt;
+  &lt;/details&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;有給休暇の申請方法を教えてください&lt;/summary&gt;
+    &lt;div class="answer"&gt;
+      休暇申請システム（社内ポータル→人事→休暇申請）から申請してください。
+      原則として3営業日前までの申請をお願いしています。
+      急な体調不良などの場合は、当日朝9時までに田中（Teams）へ連絡してください。
+    &lt;/div&gt;
+  &lt;/details&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p><code>&lt;details&gt;</code> と <code>&lt;summary&gt;</code> というHTMLタグを使っています。これはブラウザが標準で持っているアコーディオン機能で、JavaScriptを一切使わずに「クリックで開閉する」動作が実現できます。生成AIにこのコードの生成を依頼する際は、「アコーディオン形式のFAQページを作ってください。JavaScriptを使わずシンプルに実装してください」と指定すると、このようなコードが出力されます。</p>
+
+<p>FAQページを運用するコツは、<strong>「質問が来たらFAQに追加する」という習慣を作ること</strong>です。誰かに同じ質問が来たら、その場で答えると同時に「FAQに追加しておきました。次回からここを見てください」とURLを伝えます。これを繰り返すことで、FAQページが育っていきます。</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】アコーディオン形式の社内FAQページを作りたい<br>
+  【含める要素】カテゴリ別に質問をグループ化（入社・申請・システム・休暇）、各カテゴリ内の質問はクリックで開閉、ページ上部にキーワード検索ボックス（入力するとリアルタイムで質問を絞り込む）<br>
+  【スタイル】シンプルな白背景、カテゴリヘッダーはグレー帯、開閉ボタンは＋／－アイコン<br>
+  【出力形式】完全なHTMLファイルとして出力してください（JavaScriptは最小限で）<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<h2>7-3　説明ページ・案内ページを作る</h2>
+
+<h3>「これ、何度説明したかわからない」という問題</h3>
+
+<p>あなたの職場に「これ何度説明したかわからない」という話題はありますか。</p>
+
+<p>経費精算の手順、会議室の予約方法、有給休暇の申請フロー、IT機器の設定手順——こうした「知っていれば5分で終わることが、知らないと詰まってしまうこと」を、毎回誰かが説明しています。説明する側もされる側も、繰り返しには疲弊します。</p>
+
+<p>このセクションでは、「WordやPDFで作って都度送る案内資料」をHTML化することで、どんなメリットが生まれるかを見ていきます。</p>
+
+<hr>
+
+<h3>社内制度・ルール・申請手順のHTML化</h3>
+
+<p>複雑な申請フローを説明するとき、Word文書よりもHTMLのステップ表示が有効な理由はシンプルです。<strong>「今どのステップにいるか」が視覚的にわかる</strong>からです。</p>
+
+<p>例えば経費精算の手順をWordで書くと、こうなります。「まず領収書を保管し、経費精算システムにログインして申請書を作成します。申請書には日付・金額・用途を記入し、領収書の写真を添付して上長に申請します。上長が承認したら経理部に提出されます……」</p>
+
+<p>同じ内容をHTMLのステップ形式で表現すると、各ステップが独立した視覚的なブロックになり、「Step 1 → Step 2 → Step 3」という流れが一目でわかります。さらに、各ステップに画像やリンクを添付することもできます。</p>
+
+<p>以下は、ステップ形式の手順ページのコードサンプルです。</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;経費精算 申請手順&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 24px;
+      color: #333;
+    }
+    h1 { color: #1a56a0; }
+    .intro {
+      background: #e8f0fe;
+      border-left: 4px solid #1a56a0;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+      font-size: 0.9rem;
+    }
+
+    /* ステップ全体のコンテナ */
+    .steps { position: relative; }
+
+    /* 縦線（タイムライン） */
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 28px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: #d0e2f7;
+    }
+
+    /* 各ステップ */
+    .step {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .step-number {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      background: #1a56a0;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      z-index: 1;
+    }
+    .step-content {
+      background: white;
+      border: 1px solid #e0e8f4;
+      border-radius: 8px;
+      padding: 16px 20px;
+      flex: 1;
+    }
+    .step-content h3 {
+      margin: 0 0 8px;
+      color: #1a56a0;
+      font-size: 1rem;
+    }
+    .step-content p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #555;
+    }
+    .step-content .tip {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      background: #fffbea;
+      border-left: 3px solid #f0b429;
+      padding: 6px 10px;
+      border-radius: 2px;
+    }
+    .step-content a {
+      color: #1a56a0;
+    }
+
+    /* 完了メッセージ */
+    .complete {
+      background: #d4edda;
+      border-radius: 8px;
+      padding: 16px 20px;
+      text-align: center;
+      color: #155724;
+      font-weight: bold;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;h1&gt;経費精算 申請手順&lt;/h1&gt;
+&lt;div class="intro"&gt;
+  申請の締め切りは&lt;strong&gt;毎月末日&lt;/strong&gt;です。
+  不明な点は経理部（内線：2000）または
+  &lt;a href="#"&gt;FAQ（よくある質問）&lt;/a&gt;をご確認ください。
+&lt;/div&gt;
+
+&lt;div class="steps"&gt;
+
+  &lt;div class="step"&gt;
+    &lt;div class="step-number"&gt;1&lt;/div&gt;
+    &lt;div class="step-content"&gt;
+      &lt;h3&gt;領収書を保管する&lt;/h3&gt;
+      &lt;p&gt;
+        経費が発生したら、必ず領収書を受け取り保管してください。
+        紙の領収書はスキャンまたはスマートフォンで撮影し、
+        デジタルデータとして保存することをお勧めします。
+      &lt;/p&gt;
+      &lt;div class="tip"&gt;レシートは宛名なしでも有効ですが、「上様」は避けて社名を記入してもらってください。&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="step"&gt;
+    &lt;div class="step-number"&gt;2&lt;/div&gt;
+    &lt;div class="step-content"&gt;
+      &lt;h3&gt;経費精算システムにログインする&lt;/h3&gt;
+      &lt;p&gt;
+        &lt;a href="#"&gt;経費精算システム（社内ポータル経由）&lt;/a&gt;にアクセスし、
+        社員番号とパスワードでログインしてください。
+        初回ログインの方は「新規登録」から手続きしてください。
+      &lt;/p&gt;
+      &lt;div class="tip"&gt;スマートフォンからも申請できます。外出先での申請に便利です。&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="step"&gt;
+    &lt;div class="step-number"&gt;3&lt;/div&gt;
+    &lt;div class="step-content"&gt;
+      &lt;h3&gt;申請書を作成・提出する&lt;/h3&gt;
+      &lt;p&gt;
+        「新規申請」ボタンをクリックし、日付・金額・用途・支払い先を入力してください。
+        領収書のデータを添付し、「上長に申請」ボタンで提出します。
+      &lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="step"&gt;
+    &lt;div class="step-number"&gt;4&lt;/div&gt;
+    &lt;div class="step-content"&gt;
+      &lt;h3&gt;上長の承認を待つ&lt;/h3&gt;
+      &lt;p&gt;
+        申請後、上長にメール通知が届きます。通常1〜3営業日以内に承認・差し戻しの通知が届きます。
+        差し戻しの場合はコメントを確認し、修正して再申請してください。
+      &lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="step"&gt;
+    &lt;div class="step-number"&gt;5&lt;/div&gt;
+    &lt;div class="step-content"&gt;
+      &lt;h3&gt;経理部への提出（月末締め）&lt;/h3&gt;
+      &lt;p&gt;
+        上長の承認後、システム上で自動的に経理部へ送付されます。
+        月末日までに承認が完了していれば、翌月25日に指定口座へ振り込まれます。
+      &lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div class="complete"&gt;
+  申請完了！振込は翌月25日です
+&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>このHTMLを活用したある会社の経理部門では、「経費精算の手順を教えてほしい」という問い合わせが月20件以上あったのが、URLを社内wikiとTeamsに貼り付けてからほぼゼロになったという事例があります。質問された時間を集計すると、月に約3〜4時間に相当していました。</p>
+
+<p>HTMLの手順ページが有効な理由は、<strong>問い合わせを「その場で答える行為」から「ページを見てもらう行為」に転換できること</strong>にあります。</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】タイムライン形式の申請手順ページを作りたい<br>
+  【含める要素】5ステップのタイムライン表示（ステップ番号の円アイコン＋縦線でつなぐ）、各ステップに注意事項をオレンジの吹き出しで表示、完了後に緑色の「完了メッセージ」ボックス、ページ上部に締め切り日を目立つ形で表示<br>
+  【スタイル】白背景カード、ステップ番号はブルー丸アイコン、注意事項は黄色背景<br>
+  【出力形式】完全なHTMLファイルとして出力してください<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<h3>社内制度説明ページ——育休・資格支援制度など</h3>
+
+<p>人事部門が特に恩恵を受けやすいのが、社内制度の説明ページです。</p>
+
+<p>育児休業の手続き、介護休業の申請フロー、資格取得支援制度の使い方——こうした制度は複雑で、かつ「いざ使う場面になって初めて調べる」ケースが多いです。制度説明のWordファイルやPDFは作っても、「最新版がどこにあるか」「法改正で内容が変わったのに更新されていない」という問題が頻発します。</p>
+
+<p>HTMLで制度説明ページを作ると：</p>
+
+<ul>
+  <li><strong>フローチャートで手続きの全体像を見せられる</strong>：「誰がいつ何をするか」が一目でわかります</li>
+  <li><strong>よくある質問をアコーディオンで追加し続けられる</strong>：「これは対象になりますか？」という質問が来るたびにFAQを追加できます</li>
+  <li><strong>法改正や制度変更があったら、ページを更新するだけ</strong>：全員に新しいバージョンのファイルを配布する必要がありません</li>
+</ul>
+
+<hr>
+
+<h3>イベント・研修案内ページ</h3>
+
+<p>WordやPowerPointで作った案内文をPDFにしてメールに添付する——これが多くの社内イベント案内の現状です。しかしこの方法には問題があります。案内文の情報を更新したら新しいPDFを再度配布しなければならず、「最初にもらったメールの添付ファイルに記載してある会場が変わりました」というような状況が起きます。</p>
+
+<p>イベント案内ページをHTMLで作るメリットは単純です。<strong>URLを一度共有してしまえば、内容を更新しても参加者全員に最新情報が届く</strong>ということです。</p>
+
+<p>また、HTMLのイベントページは視覚的に整理された情報を提供できます。</p>
+
+<ul>
+  <li>日時・場所・参加方法を目立つカードで表示</li>
+  <li>タイムテーブルを見やすい表で表示</li>
+  <li>Googleフォームの申し込みフォームをページ内に埋め込む（<code>&lt;iframe&gt;</code>タグを使うことで、ページを離れずに申し込みができます）</li>
+  <li>地図をGoogleマップで埋め込む</li>
+</ul>
+
+<p>「お知らせメール → PDF添付」という習慣を「お知らせメール → HTMLページのURL共有」に変えるだけで、後から情報が変わっても慌てずに済みます。</p>
+
+<hr>
+
+<h2>7-4　HTMLの共有・公開・管理</h2>
+
+<h3>HTMLページをどこに置けばいいか</h3>
+
+<p>HTMLページを作っても、「どこに置けばチームが見られるか」という問題があります。企業のIT環境はさまざまなので、ここでは現実的な選択肢を整理します。</p>
+
+<p><strong>選択肢1：SharePointに置く</strong></p>
+
+<p>多くの企業でMicrosoft 365が導入されており、SharePointにファイルを置けばURLで共有できます。HTMLファイルをSharePointのドキュメントライブラリに置き、「共有」でリンクを取得してチームに配布する方法です。最もハードルが低い選択肢です。</p>
+
+<p>ただしSharePointではHTMLファイルがブラウザで直接表示されず、ダウンロードを促されることがあります。IT部門の設定によってはうまく動作しないため、事前確認が必要です。</p>
+
+<p><strong>選択肢2：社内ファイルサーバー（イントラネット）</strong></p>
+
+<p>社内ネットワーク上にウェブサーバーが立っている場合は、そこにHTMLファイルをアップロードすることで、社内からアクセスできるURLが発行されます。IT部門に相談すると、「社内公開用の領域」を割り当ててもらえることが多いです。</p>
+
+<p><strong>選択肢3：GitHub Pages（外部公開が許可される場合）</strong></p>
+
+<p>GitHub Pages（ギットハブ・ページズ）は、GitHubが提供する無料のホスティングサービスです。「ホスティング」とは、ウェブページをインターネット上に公開するための場所のことです。パブリックなリポジトリにHTMLファイルを置くだけで、無料でURLが発行されます。社外にも公開できるため、顧客向けの案内ページや採用説明ページなどに活用できます。</p>
+
+<p>ITリテラシーが高いメンバーがいれば、GitHub Pagesのセットアップは20〜30分程度でできます。操作手順を生成AIに聞きながら進めれば、コマンドライン（文字入力でPCを操作する画面）の知識がなくても設定できます。</p>
+
+<p><strong>選択肢4：Notion・Confluenceなどの既存ツールに「HTML埋め込み」</strong></p>
+
+<p>NotionやConfluenceは、HTMLを直接作成するツールではありませんが、一部のHTMLコンテンツを埋め込む機能があります。完全なHTMLページを作成するには向きませんが、既存のツールの中に「HTMLのピース」を埋め込む用途ならうまく活用できます。</p>
+
+<table class="content-table">
+  <thead>
+    <tr>
+      <th>選択肢</th>
+      <th>難易度</th>
+      <th>コスト</th>
+      <th>社外公開</th>
+      <th>向いている用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SharePoint</td>
+      <td>低</td>
+      <td>無料（既存）</td>
+      <td>不可（設定次第）</td>
+      <td>社内向けポータル</td>
+    </tr>
+    <tr>
+      <td>社内ファイルサーバー</td>
+      <td>中</td>
+      <td>無料（IT部門対応）</td>
+      <td>不可</td>
+      <td>社内向け公式ページ</td>
+    </tr>
+    <tr>
+      <td>GitHub Pages</td>
+      <td>中</td>
+      <td>無料</td>
+      <td>可</td>
+      <td>外部公開・採用・顧客向け</td>
+    </tr>
+    <tr>
+      <td>Notion埋め込み</td>
+      <td>低</td>
+      <td>Notionのプラン次第</td>
+      <td>Notionの設定次第</td>
+      <td>既存Notion活用</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>URLで共有するという文化を作る</h3>
+
+<p>「HTMLページを作ったからといって、誰もURLを使わなかった」という失敗は、技術の問題ではなく文化の問題です。</p>
+
+<p>URLで共有する文化を育てるには、小さな積み重ねが有効です。</p>
+
+<p><strong>具体的なアクション：</strong></p>
+
+<ol>
+  <li><strong>最初の一歩は自分が使うこと</strong>：「このFAQを見てください」と口頭で伝えるのではなく、URLをTeamsやSlackに貼って伝える習慣を自分から始めます。</li>
+  <li><strong>「このページに情報がある」と明示する</strong>：「詳しくはこちら」ではなく「詳しくは [チームFAQのURL] に記載しています」とURLを明示します。人はリンクがあれば開く可能性が高まります。</li>
+  <li><strong>ブックマークしてもらう</strong>：重要なページは「ブックマーク登録をお願いします」と一言添えて共有します。ブックマークされると、毎回URLを聞かずに済むようになります。</li>
+  <li><strong>「メールへのファイル添付」を「URLへの誘導」に置き換える</strong>：案内文書をPDF添付する代わりに「詳細はこちら：[URL]」に変えます。一回試すと「こっちのほうが楽」と気づきます。</li>
+</ol>
+
+<hr>
+
+<h3>メンテナンスと更新の継続性</h3>
+
+<p>HTMLページは作って終わりではありません。情報が古くなったページは「ある方が混乱を招く」状態になります。FAQに書かれた連絡先の担当者がすでに異動済み、リンクが切れている、手順が変わっているのに古いまま——これでは誰も信頼して参照できなくなります。</p>
+
+<p>メンテナンスを継続するための設計として、以下のポイントを押さえておきましょう。</p>
+
+<p><strong>オーナーを明確にする</strong>：各HTMLページに「更新担当者名と最終更新日」を表示することで、「誰が管理しているページか」が明確になります。ページの下部に「このページの管理者：田中 / 最終更新：2025年6月」と記載するだけです。</p>
+
+<p><strong>更新サイクルを定める</strong>：「四半期に一度、内容を確認して更新する」というルールを作ることで、放置を防げます。カレンダーにリマインダーを設定しておくと忘れません。</p>
+
+<p><strong>更新コストを下げる設計をする</strong>：情報が頻繁に変わる部分（担当者名・電話番号など）はページの目立つ場所に集約し、コードの中でも変更しやすい位置に書いておくと更新が楽になります。</p>
+
+<hr>
+
+<h2>7-5　音声でアクセスできるFAQページ</h2>
+
+<p>音声入力と読み上げを使ったFAQポータルも、HTMLとWeb Speech APIで実現できます。マイクボタンを押して「有給の申請方法は？」と話しかけると、該当するFAQが表示され、そのまま「読み上げ」ボタンで音声で答えを聞くことができます。</p>
+
+<p>この機能は特に以下の場面で効果的です：</p>
+
+<ul>
+  <li>両手がふさがっている作業中（倉庫作業、調理など）</li>
+  <li>文字を読むのが難しい状況での情報アクセス</li>
+  <li>高齢者・視覚弱者向け社内資料</li>
+</ul>
+
+<p>生成AIへの依頼でこのような音声対応ページも作れます：</p>
+
+<hr>
+<blockquote class="prompt-box">
+  <strong>💡 AIへの依頼例</strong><br><br>
+  【目的】音声入力・音声読み上げ対応の社内FAQポータルを作りたい<br>
+  【含める要素】マイクボタンを押すと音声認識が起動してキーワードをテキスト化、入力キーワードに一致するFAQを自動表示、「読み上げ」ボタンで回答をWeb Speech API（SpeechSynthesis）で音声再生、キーボード入力でも検索できるテキストボックスを併設<br>
+  【スタイル】大きなマイクアイコン、録音中はボタンが赤く点滅、回答エリアは白背景カードで見やすく<br>
+  【出力形式】完全なHTMLファイルとして出力してください（Web Speech APIを使用、外部ライブラリ不要）<br><br>
+  <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+</blockquote>
+<hr>
+
+<p>Web Speech APIはChromeやEdgeで広くサポートされており、社内環境でも追加インストール不要ですぐに使えます。「テキストを読む」という行為そのものが難しい場面において、HTMLページの可能性を大きく広げる技術のひとつです。</p>
+
+<hr>
+
+<figure class="chapter-figure">
+  <img src="../screenshots/ch07_voice_portal.png" alt="音声対応FAQポータル" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+  <figcaption>図：サンプル：ch07_voice_portal.html — 音声FAQ付き社内ポータル</figcaption>
+</figure>
+
+<section class="sample-download">
+  <span class="sample-download-icon">📂</span>
+  <div class="sample-download-body">
+    <strong>本章のサンプルファイル：<code>ch07_voice_portal.html</code></strong>
+    <p>本書サポートサイトよりダウンロードし、ブラウザで開いてご確認ください。</p>
+  </div>
+</section>
+
+<h2>まとめ</h2>
+
+<p>本章では、社内情報共有の慢性的な課題に対して、HTMLページというアプローチがどう機能するかを見てきました。</p>
+
+<p><strong>社内ポータル・ナレッジ共有・説明ページをHTMLで作ることの本質的な価値</strong>は、次の3点に集約されます。</p>
+
+<ol>
+  <li><strong>URLひとつで常に最新の情報が届く</strong>：ファイルを「配布する」時代から、ページを「参照する」時代へ。更新するたびに配布し直す手間がなくなります。</li>
+  <li><strong>情報の入口が設計できる</strong>：チームダッシュボード・オンボーディングページ・FAQ——それぞれの目的に合わせた「情報の入口」を設計することで、「どこにある？」という質問が減ります。</li>
+  <li><strong>問い合わせを自己解決に転換できる</strong>：ステップ形式の手順ページ、アコーディオンFAQなど、人に聞くより先にページで解決できる仕組みを作ることで、チームの時間が解放されます。</li>
+</ol>
+
+<blockquote>
+  <strong>あなたのチームで、誰かに聞かなければわからないことが1ページにまとまっていたら、チームの時間がどれだけ節約されるでしょうか。</strong>
+</blockquote>
+
+<p>技術の話ではなく、情報設計の話です。生成AIを使えばHTMLの実装は誰でもできます。問題は、「誰に向けて、何を、どこに置くか」を設計できるかどうかです。</p>
+
+<hr>
+
+<blockquote>
+  <h4>コラム：読まれるwikiと読まれないwikiの差</h4>
+  <p>「うちのwikiは誰も更新しない」という声はどこの会社でも聞きます。しかしこれはwikiというツールの問題ではなく、「情報のアーキテクチャ」の問題です。</p>
+  <p>読まれないwikiには共通する特徴があります。「誰が読むか」を想定せずに書かれている、情報がフラットに並んでいてどこから読めばいいか分からない、更新する人が決まっていない——の3点です。</p>
+  <p>HTMLページがすべての解決策になるとは言いませんが、「特定の人が特定の目的で読む1ページ」として作られたHTMLのページは、読まれやすい構造を持ちやすいです。なぜなら、1ページを作るとき、作る側は「誰が読むか」を必ず意識するからです。全員が雑多に書き足せるwikiと、「このページはオンボーディング用」と設計されたHTMLページでは、読み手の体験が根本的に違います。</p>
+</blockquote>
+
+<hr>
+
+<p>第7章では、社内情報共有という実務的な課題に対して、HTMLページを「情報のインフラ」として使うアプローチを学びました。</p>
+
+<p>最終章となる第8章では、これまでの内容を踏まえて、一段上の視点——「HTMLネイティブな思考プロセスを仕事に組み込む」というマインドセットの話に移ります。ツールの使い方ではなく、成果物の形式を問い直す習慣をいかに日常の仕事に埋め込むか。チームへの広げ方、OfficeとHTMLの共存の設計、そしてこれからのビジネスパーソンに求められるリテラシーとは何か——を考えていきましょう。</p>
+
+    </main>
+  </div>
+  <script src="book.js"></script>
+</body>
+</html>

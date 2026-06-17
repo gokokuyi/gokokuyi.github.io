@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="320" viewBox="0 0 760 320">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1a3a5c"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="760" height="300" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="380" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#1a3a5c" font-family="Hiragino Sans, Meiryo, sans-serif">Webページを構成する3層構造</text>
+
+  <!-- HTML Layer (bottom / base) -->
+  <rect x="40" y="200" width="680" height="80" rx="6" fill="#e8f0f8" stroke="#1a3a5c" stroke-width="2"/>
+  <text x="200" y="244" text-anchor="middle" font-size="18" font-weight="bold" fill="#1a3a5c" font-family="Hiragino Sans, Meiryo, sans-serif">HTML</text>
+  <text x="200" y="263" text-anchor="middle" font-size="12" fill="#1a3a5c" font-family="Hiragino Sans, Meiryo, sans-serif">骨格・構造</text>
+  <text x="480" y="232" text-anchor="start" font-size="12" fill="#2c2c2c" font-family="Hiragino Sans, Meiryo, sans-serif">見出し・段落・画像・リストなど</text>
+  <text x="480" y="252" text-anchor="start" font-size="12" fill="#2c2c2c" font-family="Hiragino Sans, Meiryo, sans-serif">「何がどこにあるか」を定義する</text>
+  <text x="480" y="270" text-anchor="start" font-size="11" fill="#888888" font-family="Hiragino Sans, Meiryo, sans-serif">例：見出しを変えたい → HTMLを変更</text>
+
+  <!-- CSS Layer (middle) -->
+  <rect x="40" y="125" width="680" height="65" rx="6" fill="#f0f5e8" stroke="#4a7a2c" stroke-width="2"/>
+  <text x="200" y="162" text-anchor="middle" font-size="18" font-weight="bold" fill="#4a7a2c" font-family="Hiragino Sans, Meiryo, sans-serif">CSS</text>
+  <text x="200" y="180" text-anchor="middle" font-size="12" fill="#4a7a2c" font-family="Hiragino Sans, Meiryo, sans-serif">皮膚・外見</text>
+  <text x="480" y="152" text-anchor="start" font-size="12" fill="#2c2c2c" font-family="Hiragino Sans, Meiryo, sans-serif">色・フォント・余白・レイアウトなど</text>
+  <text x="480" y="171" text-anchor="start" font-size="12" fill="#2c2c2c" font-family="Hiragino Sans, Meiryo, sans-serif">「見た目をどう表示するか」を担当</text>
+  <text x="480" y="184" text-anchor="start" font-size="11" fill="#888888" font-family="Hiragino Sans, Meiryo, sans-serif">例：背景色を変えたい → CSSを変更</text>
+
+  <!-- JS Layer (top) -->
+  <rect x="40" y="55" width="680" height="60" rx="6" fill="#fdf0e8" stroke="#e07b39" stroke-width="2"/>
+  <text x="200" y="89" text-anchor="middle" font-size="18" font-weight="bold" fill="#e07b39" font-family="Hiragino Sans, Meiryo, sans-serif">JavaScript</text>
+  <text x="200" y="107" text-anchor="middle" font-size="12" fill="#e07b39" font-family="Hiragino Sans, Meiryo, sans-serif">動き・インタラクション</text>
+  <text x="480" y="80" text-anchor="start" font-size="12" fill="#2c2c2c" font-family="Hiragino Sans, Meiryo, sans-serif">クリック・入力・動的更新など</text>
+  <text x="480" y="99" text-anchor="start" font-size="12" fill="#2c2c2c" font-family="Hiragino Sans, Meiryo, sans-serif">「ユーザー操作への反応」を担当</text>
+  <text x="480" y="112" text-anchor="start" font-size="11" fill="#888888" font-family="Hiragino Sans, Meiryo, sans-serif">例：ボタンで表示切替 → JavaScriptを変更</text>
+
+  <!-- Caption -->
+  <text x="380" y="310" text-anchor="middle" font-size="11" fill="#888888" font-family="Hiragino Sans, Meiryo, sans-serif">図2-1　HTML・CSS・JavaScriptの3層構造と役割分担</text>
+</svg>

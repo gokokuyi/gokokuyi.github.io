@@ -1,0 +1,1163 @@
+<!--
+================================================================================
+このページを生成したAIへのプロンプト例:
+
+「Web Speech APIを使った社内FAQポータルを作成してください。
+マイクボタンを押すと音声入力が有効になり、認識結果が検索ボックスに入力されます。
+FAQはIT・人事・経費・総務の4カテゴリで各3〜4問を用意してください。
+検索テキストにマッチしたFAQだけリアルタイムで表示し、
+各FAQ項目には音声読み上げボタン（🔊）を付けてください。
+ブラウザが音声非対応の場合のフォールバックメッセージも表示すること。
+webkitSpeechRecognitionとSpeechRecognitionの両方に対応してください。
+日本語UIでビジネスライクなデザインにしてください。」
+================================================================================
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社内AIアシスタント FAQポータル</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Meiryo", "游ゴシック", "Yu Gothic", sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    /* ======= ヘッダー ======= */
+    header {
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 60%, #0d1b2a 100%);
+      padding: 0 40px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      height: 68px;
+      gap: 16px;
+    }
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .header-title {
+      flex: 1;
+    }
+    .header-title h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+    }
+    .header-title p {
+      font-size: 12px;
+      color: #8ab4f8;
+      margin-top: 2px;
+    }
+    .header-badge {
+      background: rgba(102,126,234,0.3);
+      border: 1px solid rgba(102,126,234,0.5);
+      color: #8ab4f8;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* ======= コンテナ ======= */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    /* ======= 検索セクション ======= */
+    .search-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 28px;
+    }
+    .search-section h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #9aa0a6;
+      pointer-events: none;
+    }
+    #searchInput {
+      width: 100%;
+      height: 48px;
+      border: 2px solid #dadce0;
+      border-radius: 10px;
+      padding: 0 14px 0 42px;
+      font-size: 15px;
+      color: #1a1a2e;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+      outline: none;
+    }
+    #searchInput:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    }
+    #searchInput.listening {
+      border-color: #ea4335;
+      box-shadow: 0 0 0 3px rgba(234,67,53,0.15);
+      animation: inputPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes inputPulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(234,67,53,0.15); }
+      50% { box-shadow: 0 0 0 6px rgba(234,67,53,0.25); }
+    }
+
+    /* マイクボタン */
+    .mic-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      border: 2px solid #dadce0;
+      background: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .mic-btn:hover { background: #f8f9fa; border-color: #bbb; }
+    .mic-btn.active {
+      background: #ea4335;
+      border-color: #ea4335;
+      animation: micPulse 1s ease-in-out infinite;
+    }
+    .mic-btn.disabled-mic {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(234,67,53,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(234,67,53,0); }
+    }
+
+    .clear-btn {
+      height: 48px;
+      padding: 0 18px;
+      border-radius: 10px;
+      border: 2px solid #dadce0;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #5f6368;
+      transition: all 0.2s;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .clear-btn:hover { background: #f1f3f4; }
+
+    /* 音声認識ステータス */
+    .speech-status {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 24px;
+    }
+    .recording-dot {
+      width: 10px;
+      height: 10px;
+      background: #ea4335;
+      border-radius: 50%;
+      animation: blink 0.8s ease-in-out infinite;
+      display: none;
+    }
+    .recording-dot.visible { display: block; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    #statusText {
+      font-size: 13px;
+      color: #5f6368;
+    }
+    #statusText.error { color: #c5221f; }
+    #statusText.success { color: #137333; }
+
+    /* フォールバック警告 */
+    .fallback-banner {
+      background: #fff8e1;
+      border: 1px solid #fdd663;
+      border-left: 4px solid #f9ab00;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #5f4000;
+      display: none;
+    }
+    .fallback-banner.visible { display: block; }
+
+    /* ======= 検索結果サマリー ======= */
+    .result-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .result-count {
+      font-size: 13px;
+      color: #5f6368;
+    }
+    .result-count strong { color: #1a1a2e; }
+    .clear-search {
+      font-size: 12px;
+      color: #1967d2;
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+
+    /* ======= FAQカテゴリ ======= */
+    .category-section {
+      margin-bottom: 24px;
+    }
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: #fff;
+      border-radius: 12px 12px 0 0;
+      border-bottom: 2px solid #e8eaf0;
+      margin-bottom: 0;
+    }
+    .category-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .category-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .category-count {
+      font-size: 12px;
+      color: #5f6368;
+      margin-left: auto;
+    }
+
+    /* FAQアイテム */
+    .faq-list {
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .faq-item {
+      border-top: 1px solid #f1f3f4;
+      transition: background 0.15s;
+    }
+    .faq-item:first-child { border-top: none; }
+    .faq-item.hidden { display: none; }
+    .faq-item.highlight .faq-question {
+      background: #fff8e1;
+    }
+
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .faq-question:hover { background: #f8f9fa; }
+    .faq-question.open { background: #f0f4ff; }
+
+    .q-label {
+      width: 24px;
+      height: 24px;
+      background: #e8f0fe;
+      color: #1967d2;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .q-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a2e;
+      text-align: left;
+    }
+    .q-text mark {
+      background: #fdd663;
+      color: #1a1a2e;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+    .q-arrow {
+      font-size: 12px;
+      color: #9aa0a6;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .q-arrow.open { transform: rotate(90deg); }
+
+    .tts-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #dadce0;
+      background: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .tts-btn:hover { background: #e8f0fe; border-color: #1967d2; }
+    .tts-btn.speaking {
+      background: #e8f0fe;
+      border-color: #1967d2;
+      animation: speakerPulse 0.8s ease-in-out infinite;
+    }
+    @keyframes speakerPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(25,103,210,0.4); }
+      50% { box-shadow: 0 0 0 5px rgba(25,103,210,0); }
+    }
+    .tts-btn.disabled-tts {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 20px 18px 56px;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #3c4043;
+      border-top: 1px solid #e8f0fe;
+      background: #fafbff;
+    }
+    .faq-answer.visible { display: block; }
+    .faq-answer a {
+      color: #1967d2;
+      text-decoration: underline;
+    }
+    .faq-answer .step-list {
+      margin-top: 8px;
+      padding-left: 16px;
+    }
+    .faq-answer .step-list li {
+      margin-bottom: 4px;
+    }
+    .answer-meta {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e8eaf0;
+      display: flex;
+      gap: 16px;
+    }
+    .meta-chip {
+      font-size: 11px;
+      color: #9aa0a6;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 検索結果なし */
+    .no-results {
+      text-align: center;
+      padding: 48px 24px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      display: none;
+    }
+    .no-results.visible { display: block; }
+    .no-results .icon { font-size: 48px; margin-bottom: 16px; }
+    .no-results p { font-size: 15px; color: #5f6368; }
+    .no-results small { font-size: 12px; color: #9aa0a6; margin-top: 6px; display: block; }
+
+    /* カテゴリ非表示（全アイテムが非表示の場合） */
+    .category-section.all-hidden { display: none; }
+
+    /* ======= フッター ======= */
+    footer {
+      background: #fff;
+      border-top: 1px solid #e8eaf0;
+      padding: 16px 40px;
+      text-align: center;
+      font-size: 12px;
+      color: #9aa0a6;
+    }
+    footer strong { color: #5f6368; }
+  </style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header>
+  <div class="header-inner">
+    <div class="logo">🤖</div>
+    <div class="header-title">
+      <h1>社内AIアシスタント FAQポータル</h1>
+      <p>音声・テキスト検索で社内FAQ を素早く検索できます</p>
+    </div>
+    <span class="header-badge" id="speechSupportBadge">音声対応チェック中...</span>
+  </div>
+</header>
+
+<!-- メインコンテンツ -->
+<div class="container">
+
+  <!-- 検索セクション -->
+  <div class="search-section">
+    <h2>🔍 FAQを検索</h2>
+    <div class="search-bar">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput"
+               placeholder="キーワードを入力、または🎤で音声入力..."
+               oninput="filterFAQ(this.value)"
+               autocomplete="off"/>
+      </div>
+      <button class="mic-btn" id="micBtn" onclick="toggleSpeech()" title="音声入力">
+        🎤
+      </button>
+      <button class="clear-btn" onclick="clearSearch()">クリア</button>
+    </div>
+
+    <!-- 音声認識ステータス -->
+    <div class="speech-status">
+      <div class="recording-dot" id="recordingDot"></div>
+      <span id="statusText">キーワードを入力するか、🎤で音声検索できます</span>
+    </div>
+
+    <!-- フォールバックバナー -->
+    <div class="fallback-banner" id="fallbackBanner">
+      ⚠️ このブラウザは Web Speech API（音声認識）に対応していません。
+      音声入力を使用するには <strong>Google Chrome</strong> をお使いください。
+      テキスト検索は引き続きご利用いただけます。
+    </div>
+  </div>
+
+  <!-- 検索結果サマリー -->
+  <div class="result-summary" id="resultSummary" style="display:none;">
+    <span class="result-count" id="resultCount"></span>
+    <button class="clear-search" onclick="clearSearch()">検索をクリア</button>
+  </div>
+
+  <!-- ========== FAQ コンテンツ ========== -->
+
+  <!-- カテゴリ1: IT -->
+  <div class="category-section" id="cat-IT">
+    <div class="category-header">
+      <div class="category-icon" style="background:#e8f0fe;">💻</div>
+      <span class="category-name">IT・システム</span>
+      <span class="category-count" id="count-IT"></span>
+    </div>
+    <div class="faq-list" id="list-IT">
+
+      <div class="faq-item" data-keywords="パスワード リセット 変更 ログイン できない">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">パスワードをリセットしたい / ログインできない</span>
+          <button class="tts-btn" id="tts-0" onclick="speakText(event, 0)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="0">
+          社内ポータルのパスワードをリセットする手順は以下の通りです。
+          <ol class="step-list">
+            <li>社内ポータルのログイン画面で「パスワードを忘れた方はこちら」をクリック</li>
+            <li>登録済みの社員番号またはメールアドレスを入力</li>
+            <li>社用メールに届いたリセットリンクから新パスワードを設定（有効期限30分）</li>
+            <li>リセットできない場合は IT ヘルプデスク（内線: 5000）へご連絡ください</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📞 IT ヘルプデスク: 内線5000</span>
+            <span class="meta-chip">🕐 対応時間: 平日9:00〜18:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="VPN 接続 リモート 在宅 外部">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">VPN に接続できない・設定方法を知りたい</span>
+          <button class="tts-btn" id="tts-1" onclick="speakText(event, 1)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="1">
+          VPN（GlobalProtect）の接続手順です。
+          <ol class="step-list">
+            <li>GlobalProtect クライアントを起動（タスクバーのアイコン）</li>
+            <li>接続先: <strong>vpn.company.co.jp</strong> を入力して「接続」</li>
+            <li>社員番号とパスワードを入力し、スマホに届いた2段階認証コードを入力</li>
+            <li>初回インストールが必要な場合は <a href="#">ITポータル &gt; ソフトウェア配布</a> からダウンロード</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">🔧 接続先: vpn.company.co.jp</span>
+            <span class="meta-chip">📱 2段階認証必須</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="端末 PC パソコン 申請 新規 交換 故障">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">新規PC・端末を申請したい / 故障して交換したい</span>
+          <button class="tts-btn" id="tts-2" onclick="speakText(event, 2)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="2">
+          端末申請は IT 機器申請フォームから行います。
+          <ol class="step-list">
+            <li>社内ポータル → IT申請 → 「端末・機器申請」を選択</li>
+            <li>申請区分（新規/交換/増設）、機種、用途を入力</li>
+            <li>部門長の電子承認後、IT部門で調達（通常2〜3週間）</li>
+            <li>故障の場合は IT ヘルプデスク（内線5000）へ先に連絡してください</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📋 申請フォーム: 社内ポータル &gt; IT申請</span>
+            <span class="meta-chip">📅 調達期間: 2〜3週間</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="メール 容量 Outlook 添付 大きい ファイル">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">メールの容量が上限に達した / 大きなファイルを送りたい</span>
+          <button class="tts-btn" id="tts-3" onclick="speakText(event, 3)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="3">
+          メール容量の上限は1アカウント50GBです。大容量ファイルは以下の方法で送付してください。
+          <ol class="step-list">
+            <li>社内ファイル共有（SharePoint/Teams）にアップロードしてリンクを共有</li>
+            <li>外部への送付には承認済みファイル転送サービス（FileZen）を利用</li>
+            <li>メールの不要フォルダ削除は Outlook → フォルダー右クリック → 「フォルダーを空にする」</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">💾 容量上限: 50GB</span>
+            <span class="meta-chip">📁 大容量: SharePoint 推奨</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- カテゴリ2: 人事 -->
+  <div class="category-section" id="cat-HR">
+    <div class="category-header">
+      <div class="category-icon" style="background:#e6f4ea;">👥</div>
+      <span class="category-name">人事・労務</span>
+      <span class="category-count" id="count-HR"></span>
+    </div>
+    <div class="faq-list" id="list-HR">
+
+      <div class="faq-item" data-keywords="有給 休暇 申請 年次 取得">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">有給休暇の申請方法を教えてください</span>
+          <button class="tts-btn" id="tts-4" onclick="speakText(event, 4)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="4">
+          有給休暇の申請は就業管理システム（KING OF TIME）から行います。
+          <ol class="step-list">
+            <li>KING OF TIME にログイン → 「休暇申請」タブをクリック</li>
+            <li>取得日、種別（全日/半日/時間単位）を選択して申請</li>
+            <li>直属の上長が承認すると確定（原則2営業日以内に承認）</li>
+            <li>年次有給は入社から6か月後に10日付与、以降勤続年数に応じて増加</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">💻 KING OF TIME で申請</span>
+            <span class="meta-chip">📅 前日までに申請推奨</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="育児 休暇 産休 育休 制度">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">育児休業制度の概要を教えてください</span>
+          <button class="tts-btn" id="tts-5" onclick="speakText(event, 5)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="5">
+          当社の育児休業制度は育児・介護休業法に基づき、以下の通りです。
+          <ol class="step-list">
+            <li>取得対象: 子が1歳に達するまで（保育園未入所等の場合は最長2歳まで延長可）</li>
+            <li>産前産後休暇: 産前6週（多胎14週）〜産後8週は取得義務あり</li>
+            <li>パパ育休: 出生後8週以内に最大4週の育児休業が取得可能（2回まで分割）</li>
+            <li>申請方法: 取得予定日の1か月前までに人事部へ申請書を提出</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📞 人事部: 内線3000</span>
+            <span class="meta-chip">📄 申請書: 社内ポータル &gt; 人事書類</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="給与 明細 確認 マイページ 給料">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">給与明細の確認方法を教えてください</span>
+          <button class="tts-btn" id="tts-6" onclick="speakText(event, 6)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="6">
+          給与明細は毎月25日に電子明細で配信されます。
+          <ol class="step-list">
+            <li>社内ポータル → 「給与・勤怠」→「電子給与明細」をクリック</li>
+            <li>当月・過去24か月分の明細を PDF でダウンロード可能</li>
+            <li>初回ログイン時は社員番号 + 生年月日（8桁）がパスワード</li>
+            <li>内容に疑問がある場合は人事部（内線3000）へご相談ください</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📅 配信日: 毎月25日</span>
+            <span class="meta-chip">💻 社内ポータル &gt; 給与・勤怠</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- カテゴリ3: 経費 -->
+  <div class="category-section" id="cat-Expense">
+    <div class="category-header">
+      <div class="category-icon" style="background:#fff8e1;">💴</div>
+      <span class="category-name">経費・精算</span>
+      <span class="category-count" id="count-Expense"></span>
+    </div>
+    <div class="faq-list" id="list-Expense">
+
+      <div class="faq-item" data-keywords="経費 精算 申請 手順 方法 交通費">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">経費精算の手順を教えてください</span>
+          <button class="tts-btn" id="tts-7" onclick="speakText(event, 7)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="7">
+          経費精算はクラウド経費システム（Concur）で行います。
+          <ol class="step-list">
+            <li>Concur（concur.company.co.jp）にログイン → 「経費精算」→「新規作成」</li>
+            <li>支出日、金額、科目（交通費/接待費等）を入力し、領収書を撮影添付</li>
+            <li>上長の電子承認後、翌月給与と合算して振込</li>
+            <li>月末締め：毎月20日までの申請分が翌月25日に支払い</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">💻 Concur: concur.company.co.jp</span>
+            <span class="meta-chip">📅 締め日: 毎月20日</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="領収書 提出 紛失 電子 原本">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">領収書の提出ルールと紛失した場合の対応は？</span>
+          <button class="tts-btn" id="tts-8" onclick="speakText(event, 8)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="8">
+          電子帳簿保存法対応により、2024年1月から電子保存に完全移行しました。
+          <ol class="step-list">
+            <li>領収書はスキャン or スマホ撮影して Concur に添付（原本不要）</li>
+            <li>撮影基準: 金額・日付・発行者が判読できる鮮明な画像（JPEG/PDF）</li>
+            <li>紛失した場合は「支払証明書」（Concur 内テンプレート）で代替申請</li>
+            <li>1万円以上の接待交際費は参加者名簿の添付が必要</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📱 スマホ撮影OK</span>
+            <span class="meta-chip">💡 電子帳簿保存法対応済</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="交通費 定期 出張 新幹線 グリーン">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">出張時の交通費精算ルールを教えてください</span>
+          <button class="tts-btn" id="tts-9" onclick="speakText(event, 9)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="9">
+          出張旅費規程に基づいて精算してください。
+          <ol class="step-list">
+            <li>新幹線は原則自由席（乗車時間2時間以上は指定席・グリーン車も可）</li>
+            <li>飛行機はエコノミークラス（路線によっては事前にIT旅行サービスで手配）</li>
+            <li>日当: 宿泊出張 2,000円/日、日帰り出張 1,000円/日（役職に応じた追加支給あり）</li>
+            <li>出張前に「出張申請」を提出し、出張後5営業日以内に精算</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📋 旅費規程: 社内ポータル &gt; 規程集</span>
+            <span class="meta-chip">📅 精算期限: 帰社後5営業日</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- カテゴリ4: 総務 -->
+  <div class="category-section" id="cat-General">
+    <div class="category-header">
+      <div class="category-icon" style="background:#fce8e6;">🏢</div>
+      <span class="category-name">総務・施設</span>
+      <span class="category-count" id="count-General"></span>
+    </div>
+    <div class="faq-list" id="list-General">
+
+      <div class="faq-item" data-keywords="在宅 テレワーク リモートワーク 申請 勤務">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">在宅勤務（テレワーク）の申請方法は？</span>
+          <button class="tts-btn" id="tts-10" onclick="speakText(event, 10)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="10">
+          在宅勤務は週3日まで利用可能です（職種により異なる場合があります）。
+          <ol class="step-list">
+            <li>KING OF TIME → 「勤務区分変更」→「在宅勤務」を当日または前日までに申請</li>
+            <li>チームの在宅比率ルール（同一チームの50%以上は出社）を遵守</li>
+            <li>在宅勤務手当: 月1,500円（通信費補助）が毎月自動で支給</li>
+            <li>通信環境・セキュリティ要件: VPN接続必須、公衆Wi-Fi使用不可</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📅 週3日まで</span>
+            <span class="meta-chip">💴 在宅手当: 月1,500円</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="会議室 予約 設備 プロジェクター 場所">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">会議室の予約方法と設備を教えてください</span>
+          <button class="tts-btn" id="tts-11" onclick="speakText(event, 11)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="11">
+          会議室は Outlook / Microsoft 365 の会議室予約機能から予約できます。
+          <ol class="step-list">
+            <li>Outlook カレンダー → 「新しい会議」→「場所を追加」→ 会議室を検索</li>
+            <li>または社内ポータル → 「施設予約」から地図で会議室を選択</li>
+            <li>設備一覧: プロジェクター全室完備、大会議室はホワイトボード・Web会議対応</li>
+            <li>30分前まで予約可能、当日キャンセルは必ず行うこと（連続予約制限あり）</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">💻 Outlook / 施設予約から予約</span>
+            <span class="meta-chip">⏰ 当日予約は30分前まで</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-keywords="名刺 発注 作成 申請 印刷">
+        <button class="faq-question" onclick="toggleAnswer(this)">
+          <span class="q-label">Q</span>
+          <span class="q-text">名刺の発注方法を教えてください</span>
+          <button class="tts-btn" id="tts-12" onclick="speakText(event, 12)" title="読み上げ">🔊</button>
+          <span class="q-arrow">▶</span>
+        </button>
+        <div class="faq-answer" data-answer="12">
+          名刺は社内ポータルのオンライン発注システムから注文します。
+          <ol class="step-list">
+            <li>社内ポータル → 「庶務申請」→「名刺発注」を選択</li>
+            <li>役職・電話番号・メールアドレスを入力し、プレビューで確認</li>
+            <li>部門長承認後、印刷会社へ自動発注（通常5〜7営業日で届く）</li>
+            <li>入社時・役職変更時は100枚まで会社負担、追加分は部門予算から</li>
+          </ol>
+          <div class="answer-meta">
+            <span class="meta-chip">📅 納期: 5〜7営業日</span>
+            <span class="meta-chip">💴 100枚まで会社負担</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 検索結果なし -->
+  <div class="no-results" id="noResults">
+    <div class="icon">🔍</div>
+    <p>「<strong id="noResultsKeyword"></strong>」に一致するFAQが見つかりませんでした</p>
+    <small>別のキーワードで再検索するか、ITヘルプデスク（内線5000）にお問い合わせください</small>
+  </div>
+
+</div>
+
+<!-- フッター -->
+<footer>
+  <strong>社内AIアシスタント FAQポータル</strong> — 第7章サンプル: Web Speech API デモ
+  <span style="margin: 0 12px;">|</span>
+  最終更新: 2025年6月 <span style="margin: 0 12px;">|</span>
+  お問い合わせ: IT ヘルプデスク（内線5000）
+</footer>
+
+<script>
+// ======= Web Speech API 初期化 =======
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechSynthesisAPI = window.speechSynthesis;
+
+let recognition = null;
+let isListening = false;
+
+// 音声対応チェック
+const hasSpeechRecognition = !!SpeechRecognitionAPI;
+const hasSpeechSynthesis = !!SpeechSynthesisAPI;
+
+window.addEventListener('DOMContentLoaded', () => {
+  initSpeechSupport();
+  updateCategoryCounts();
+});
+
+function initSpeechSupport() {
+  const badge = document.getElementById('speechSupportBadge');
+  const micBtn = document.getElementById('micBtn');
+  const fallback = document.getElementById('fallbackBanner');
+
+  if (hasSpeechRecognition) {
+    badge.textContent = '🎤 音声入力対応';
+    badge.style.background = 'rgba(19,115,51,0.3)';
+    badge.style.borderColor = 'rgba(19,115,51,0.5)';
+    badge.style.color = '#81c995';
+    setupRecognition();
+  } else {
+    badge.textContent = '⚠ 音声非対応';
+    badge.style.background = 'rgba(249,171,0,0.3)';
+    badge.style.borderColor = 'rgba(249,171,0,0.5)';
+    badge.style.color = '#fdd663';
+    micBtn.classList.add('disabled-mic');
+    micBtn.title = '音声入力非対応 (Chrome推奨)';
+    fallback.classList.add('visible');
+  }
+
+  if (!hasSpeechSynthesis) {
+    document.querySelectorAll('.tts-btn').forEach(btn => {
+      btn.classList.add('disabled-tts');
+      btn.title = '音声読み上げ非対応';
+    });
+  }
+}
+
+function setupRecognition() {
+  recognition = new SpeechRecognitionAPI();
+  recognition.lang = 'ja-JP';
+  recognition.interimResults = true;
+  recognition.continuous = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('active');
+    document.getElementById('searchInput').classList.add('listening');
+    document.getElementById('recordingDot').classList.add('visible');
+    setStatus('🔴 録音中... 話しかけてください', '');
+  };
+
+  recognition.onresult = (event) => {
+    let interimTranscript = '';
+    let finalTranscript = '';
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+
+    const current = finalTranscript || interimTranscript;
+    document.getElementById('searchInput').value = current;
+    filterFAQ(current);
+
+    if (finalTranscript) {
+      setStatus(`✅ 認識完了: 「${finalTranscript}」`, 'success');
+    }
+  };
+
+  recognition.onerror = (event) => {
+    let msg = '音声認識でエラーが発生しました';
+    if (event.error === 'no-speech') msg = '音声が検出されませんでした。もう一度お試しください';
+    if (event.error === 'not-allowed') msg = 'マイクへのアクセスが拒否されました。ブラウザの設定を確認してください';
+    if (event.error === 'network') msg = 'ネットワークエラー。インターネット接続を確認してください';
+    setStatus(msg, 'error');
+    stopListening();
+  };
+
+  recognition.onend = () => {
+    stopListening();
+  };
+}
+
+function toggleSpeech() {
+  if (!hasSpeechRecognition) return;
+  if (isListening) {
+    recognition.stop();
+  } else {
+    document.getElementById('searchInput').value = '';
+    filterFAQ('');
+    recognition.start();
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  document.getElementById('micBtn').classList.remove('active');
+  document.getElementById('searchInput').classList.remove('listening');
+  document.getElementById('recordingDot').classList.remove('visible');
+  if (!document.getElementById('statusText').classList.contains('success') &&
+      !document.getElementById('statusText').classList.contains('error')) {
+    setStatus('キーワードを入力するか、🎤で音声検索できます', '');
+  }
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('statusText');
+  el.textContent = msg;
+  el.className = type;
+}
+
+// ======= FAQ フィルタリング =======
+function filterFAQ(keyword) {
+  const q = (keyword || '').trim().toLowerCase();
+  const items = document.querySelectorAll('.faq-item');
+  let visibleCount = 0;
+
+  items.forEach(item => {
+    const keywords = (item.dataset.keywords || '').toLowerCase();
+    const qText = item.querySelector('.q-text').textContent.toLowerCase();
+    const answerText = item.querySelector('.faq-answer') ? item.querySelector('.faq-answer').textContent.toLowerCase() : '';
+
+    const match = !q || keywords.includes(q) || qText.includes(q) || answerText.includes(q);
+
+    if (match) {
+      item.classList.remove('hidden');
+      visibleCount++;
+
+      // キーワードハイライト
+      const qTextEl = item.querySelector('.q-text');
+      const originalText = qTextEl.textContent;
+      if (q && originalText.toLowerCase().includes(q)) {
+        const regex = new RegExp(`(${escapeRegex(q)})`, 'gi');
+        qTextEl.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+        item.classList.add('highlight');
+      } else {
+        qTextEl.innerHTML = originalText;
+        item.classList.remove('highlight');
+      }
+    } else {
+      item.classList.add('hidden');
+      item.classList.remove('highlight');
+    }
+  });
+
+  // カテゴリ単位で全非表示なら隠す
+  ['IT', 'HR', 'Expense', 'General'].forEach(cat => {
+    const section = document.getElementById(`cat-${cat}`);
+    const list = document.getElementById(`list-${cat}`);
+    const visibleItems = list.querySelectorAll('.faq-item:not(.hidden)').length;
+    section.classList.toggle('all-hidden', visibleItems === 0);
+  });
+
+  // 検索サマリー
+  const summary = document.getElementById('resultSummary');
+  const resultCount = document.getElementById('resultCount');
+  const noResults = document.getElementById('noResults');
+
+  if (q) {
+    summary.style.display = 'flex';
+    resultCount.innerHTML = `「<strong>${keyword}</strong>」の検索結果: <strong>${visibleCount}件</strong>`;
+    noResults.classList.toggle('visible', visibleCount === 0);
+    document.getElementById('noResultsKeyword').textContent = keyword;
+  } else {
+    summary.style.display = 'none';
+    noResults.classList.remove('visible');
+  }
+
+  updateCategoryCounts();
+}
+
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function updateCategoryCounts() {
+  ['IT', 'HR', 'Expense', 'General'].forEach(cat => {
+    const list = document.getElementById(`list-${cat}`);
+    const total = list.querySelectorAll('.faq-item').length;
+    const visible = list.querySelectorAll('.faq-item:not(.hidden)').length;
+    const q = document.getElementById('searchInput').value.trim();
+    const countEl = document.getElementById(`count-${cat}`);
+    if (q) {
+      countEl.textContent = `${visible} / ${total}件`;
+    } else {
+      countEl.textContent = `${total}件`;
+    }
+  });
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  filterFAQ('');
+  if (isListening && recognition) recognition.stop();
+  setStatus('キーワードを入力するか、🎤で音声検索できます', '');
+}
+
+// ======= FAQ アコーディオン =======
+function toggleAnswer(btn) {
+  // TTS ボタンのクリックは除外
+  if (event && event.target.classList.contains('tts-btn')) return;
+
+  const answer = btn.nextElementSibling;
+  const arrow = btn.querySelector('.q-arrow');
+  const isOpen = answer.classList.contains('visible');
+
+  // 同一カテゴリ内を全閉じ
+  const parentList = btn.closest('.faq-list');
+  parentList.querySelectorAll('.faq-answer.visible').forEach(a => a.classList.remove('visible'));
+  parentList.querySelectorAll('.faq-question.open').forEach(b => b.classList.remove('open'));
+  parentList.querySelectorAll('.q-arrow.open').forEach(a => a.classList.remove('open'));
+
+  if (!isOpen) {
+    answer.classList.add('visible');
+    btn.classList.add('open');
+    arrow.classList.add('open');
+  }
+}
+
+// ======= 音声読み上げ =======
+let currentSpeakingBtn = null;
+
+function speakText(event, index) {
+  event.stopPropagation();
+
+  if (!hasSpeechSynthesis) return;
+
+  const btn = document.getElementById(`tts-${index}`);
+
+  // 既に読み上げ中ならキャンセル
+  if (SpeechSynthesisAPI.speaking) {
+    SpeechSynthesisAPI.cancel();
+    if (currentSpeakingBtn) {
+      currentSpeakingBtn.classList.remove('speaking');
+      currentSpeakingBtn = null;
+    }
+    if (btn === currentSpeakingBtn) return;
+  }
+
+  // 対応するFAQのアコーディオンを開く
+  const parentItem = btn.closest('.faq-item');
+  const question = parentItem.querySelector('.faq-question');
+  const answer = parentItem.querySelector('.faq-answer');
+
+  if (!answer.classList.contains('visible')) {
+    toggleAnswer(question);
+  }
+
+  // 読み上げるテキストを組み立て
+  const qText = parentItem.querySelector('.q-text').textContent;
+  const aText = parentItem.querySelector('.faq-answer').innerText
+    .replace(/\d+\./g, '')
+    .replace(/\n+/g, '。')
+    .trim();
+
+  const utterance = new SpeechSynthesisUtterance(`質問。${qText}。回答。${aText}`);
+  utterance.lang = 'ja-JP';
+  utterance.rate = 0.95;
+  utterance.pitch = 1.0;
+
+  utterance.onstart = () => {
+    btn.classList.add('speaking');
+    currentSpeakingBtn = btn;
+    btn.textContent = '⏹';
+    btn.title = '読み上げ停止';
+  };
+  utterance.onend = () => {
+    btn.classList.remove('speaking');
+    btn.textContent = '🔊';
+    btn.title = '読み上げ';
+    currentSpeakingBtn = null;
+  };
+  utterance.onerror = () => {
+    btn.classList.remove('speaking');
+    btn.textContent = '🔊';
+    currentSpeakingBtn = null;
+  };
+
+  SpeechSynthesisAPI.speak(utterance);
+}
+</script>
+
+</body>
+</html>

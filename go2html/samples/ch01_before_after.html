@@ -1,0 +1,544 @@
+﻿<!--
+=============================================================
+このページを生成したAIへのプロンプト例
+=============================================================
+「OfficeファイルとHTMLコンテンツの比較ページを作成してください。
+左右2カラムで、左側はWordやExcelのような静的な表形式の月次営業報告、
+右側は同じ内容をHTML化した色付きカード・進捗バー・アコーディオン付きの
+インタラクティブなページにしてください。
+上部に見出し「Officeファイル時代 vs HTMLコンテンツ時代」を入れ、
+ページ下部に共有方法・更新方法・表現力・再利用性の4項目の比較表を追加。
+フォントはsans-serif、ビジネスライクな落ち着いた配色でお願いします。」
+=============================================================
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Officeファイルvs HTMLコンテンツ | 生成AI時代は、なんでもHTML！</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      background: #f0f2f5;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    /* ヘッダー */
+    header {
+      background: linear-gradient(135deg, #1a2e4a 0%, #2c5282 100%);
+      color: #fff;
+      padding: 40px 24px;
+      text-align: center;
+    }
+    header .chapter-label {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #90cdf4;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    header p {
+      font-size: 14px;
+      color: #bee3f8;
+    }
+
+    /* メインレイアウト */
+    main {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #718096;
+      margin-bottom: 16px;
+    }
+
+    /* 2カラム比較 */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 20px; }
+    }
+
+    /* 左パネル（Office/Word風） */
+    .panel {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-header.office { background: #f0f7ff; border-bottom: 2px solid #bee3f8; color: #2b6cb0; }
+    .panel-header.html   { background: #f0fff4; border-bottom: 2px solid #9ae6b4; color: #276749; }
+
+    .panel-body { padding: 20px; }
+
+    /* Word風レイアウト */
+    .word-doc {
+      font-family: 'Times New Roman', 'Yu Mincho', serif;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.8;
+    }
+    .word-doc .doc-title {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .word-doc .doc-meta {
+      text-align: right;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 8px;
+    }
+    .word-doc h3 { font-size: 13px; margin: 12px 0 4px; border-left: 3px solid #333; padding-left: 6px; }
+
+    .word-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 12px 0;
+    }
+    .word-table th {
+      background: #ddd;
+      border: 1px solid #999;
+      padding: 5px 8px;
+      text-align: left;
+      font-weight: bold;
+    }
+    .word-table td {
+      border: 1px solid #bbb;
+      padding: 5px 8px;
+    }
+    .word-table tr:nth-child(even) td { background: #f9f9f9; }
+
+    .word-note {
+      font-size: 11px;
+      color: #666;
+      margin-top: 12px;
+      border-top: 1px solid #ddd;
+      padding-top: 8px;
+    }
+
+    /* HTML版スタイル */
+    .report-header-mini {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .report-header-mini h3 { font-size: 15px; color: #1a2e4a; }
+    .report-badge {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* KPIカード（小） */
+    .kpi-mini {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .kpi-card-mini {
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .kpi-card-mini .kpi-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2b6cb0;
+    }
+    .kpi-card-mini .kpi-label {
+      font-size: 10px;
+      color: #718096;
+      margin-top: 2px;
+    }
+
+    /* 進捗バー */
+    .progress-section { margin-bottom: 16px; }
+    .progress-item { margin-bottom: 10px; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #4a5568;
+    }
+    .progress-track {
+      background: #e2e8f0;
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+    .fill-green  { background: linear-gradient(90deg, #38a169, #68d391); }
+    .fill-blue   { background: linear-gradient(90deg, #3182ce, #63b3ed); }
+    .fill-orange { background: linear-gradient(90deg, #dd6b20, #f6ad55); }
+
+    /* アコーディオン */
+    .accordion { border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
+    .accordion-item { border-bottom: 1px solid #e2e8f0; }
+    .accordion-item:last-child { border-bottom: none; }
+    .accordion-btn {
+      width: 100%;
+      background: #f7fafc;
+      border: none;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: #2d3748;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .accordion-btn:hover { background: #edf2f7; }
+    .accordion-btn .arrow { transition: transform 0.3s; font-size: 10px; color: #a0aec0; }
+    .accordion-btn.open .arrow { transform: rotate(180deg); }
+    .accordion-content {
+      display: none;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #4a5568;
+      background: #fff;
+      line-height: 1.7;
+    }
+    .accordion-content.open { display: block; }
+
+    /* 比較表セクション */
+    .compare-section {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .compare-section-title {
+      background: #1a2e4a;
+      color: #fff;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .compare-table thead th {
+      background: #2c5282;
+      color: #fff;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .compare-table thead th:first-child { width: 18%; }
+    .compare-table tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+    .compare-table tbody tr:last-child td { border-bottom: none; }
+    .compare-table tbody tr:nth-child(even) td { background: #f7fafc; }
+    .compare-table .item-name {
+      font-weight: 700;
+      color: #2d3748;
+    }
+    .compare-table .office-col { color: #4a5568; }
+    .compare-table .html-col   { color: #276749; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .badge-red    { background: #fed7d7; color: #c53030; }
+    .badge-green  { background: #c6f6d5; color: #276749; }
+    .badge-yellow { background: #fefcbf; color: #744210; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="chapter-label">Chapter 01</div>
+  <h1>Officeファイル時代 vs HTMLコンテンツ時代</h1>
+  <p>同じ「月次営業報告」が、HTMLになるとどう変わるか</p>
+</header>
+
+<main>
+
+  <!-- 2カラム比較 -->
+  <p class="section-title">同じ内容、まったく違う体験</p>
+  <div class="comparison-grid">
+
+    <!-- 左：Office/Word風 -->
+    <div class="panel">
+      <div class="panel-header office">
+        <span>📄</span> Officeファイル版（Word・Excel）
+      </div>
+      <div class="panel-body">
+        <div class="word-doc">
+          <div class="doc-title">月次営業報告書</div>
+          <div class="doc-meta">
+            作成日：2025年11月30日　作成者：営業本部
+          </div>
+
+          <h3>1. 当月サマリー</h3>
+          <table class="word-table">
+            <thead>
+              <tr><th>項目</th><th>目標</th><th>実績</th><th>達成率</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>売上高</td><td>50,000千円</td><td>42,500千円</td><td>85%</td></tr>
+              <tr><td>新規顧客</td><td>15社</td><td>12社</td><td>80%</td></tr>
+              <tr><td>継続顧客</td><td>—</td><td>94%継続</td><td>—</td></tr>
+            </tbody>
+          </table>
+
+          <h3>2. 地域別実績</h3>
+          <table class="word-table">
+            <thead>
+              <tr><th>地域</th><th>売上</th><th>前月比</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>東日本</td><td>18,200千円</td><td>+5%</td></tr>
+              <tr><td>西日本</td><td>15,800千円</td><td>+2%</td></tr>
+              <tr><td>海外</td><td>8,500千円</td><td>+12%</td></tr>
+            </tbody>
+          </table>
+
+          <h3>3. 所感</h3>
+          <p style="font-size:12px; color:#444; margin-top:6px;">
+            海外部門が好調。東日本は大型案件の受注により前月比大幅増。
+            次月は西日本でのキャンペーン強化を予定。
+          </p>
+
+          <div class="word-note">
+            ※このファイルはメール添付で共有。編集はExcelを直接開いて更新。<br>
+            ※グラフは別ファイル参照。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：HTML版 -->
+    <div class="panel">
+      <div class="panel-header html">
+        <span>🌐</span> HTML版（ブラウザで開くだけ）
+      </div>
+      <div class="panel-body">
+
+        <div class="report-header-mini">
+          <h3>月次営業報告 <span style="font-weight:400; color:#718096; font-size:13px;">2025年11月</span></h3>
+          <span class="report-badge">営業本部</span>
+        </div>
+
+        <!-- KPIカード -->
+        <div class="kpi-mini">
+          <div class="kpi-card-mini">
+            <div class="kpi-val">85%</div>
+            <div class="kpi-label">売上達成率</div>
+          </div>
+          <div class="kpi-card-mini">
+            <div class="kpi-val" style="color:#276749;">12社</div>
+            <div class="kpi-label">新規顧客</div>
+          </div>
+          <div class="kpi-card-mini">
+            <div class="kpi-val" style="color:#6b46c1;">94%</div>
+            <div class="kpi-label">継続率</div>
+          </div>
+        </div>
+
+        <!-- 進捗バー -->
+        <div class="progress-section">
+          <div class="progress-item">
+            <div class="progress-label"><span>東日本</span><span>18,200千円</span></div>
+            <div class="progress-track"><div class="progress-fill fill-blue" style="width:72%;"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label"><span>西日本</span><span>15,800千円</span></div>
+            <div class="progress-track"><div class="progress-fill fill-green" style="width:63%;"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label"><span>海外</span><span>8,500千円</span></div>
+            <div class="progress-track"><div class="progress-fill fill-orange" style="width:34%;"></div></div>
+          </div>
+        </div>
+
+        <!-- アコーディオン -->
+        <div class="accordion">
+          <div class="accordion-item">
+            <button class="accordion-btn" onclick="toggleAccordion(this)">
+              東日本 — 詳細レポート <span class="arrow">▼</span>
+            </button>
+            <div class="accordion-content">
+              大型案件（A社、B社）の受注が寄与。前月比+5%達成。
+              担当：田中チーム。次月は更新商談3件を予定。
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-btn" onclick="toggleAccordion(this)">
+              西日本 — 詳細レポート <span class="arrow">▼</span>
+            </button>
+            <div class="accordion-content">
+              新規開拓が順調に推移。キャンペーン施策の効果が現れ始めており、
+              次月に向けてパイプラインが積み上がっている状態。
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-btn" onclick="toggleAccordion(this)">
+              海外 — 詳細レポート <span class="arrow">▼</span>
+            </button>
+            <div class="accordion-content">
+              東南アジア向け案件が好調。前月比+12%の大幅増。
+              為替リスクに注意が必要だが、受注見通しは良好。
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.comparison-grid -->
+
+  <!-- 比較表 -->
+  <div class="compare-section">
+    <div class="compare-section-title">Officeファイル vs HTMLコンテンツ — 比較表</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th>Officeファイル（Word / Excel）</th>
+          <th>HTMLコンテンツ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="item-name">共有方法</td>
+          <td class="office-col">
+            <span class="badge badge-yellow">手動</span>
+            メール添付・ファイルサーバーに保存。受け手はアプリが必要。
+            バージョン管理が難しく「最終版_v3_修正.docx」問題が発生しやすい。
+          </td>
+          <td class="html-col">
+            <span class="badge badge-green">簡単</span>
+            URLを送るだけ。ブラウザがあれば誰でも開ける。
+            クラウドにアップすれば常に最新版を確認できる。
+          </td>
+        </tr>
+        <tr>
+          <td class="item-name">更新方法</td>
+          <td class="office-col">
+            <span class="badge badge-red">煩雑</span>
+            ファイルを開いて編集→保存→再送信。
+            複数人が同時編集するとコンフリクトが生じる。
+          </td>
+          <td class="html-col">
+            <span class="badge badge-green">リアルタイム</span>
+            HTMLファイルを更新してアップロードすれば即反映。
+            GitやCMSと連携すると更に効率的。
+          </td>
+        </tr>
+        <tr>
+          <td class="item-name">表現力</td>
+          <td class="office-col">
+            <span class="badge badge-yellow">静的</span>
+            図表・グラフは可能だが静的。アニメーション・
+            インタラクションの実装は困難。
+          </td>
+          <td class="html-col">
+            <span class="badge badge-green">無限大</span>
+            アニメーション・グラフ・動画・インタラクション—
+            すべてブラウザ標準機能で実現可能。
+          </td>
+        </tr>
+        <tr>
+          <td class="item-name">再利用性</td>
+          <td class="office-col">
+            <span class="badge badge-red">低い</span>
+            テンプレートはあるが流用に手間がかかる。
+            データとデザインが混在していて分離が難しい。
+          </td>
+          <td class="html-col">
+            <span class="badge badge-green">高い</span>
+            CSSを変えるだけでデザイン変更が全ページに反映。
+            データ部分だけを差し替えるテンプレート運用も容易。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  サンプルコード — 書籍「生成AI時代は、なんでもHTML！」Chapter 01
+</footer>
+
+<script>
+  function toggleAccordion(btn) {
+    btn.classList.toggle('open');
+    const content = btn.nextElementSibling;
+    content.classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>

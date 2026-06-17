@@ -1,0 +1,601 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第5章 Excel的な仕事をHTMLで再発明する | 生成AI時代は、なんでもHTML！</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="book-nav">
+    <a href="index.html" class="nav-brand">📖 なんでもHTML！</a>
+    <span class="nav-chapter-title">第5章 Excel的な仕事をHTMLで再発明する</span>
+    <div class="nav-arrows">
+      <a href="chapter04.html" class="nav-prev">← 前</a>
+      <a href="chapter06.html" class="nav-next">次 →</a>
+    </div>
+  </nav>
+  <div class="book-layout">
+    <aside class="toc-sidebar">
+      <div class="toc-title">目次</div>
+      <nav>
+        <a href="intro.html">はじめに</a>
+        <a href="chapter01.html">第1章 なぜ今OfficeではなくHTMLなのか</a>
+        <a href="chapter02.html">第2章 HTMLは"ホームページを作る技術"ではない</a>
+        <a href="chapter03.html">第3章 生成AIと一緒にHTMLを作る</a>
+        <a href="chapter04.html">第4章 資料をHTMLにすると何が変わるか</a>
+        <a href="chapter05.html">第5章 Excel的な仕事をHTMLで再発明する</a>
+        <a href="chapter06.html">第6章 図解・フロー図・概念図をHTML+SVGで扱う</a>
+        <a href="chapter07.html">第7章 社内ポータル・ナレッジ共有・説明ページをHTMLで作る</a>
+        <a href="chapter08.html">第8章 HTMLネイティブな仕事術</a>
+        <a href="final.html">終章 あなたの仕事は、どこからHTML化できるか</a>
+        <a href="appendix_a.html">付録A プロンプト集</a>
+        <a href="appendix_b.html">付録B HTMLの遊び場</a>
+      </nav>
+    </aside>
+    <main class="chapter-main">
+      <h1>第5章　Excel的な仕事をHTMLで再発明する</h1>
+
+      <blockquote class="sample-ref">
+        <strong>📂 本章のサンプルファイル</strong>: <code>ch05_dashboard.html</code><br>
+        ブラウザで開くと、本章で解説するHTMLコンテンツを実際に操作できます。<br>
+        本書サポートサイトからダウンロードしてください。
+      </blockquote>
+
+      <hr>
+
+      <h2>5-1　Excelの「何」をHTMLで代替するのか</h2>
+
+      <h3>あなたのExcelは、何をしていますか？</h3>
+
+      <p>少し立ち止まって考えてみてください。今日あなたが開いたExcelのファイルは、何のために使いましたか。数字を計算するために使いましたか。データを一覧で眺めるために使いましたか。あるいは、上司や同僚に何かを「見せる」ために使いましたか。</p>
+
+      <p>この問いは、案外難しいものです。Excelはあまりにも万能なツールなので、「計算もできるし、一覧管理もできるし、グラフも作れる」という答えが返ってくることが多いのです。しかしその万能さこそが、Excelの弱点でもあります。</p>
+
+      <hr>
+
+      <h3>Excelの三つの顔</h3>
+
+      <p>Excelが職場で担っている役割は、大きく三つに分けることができます。</p>
+
+      <p><strong>第一の顔：計算ツール</strong></p>
+
+      <p>数値を入力し、数式で加工し、集計します。これがExcelの原点です。SUM、VLOOKUP、IF関数——複雑な計算ロジックをセル上で組み立て、財務モデルや予算管理、売上予測などに使われています。この用途ではExcelは本領を発揮します。スプレッドシートという形式そのものが、「セルに式を書いて計算する」という作業のために設計されているからです。</p>
+
+      <p><strong>第二の顔：一覧管理ツール</strong></p>
+
+      <p>顧客名簿、在庫リスト、プロジェクト管理表——行と列でデータを整理する、いわゆる「リスト管理」の使い方です。Accessのようなデータベースソフトほど厳密ではありませんが、手軽に使えることから多くの職場でこの用途に使われています。</p>
+
+      <p><strong>第三の顔：報告・共有ツール</strong></p>
+
+      <p>グラフを作り、色を付け、結果を「見せる」ために使うExcelです。月次レポートの集計結果をグラフで示す、KPI（重要業績評価指標）の達成状況を表で見せる——「出力物」として使う使い方です。</p>
+
+      <hr>
+
+      <h3>どの顔がHTMLに向いているか</h3>
+
+      <p>この三つを並べたとき、HTMLへの移行に最も向いているのは<strong>第三の顔</strong>、すなわち「報告・共有」の用途です。</p>
+
+      <p>計算はExcelの独壇場です。複数のシートにまたがるVLOOKUPや、複雑な条件付き集計を、HTMLで再現することは現実的ではありません。一覧管理も、リアルタイムの編集や複数人でのデータ入力が必要であれば、ExcelやGoogle スプレッドシートのほうが適しています。</p>
+
+      <p>しかし「見せる」という行為は、HTMLが圧倒的に得意とする領域です。</p>
+
+      <p>考えてみてください。Excelで作ったグラフは、拡大するとぼやけます。スマートフォンで開くと崩れます。検索ボックスはありません。フィルターは機能するものの、URLで共有したり、ブラウザのブックマークに登録したりはできません。</p>
+
+      <p>HTMLにはこれらすべての問題が存在しません。</p>
+
+      <p><strong>「計算はExcel、見せることはHTML」——この分業こそが、この章の核心です。</strong></p>
+
+      <p>Excelで集計した結果をHTMLに渡します。この流れを設計することで、それぞれのツールが最も得意なことに集中できるようになります。財務部門が精緻に組み上げた数値モデルを壊す必要はありません。ただ、その結果を「誰かに見せる」フェーズだけを、HTMLに任せるのです。</p>
+
+      <hr>
+
+      <blockquote class="column-box">
+        <h4>〔コラム〕　なぜExcelダッシュボードは見づらいのか</h4>
+        <p>Excelで「ダッシュボード」を作ったことがある方は多いと思います。グラフを並べ、条件付き書式で色を付け、見栄えを整える作業は、慣れた方なら数時間でこなせます。しかし完成したものを改めて眺めると、どこか窮屈で、洗練されていない印象が残ることはないでしょうか。</p>
+        <p>これはExcelの限界ではなく、「使い方のミスマッチ」によるものです。Excelのセルは「数値を入力する場所」として設計されており、自由なレイアウトや豊富なビジュアル表現は本来の設計思想にありません。見づらいExcelダッシュボードは、ハンマーで壁に絵を描こうとした結果です。道具を間違えているだけで、あなたのセンスの問題ではありません。</p>
+      </blockquote>
+
+      <hr>
+
+      <h2>5-2　一覧・リストをHTMLで作る</h2>
+
+      <h3>「あの表、検索できたらいいのに」という声を聞いたことはありませんか</h3>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】社員のスキルマップをHTMLの表で作りたい。名前・部署・スキルで瞬時に絞り込めるようにしたい<br>
+        【含める要素】氏名・部署・主なスキル・レベルの4列、リアルタイム検索ボックス（入力した瞬間に表が絞り込まれる）、列ヘッダーをクリックした昇順・降順ソート、行のホバー時のハイライト<br>
+        【スタイル】ビジネス向け、シンプルで視認性の高いテーブルデザイン<br>
+        【出力形式】完全なHTMLファイルとして出力してください<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <p>職場のどこかに、「見るだけで更新は誰かがやる」という表が存在しないでしょうか。社内のメンバーリスト、取引先の連絡先一覧、プロジェクト別のタスク管理表——誰もが使うけれど、誰も管理に喜びを感じていない表です。</p>
+
+      <p>Excelでこうした表を作ると、いくつかの問題が生じます。開くたびに読み込みが遅い、スマートフォンでは見づらい、フィルターの設定が外れる、最新版がどれかわからなくなる……。</p>
+
+      <p>HTMLの表は、これらの問題を根本から解決する可能性を持っています。</p>
+
+      <hr>
+
+      <h3>検索・ソート・フィルター機能付きの表</h3>
+
+      <p>HTMLで作る表の最大の強みは、<strong>ブラウザ上でリアルタイムに動作するインタラクション</strong>（操作への反応）を持てることです。テキストボックスに文字を入力すると、瞬時に一致する行だけが表示されます。列のヘッダーをクリックすると、その列で並び替えられます。こうした機能を、生成AIに依頼することで実現できます。</p>
+
+      <p>たとえば、社員のスキルマップをExcelで管理していたとします。「Aさんのスキル」「B部門のメンバー」「Pythonができる人」を調べるたびに、Excelのフィルターを設定し直す手間があります。HTMLに変換し、検索ボックスを一つ追加するだけで、この手間はほぼゼロになります。</p>
+
+      <p>以下は、生成AIに依頼して作成した「検索機能付きの社員スキル一覧表」の例です。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;社員スキルマップ&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
+    h1 { font-size: 1.4rem; color: #333; }
+    #searchBox {
+      width: 100%; padding: 10px;
+      font-size: 1rem; border: 1px solid #ccc;
+      border-radius: 6px; margin-bottom: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th {
+      background: #2c5282; color: white;
+      padding: 10px 14px; text-align: left;
+      cursor: pointer; user-select: none;
+    }
+    th:hover { background: #2a4a7f; }
+    td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; }
+    tr:hover { background: #ebf4ff; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;社員スキルマップ&lt;/h1&gt;
+  &lt;input type="text" id="searchBox" placeholder="名前・部署・スキルで検索..."&gt;
+  &lt;table id="skillTable"&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th onclick="sortTable(0)"&gt;氏名&lt;/th&gt;
+        &lt;th onclick="sortTable(1)"&gt;部署&lt;/th&gt;
+        &lt;th onclick="sortTable(2)"&gt;主なスキル&lt;/th&gt;
+        &lt;th onclick="sortTable(3)"&gt;レベル&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;td&gt;田中 明子&lt;/td&gt;&lt;td&gt;営業部&lt;/td&gt;&lt;td&gt;Excel・PowerPoint・交渉術&lt;/td&gt;&lt;td&gt;上級&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;佐藤 健一&lt;/td&gt;&lt;td&gt;技術部&lt;/td&gt;&lt;td&gt;Python・データ分析・SQL&lt;/td&gt;&lt;td&gt;中級&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;山田 花子&lt;/td&gt;&lt;td&gt;マーケティング部&lt;/td&gt;&lt;td&gt;Webデザイン・GA4・SEO&lt;/td&gt;&lt;td&gt;上級&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;鈴木 大輔&lt;/td&gt;&lt;td&gt;人事部&lt;/td&gt;&lt;td&gt;採用・制度設計・評価制度&lt;/td&gt;&lt;td&gt;中級&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;伊藤 裕美&lt;/td&gt;&lt;td&gt;技術部&lt;/td&gt;&lt;td&gt;Java・テスト設計・AWS&lt;/td&gt;&lt;td&gt;上級&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;script&gt;
+    // 検索機能
+    document.getElementById('searchBox').addEventListener('input', function() {
+      const keyword = this.value.toLowerCase();
+      document.querySelectorAll('#skillTable tbody tr').forEach(row =&gt; {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(keyword) ? '' : 'none';
+      });
+    });
+    // ソート機能
+    function sortTable(col) {
+      const tbody = document.querySelector('#skillTable tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) =&gt; {
+        const aText = a.cells[col].textContent;
+        const bText = b.cells[col].textContent;
+        return aText.localeCompare(bText, 'ja');
+      });
+      rows.forEach(row =&gt; tbody.appendChild(row));
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p>このコードを生成AIに依頼するときは、「社員スキルマップをHTMLの表で作って。名前・部署・スキル・レベルの列を持ち、リアルタイム検索と列クリックでのソートができるようにして」と伝えるだけです。コードの細部を理解する必要はありません。</p>
+
+      <hr>
+
+      <h3>カード型レイアウトで情報を整理する</h3>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】プロジェクト管理表をカード型レイアウトのHTMLページに変換したい<br>
+        【含める要素】プロジェクト名・担当者・期限・進捗率のカード、進捗バー（視覚的な棒グラフ）、ステータスバッジ（「進行中」緑・「要確認」黄・「遅延」赤）、カードのフィルタリングボタン（ステータス別に絞り込み）<br>
+        【スタイル】ビジネス向け、カードに影を付けた洗練されたレイアウト<br>
+        【出力形式】完全なHTMLファイルとして出力してください<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <p>Excelの表が「行×列」という形式に縛られているのに対し、HTMLは「カード型レイアウト」という全く異なる表現を使うことができます。</p>
+
+      <p>カード型とは、各情報を小さなカード状のブロックとして並べるレイアウトです。人名鑑、製品カタログ、プロジェクト一覧など、「個々の対象をひとつのまとまりとして見せたい」場面に特に有効です。</p>
+
+      <p>たとえばプロジェクト管理表を例に取りましょう。Excelでは、プロジェクト名・担当者・期限・進捗率を列で管理します。しかしHTMLのカード型レイアウトに変換すると、各プロジェクトが独立したカードになり、担当者の名前、進捗バー、ステータスバッジが視覚的に整理されます。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;プロジェクト一覧&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; padding: 24px; background: #f0f4f8; }
+    h1 { font-size: 1.4rem; color: #2d3748; margin-bottom: 20px; }
+    .cards { display: flex; flex-wrap: wrap; gap: 16px; }
+    .card {
+      background: white; border-radius: 10px;
+      padding: 20px; width: 280px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .card h2 { font-size: 1rem; color: #2d3748; margin: 0 0 8px; }
+    .meta { font-size: 0.85rem; color: #718096; margin-bottom: 12px; }
+    .progress-bar {
+      background: #e2e8f0; border-radius: 999px;
+      height: 8px; overflow: hidden; margin-bottom: 8px;
+    }
+    .progress-fill { height: 100%; border-radius: 999px; }
+    .label { font-size: 0.8rem; color: #4a5568; }
+    .badge {
+      display: inline-block; padding: 2px 10px;
+      border-radius: 999px; font-size: 0.78rem;
+      font-weight: bold; margin-top: 10px;
+    }
+    .badge.green { background: #c6f6d5; color: #276749; }
+    .badge.yellow { background: #fefcbf; color: #744210; }
+    .badge.red { background: #fed7d7; color: #9b2c2c; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;プロジェクト一覧&lt;/h1&gt;
+  &lt;div class="cards"&gt;
+    &lt;div class="card"&gt;
+      &lt;h2&gt;新CRM導入プロジェクト&lt;/h2&gt;
+      &lt;div class="meta"&gt;担当：田中 明子 ／ 期限：2025年9月30日&lt;/div&gt;
+      &lt;div class="progress-bar"&gt;
+        &lt;div class="progress-fill" style="width:72%; background:#48bb78;"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="label"&gt;進捗 72%&lt;/div&gt;
+      &lt;span class="badge green"&gt;進行中&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="card"&gt;
+      &lt;h2&gt;社内ナレッジDB構築&lt;/h2&gt;
+      &lt;div class="meta"&gt;担当：佐藤 健一 ／ 期限：2025年10月15日&lt;/div&gt;
+      &lt;div class="progress-bar"&gt;
+        &lt;div class="progress-fill" style="width:40%; background:#ecc94b;"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="label"&gt;進捗 40%&lt;/div&gt;
+      &lt;span class="badge yellow"&gt;要確認&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="card"&gt;
+      &lt;h2&gt;採用ページリニューアル&lt;/h2&gt;
+      &lt;div class="meta"&gt;担当：山田 花子 ／ 期限：2025年8月31日&lt;/div&gt;
+      &lt;div class="progress-bar"&gt;
+        &lt;div class="progress-fill" style="width:15%; background:#fc8181;"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="label"&gt;進捗 15%&lt;/div&gt;
+      &lt;span class="badge red"&gt;遅延&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p>このレイアウトを見たとき、Excelの行×列表示と比べて、どちらが「状況を把握しやすいか」を感じていただけるはずです。</p>
+
+      <hr>
+
+      <h3>ステータス管理・進捗表示の視覚化</h3>
+
+      <p>多くのExcel管理表で、「○」「×」「△」「完了」「未着手」「進行中」といった記号や文字でステータスを管理しています。この表現を、HTMLでは色付きバッジやプログレスバーに置き換えることができます。</p>
+
+      <p>視覚的な色分けは、人間の情報処理に直接訴えかけます。「×」という文字を読むより、赤いバッジを目で見るほうが、問題の深刻さが即座に伝わります。これは見た目の話ではなく、情報伝達の効率の話です。</p>
+
+      <p>Excelの条件付き書式でも似たことはできますが、HTMLのバッジは任意のテキストと色の組み合わせを自由に設計でき、スマートフォンでも崩れません。</p>
+
+      <hr>
+
+      <h2>5-3　ダッシュボードをHTMLで作る</h2>
+
+      <h3>あなたのチームに「全員が同じ画面を見る場所」はありますか</h3>
+
+      <p>毎週のチームミーティングで、誰かが画面共有しながらExcelを開いている——そんな光景は多くの職場で見られます。KPIの進捗を確認するために、担当者がExcelを手動で更新し、会議直前にメールで送ります。受け取った側はそのExcelを開き、自分のシートに集計し直す……。</p>
+
+      <p>このプロセスに費やしているエネルギーを、HTMLダッシュボードは大幅に削減できます。</p>
+
+      <hr>
+
+      <h3>KPIカード・グラフ・表を組み合わせたページ構成</h3>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】月次チームKPIダッシュボードをHTMLで作りたい。ページを開いたときに数値がカウントアップするアニメーションを入れたい<br>
+        【含める要素】売上・新規顧客数・タスク完了率の3枚のKPIカード（ページ読み込み時に0から目標値までカウントアップするアニメーション）、Chart.jsを使った月次売上推移の折れ線グラフ、部門別実績の詳細表（達成率に応じて色が変わる）<br>
+        【スタイル】ビジネス向け、明るく視認性の高いダッシュボードデザイン<br>
+        【出力形式】完全なHTMLファイルとして出力してください<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <p>ビジネスダッシュボードの典型的なレイアウトは、次の三要素で構成されます。</p>
+
+      <ol>
+        <li><strong>KPIカード</strong>：単一の重要指標を大きな数字で表示するブロックです。「今月の売上：1,230万円」「新規顧客：47件」といった数値を一目でわかるよう表示します。</li>
+        <li><strong>グラフ</strong>：時系列の変化や比較を視覚化する部分です。折れ線グラフ、棒グラフ、円グラフなど用途に応じて使い分けます。</li>
+        <li><strong>詳細表</strong>：グラフの背後にある詳細なデータを表で補足します。グラフで大局を掴み、表で詳細を確認する——この二段構えが情報密度と可読性を両立させます。</li>
+      </ol>
+
+      <p>以下は、Chart.js（チャートジェイエス）ライブラリを使った月次ダッシュボードの例です。Chart.jsとは、ブラウザ上でグラフを描画するための無料のJavaScriptライブラリで、生成AIとの組み合わせで簡単に利用できます。</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;月次チームダッシュボード&lt;/title&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; background: #f7fafc; padding: 24px; color: #2d3748; }
+    h1 { font-size: 1.5rem; margin-bottom: 24px; }
+
+    /* KPIカード */
+    .kpi-row { display: flex; gap: 16px; margin-bottom: 24px; }
+    .kpi-card {
+      background: white; border-radius: 10px;
+      padding: 20px 24px; flex: 1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    .kpi-label { font-size: 0.85rem; color: #718096; margin-bottom: 6px; }
+    .kpi-value { font-size: 2rem; font-weight: bold; color: #2c5282; }
+    .kpi-change { font-size: 0.82rem; margin-top: 4px; }
+    .up { color: #276749; }
+    .down { color: #c53030; }
+
+    /* グラフ */
+    .chart-area {
+      background: white; border-radius: 10px;
+      padding: 24px; margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    canvas { max-height: 260px; }
+
+    /* 詳細表 */
+    .table-area {
+      background: white; border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #ebf4ff; color: #2c5282; padding: 10px 14px; text-align: left; }
+    td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;月次チームダッシュボード（2025年8月）&lt;/h1&gt;
+
+  &lt;!-- KPIカード --&gt;
+  &lt;div class="kpi-row"&gt;
+    &lt;div class="kpi-card"&gt;
+      &lt;div class="kpi-label"&gt;今月の売上&lt;/div&gt;
+      &lt;div class="kpi-value"&gt;1,230万円&lt;/div&gt;
+      &lt;div class="kpi-change up"&gt;▲ 先月比 +8.5%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="kpi-card"&gt;
+      &lt;div class="kpi-label"&gt;新規顧客数&lt;/div&gt;
+      &lt;div class="kpi-value"&gt;47件&lt;/div&gt;
+      &lt;div class="kpi-change up"&gt;▲ 先月比 +12件&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="kpi-card"&gt;
+      &lt;div class="kpi-label"&gt;タスク完了率&lt;/div&gt;
+      &lt;div class="kpi-value"&gt;83%&lt;/div&gt;
+      &lt;div class="kpi-change down"&gt;▼ 先月比 -3pt&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 折れ線グラフ --&gt;
+  &lt;div class="chart-area"&gt;
+    &lt;h2 style="font-size:1rem; margin-bottom:16px;"&gt;月次売上推移（万円）&lt;/h2&gt;
+    &lt;canvas id="salesChart"&gt;&lt;/canvas&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 詳細表 --&gt;
+  &lt;div class="table-area"&gt;
+    &lt;h2 style="font-size:1rem; margin-bottom:16px;"&gt;部門別実績&lt;/h2&gt;
+    &lt;table&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;部門&lt;/th&gt;&lt;th&gt;売上目標&lt;/th&gt;&lt;th&gt;実績&lt;/th&gt;&lt;th&gt;達成率&lt;/th&gt;&lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;東日本営業&lt;/td&gt;&lt;td&gt;500万円&lt;/td&gt;&lt;td&gt;532万円&lt;/td&gt;&lt;td&gt;106%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;西日本営業&lt;/td&gt;&lt;td&gt;480万円&lt;/td&gt;&lt;td&gt;461万円&lt;/td&gt;&lt;td&gt;96%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;オンライン&lt;/td&gt;&lt;td&gt;200万円&lt;/td&gt;&lt;td&gt;237万円&lt;/td&gt;&lt;td&gt;119%&lt;/td&gt;&lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['3月', '4月', '5月', '6月', '7月', '8月'],
+        datasets: [{
+          label: '売上（万円）',
+          data: [980, 1050, 1120, 1080, 1134, 1230],
+          borderColor: '#4299e1',
+          backgroundColor: 'rgba(66,153,225,0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: false } }
+      }
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <p>このコードを見て「難しそう」と感じても大丈夫です。実際の業務で使うときは、このコードをゼロから書く必要はありません。生成AIに「月次売上・新規顧客数・タスク完了率の3つのKPIカードと、売上の折れ線グラフ、部門別の実績表を含むHTMLダッシュボードを作って。Chart.jsを使って」と依頼するだけで、ほぼ同等のものが生成されます。</p>
+
+      <hr>
+
+      <h3>Chart.jsを使ったグラフの基本</h3>
+
+      <hr>
+
+      <blockquote class="prompt-box">
+        <strong>💡 AIへの依頼例</strong><br><br>
+        【目的】Chart.jsを使って部門別売上と達成率を視覚化するHTMLページを作りたい<br>
+        【含める要素】棒グラフ（部門別売上、X軸に部門名・Y軸に売上金額）、折れ線グラフ（月次推移）、円グラフ（チャネル別売上構成比）、グラフをクリックすると詳細情報がポップアップ表示<br>
+        【スタイル】ビジネス向け、青系のカラーパレットで統一感のある配色<br>
+        【出力形式】完全なHTMLファイルとして出力してください<br><br>
+        <em>このプロンプトをそのままClaude/ChatGPT/Geminiに貼り付けて使えます。</em>
+      </blockquote>
+
+      <hr>
+
+      <p>Chart.jsは、HTMLファイル内に一行のコードを書くだけで読み込めるグラフライブラリです（<code>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;</code> の一行です）。棒グラフ、折れ線グラフ、円グラフ、レーダーチャートなど多様なグラフタイプを持ち、グラフをクリックするとツールチップ（詳細情報の吹き出し）が表示されるインタラクション機能も備えています。</p>
+
+      <p>ビジネスで最もよく使われるのは以下の三種類です。</p>
+
+      <ul>
+        <li><strong>折れ線グラフ（line）</strong>：時系列の変化を追うときに最適です。売上推移、アクセス数変化など</li>
+        <li><strong>棒グラフ（bar）</strong>：カテゴリ間の比較をするときに最適です。部門別実績、製品別売上など</li>
+        <li><strong>円グラフ（doughnut / pie）</strong>：構成比を見せるときに最適です。チャネル別比率、カテゴリ別割合など</li>
+      </ul>
+
+      <p>生成AIに依頼するとき、「Chart.jsの棒グラフで、X軸に月、Y軸に売上金額、色は青系で」という指示レベルで十分です。生成AIが適切なコードを生成してくれます。</p>
+
+      <hr>
+
+      <h3>データをJSONで持ち、HTMLで表示する分離の発想</h3>
+
+      <p>ここで少し発想の話をします。上記のコードをよく見ると、<code>data: [980, 1050, 1120, 1080, 1134, 1230]</code> という部分があります。これがグラフに表示される数値そのものです。</p>
+
+      <p>Excelでは、数値とその表示（グラフ）が同じファイルの中に混在しています。数値を変えれば自動的にグラフが変わるのは便利ですが、「数値の部分」と「グラフの設計の部分」が強く結びついているため、柔軟な管理が難しくなります。</p>
+
+      <p>HTMLベースのアプローチでは、<strong>データ（何を表示するか）と表示（どう見せるか）を分離する</strong>ことが可能です。</p>
+
+      <p>JSONとは「JavaScript Object Notation（ジャバスクリプト・オブジェクト・ノーテーション）」の略で、データを記述するためのシンプルな書式です。難しく聞こえますが、要するに「データをテキストで書いたもの」です。</p>
+
+      <pre><code>{
+  "month": ["3月", "4月", "5月", "6月", "7月", "8月"],
+  "sales": [980, 1050, 1120, 1080, 1134, 1230]
+}</code></pre>
+
+      <p>このように数値をテキストファイルとして別に管理しておき、HTMLがそれを読み込んでグラフを描画する設計を取ることで、「数値の更新者」と「デザインの設計者」を分けることができます。経理部門が数値ファイルを更新すれば、デザイン担当が手を加えなくても表示が自動的に変わります——これが「データと表示の分離」の実際の価値です。</p>
+
+      <p>すぐにこの設計を実装する必要はありませんが、「将来的にはそういう仕組みができる」という認識を持っておくことは、業務設計の視野を広げます。</p>
+
+      <hr>
+
+      <h2>5-4　Excelから卒業するための移行ステップ</h2>
+
+      <h3>「全部変えなくていい」という前提から始める</h3>
+
+      <p>ここまでの節を読んで、「便利そうだけど、今あるExcelをすべて作り直すのは大変だ」と感じた方もいるかもしれません。その感覚は正しいです。既存のExcelをすべて捨ててHTMLに移行しようとすれば、コストと混乱は計り知れません。</p>
+
+      <p>この章が提案するのは、そのような急激な変革ではありません。<strong>小さく始め、少しずつ拡張する</strong>——この漸進的なアプローチが、現実の職場での変化を成功させる道です。</p>
+
+      <hr>
+
+      <h3>現実的な四つの移行ステップ</h3>
+
+      <p><strong>ステップ1（第1〜2週）：既存の表を一つだけHTMLに変換して共有する</strong></p>
+
+      <p>まず一つ選んでください。「あのメンバーリスト、もっと使いやすくなったらいいのに」と思っている表が、どの職場にも一つはあるはずです。その表のデータをコピーして生成AIに渡し、「検索機能付きのHTMLの表に変換して」と依頼します。完成したら同僚に試してもらいましょう。</p>
+
+      <p>このステップでは、自分自身がHTMLの作成プロセスを体験することと、周囲のフィードバックを得ることが目的です。</p>
+
+      <p><strong>ステップ2（第3〜4週）：月次レポートのグラフ部分をHTMLダッシュボードにする</strong></p>
+
+      <p>毎月作っているExcelレポートのうち、グラフが含まれる部分だけをHTML化します。Excelでの計算と集計はそのまま継続し、最終的な「見せる部分」だけをHTMLに切り出すイメージです。KPIカード数枚と簡単なグラフ一つから始めれば十分です。</p>
+
+      <p><strong>ステップ3（2〜3ヶ月後）：更新の多い一覧管理をHTMLに移行する</strong></p>
+
+      <p>次は更新頻度が高い一覧表——在庫管理表やタスク管理表など——をHTMLに移行します。このタイミングから、「データをJSONで管理する」という分離の設計を試してみるのが理想的です。</p>
+
+      <p><strong>ステップ4（半年後以降）：チーム共有のダッシュボードを設ける</strong></p>
+
+      <p>チームメンバー全員がブラウザで開ける共有ダッシュボードを設置します。ここまで来れば、「毎週のミーティングで誰かがExcelを開く」という習慣は自然に変わっています。</p>
+
+      <hr>
+
+      <h3>ExcelとHTMLは「共存する」</h3>
+
+      <p>この四ステップのどの段階においても、ExcelをゼロにしてHTMLだけにする必要はありません。複雑な財務計算、既存のマクロ、数式が緻密に絡み合ったモデル——これらはExcelのまま保つのが正解です。</p>
+
+      <p>「Excelを否定するためにHTMLを使う」のではなく、「ExcelとHTMLが互いの弱点を補い合う」関係を設計することが、この章の本質的なメッセージです。</p>
+
+      <p>最終的な姿は、<strong>「Excelで計算し、HTMLで伝える」という二層構造</strong>です。ツールを変えるのではなく、仕事の流れを再設計する——この視点から、あなたの今の仕事を見直してみてください。</p>
+
+      <hr>
+
+      <blockquote class="column-box">
+        <h4>読者への問いかけ</h4>
+        <p>あなたが毎月作るExcelレポートのうち、「計算している部分」と「見せている部分」はそれぞれどのくらいを占めていますか。もし「見せる部分だけHTMLに移せたら」と想像してみてください。どの作業が楽になり、どのくらいの時間が生まれるでしょうか。</p>
+        <p>また、あなたのチームで「あの表、検索できたらいいのに」と思っているリストはありますか？そのリストは、おそらくこの章で紹介した方法で1時間以内にHTMLに変換できます。</p>
+      </blockquote>
+
+      <hr>
+
+      <figure class="chapter-figure">
+        <img src="../screenshots/ch05_dashboard.png" alt="KPIダッシュボード" class="figure-img" style="max-width:100%; border:1px solid #d0ccc6; border-radius:6px;">
+        <figcaption>図：サンプル：ch05_dashboard.html — インタラクティブKPIダッシュボード</figcaption>
+      </figure>
+
+      <section class="sample-download">
+        <span class="sample-download-icon">📂</span>
+        <div class="sample-download-body">
+          <strong>本章のサンプルファイル：<code>ch05_dashboard.html</code></strong>
+          <p>本書サポートサイトよりダウンロードし、ブラウザで開いてご確認ください。</p>
+        </div>
+      </section>
+
+      <h2>まとめ</h2>
+
+      <p>この章では、Excelが担っている三つの役割（計算・一覧管理・ダッシュボード）を整理し、「見せる・共有する」という役割をHTMLに切り出すという分業の設計を提案しました。</p>
+
+      <p>主なポイントを振り返ります。</p>
+
+      <ul>
+        <li><strong>Excelの計算は残す</strong>：複雑な数式やVLOOKUPはExcelの仕事です。無理にHTMLに移す必要はありません</li>
+        <li><strong>見せるためのHTMLを作る</strong>：検索・ソート・フィルター付きの表、カード型レイアウト、KPIダッシュボード——これらはHTMLが得意とする表現です</li>
+        <li><strong>Chart.jsを生成AIに任せる</strong>：グラフの作成は生成AIに依頼すれば大丈夫です。コードを書く必要はありません</li>
+        <li><strong>データと表示を分けることを意識する</strong>：Excelに閉じ込められていたデータを外に出し、HTMLが表示する設計が将来の柔軟性を高めます</li>
+        <li><strong>漸進的に移行する</strong>：一度にすべてを変えません。まず一つの表からHTML化を試みましょう</li>
+      </ul>
+
+      <p>「Excelを使うのをやめてください」という話ではありません。「Excelが苦手なことをHTMLに任せましょう」という提案です。その小さな役割分担が、チームのコミュニケーションをどれほど変えるかを、ぜひ実際に体験してみてください。</p>
+
+      <hr>
+
+      <h2>次章への橋渡し</h2>
+
+      <p>この章では、数値データを「表とグラフ」という形で視覚化することを扱いました。次の第6章では、数値ではなく「概念・プロセス・関係性」を図で表現することを扱います。</p>
+
+      <p>フローチャート、組織図、概念図——こうした「説明のための図」は、多くの場合PowerPointやVisioなどのツールで描かれ、画像として貼り付けられています。しかし画像になった図には致命的な問題があります。「古くなっても更新されない」という問題です。</p>
+
+      <p>次章では、SVGという技術を使って図をHTMLの一部にし、データと連動して変化する「生きた図」を実現する方法を探ります。「図を描く」という行為が、生成AIの登場によってどう変わったかを一緒に考えていきましょう。</p>
+
+    </main>
+  </div>
+  <script src="book.js"></script>
+</body>
+</html>

@@ -1,0 +1,579 @@
+﻿<!--
+=============================================================
+このページを生成したAIへのプロンプト例
+=============================================================
+「HTMLの三層構造（骨格・皮膚・動き）を体験できるデモページを作成してください。
+上部にトグルボタンを3つ用意し、
+1. 「HTML（骨格）のみ」— ブラウザのデフォルトスタイルだけの素のHTML
+2. 「HTML+CSS（骨格＋皮膚）」— スタイルが適用されたビジュアル
+3. 「HTML+CSS+JS（完全版）」— フリップカードなどのインタラクション付き
+と切り替えられるようにしてください。
+コンテンツは「チームメンバー紹介カード」を3人分。
+各状態の下に『今何が効いているか』の説明文も表示してください。
+フォントsans-serif、ビジネスライクな配色でお願いします。」
+=============================================================
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTMLの三層構造を体験 | 生成AI時代は、なんでもHTML！</title>
+  <style>
+    /* ============================================
+       ページ全体の基盤スタイル（常時適用）
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      background: #f0f2f5;
+      color: #2c3e50;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a2e4a 0%, #2c5282 100%);
+      color: #fff;
+      padding: 36px 24px;
+      text-align: center;
+    }
+    header .chapter-label {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #90cdf4;
+      margin-bottom: 8px;
+    }
+    header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    header p  { font-size: 14px; color: #bee3f8; }
+
+    /* トグルバー */
+    .toggle-bar {
+      background: #fff;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .toggle-btn {
+      padding: 10px 20px;
+      border: 2px solid #cbd5e0;
+      background: #f7fafc;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #4a5568;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .toggle-btn:hover { border-color: #3182ce; color: #3182ce; }
+    .toggle-btn.active {
+      background: #2b6cb0;
+      border-color: #2b6cb0;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(43,108,176,0.3);
+    }
+
+    /* 状態インジケーター */
+    .state-indicator {
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+    .state-box {
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .state-box .icon { font-size: 28px; flex-shrink: 0; }
+    .state-box .text-content .title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .state-box .text-content p { font-size: 13px; line-height: 1.7; }
+
+    .state-box.s1 { background: #fff8f0; border: 1px solid #fbd38d; }
+    .state-box.s1 .title { color: #b7791f; }
+    .state-box.s2 { background: #ebf8ff; border: 1px solid #90cdf4; }
+    .state-box.s2 .title { color: #2b6cb0; }
+    .state-box.s3 { background: #f0fff4; border: 1px solid #9ae6b4; }
+    .state-box.s3 .title { color: #276749; }
+
+    /* ============================================
+       カード展示エリア
+       ============================================ */
+    .demo-area {
+      max-width: 900px;
+      margin: 24px auto 40px;
+      padding: 0 16px;
+    }
+
+    /* --------  STATE 1: 素のHTML --------  */
+    #cards-wrapper.state-bare {
+      /* スタイルなし — ブラウザデフォルトのみ */
+    }
+    #cards-wrapper.state-bare .card-list {
+      /* リスト解除なし */
+    }
+    #cards-wrapper.state-bare .member-card {
+      /* 何もしない */
+      margin-bottom: 12px;
+      padding: 4px;
+    }
+    #cards-wrapper.state-bare .member-card h3 {
+      /* デフォルトh3 */
+    }
+    #cards-wrapper.state-bare .member-card p {
+      margin: 2px 0;
+    }
+    #cards-wrapper.state-bare .skill-tag {
+      display: inline;
+      font-size: 12px;
+    }
+    #cards-wrapper.state-bare .skill-tag::after { content: " / "; }
+    #cards-wrapper.state-bare .skill-tag:last-child::after { content: ""; }
+    #cards-wrapper.state-bare .flip-inner { /* no flip */ }
+    #cards-wrapper.state-bare .card-back { display: none; }
+    #cards-wrapper.state-bare .flip-hint { display: none; }
+
+    /* --------  STATE 2: CSS適用 --------  */
+    #cards-wrapper.state-styled {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media(max-width:640px){
+      #cards-wrapper.state-styled { grid-template-columns: 1fr; }
+    }
+    #cards-wrapper.state-styled .member-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    #cards-wrapper.state-styled .card-avatar {
+      width: 100%;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    #cards-wrapper.state-styled .card-body-inner {
+      padding: 16px;
+    }
+    #cards-wrapper.state-styled .member-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a2e4a;
+      margin-bottom: 2px;
+    }
+    #cards-wrapper.state-styled .member-role {
+      font-size: 12px;
+      color: #718096;
+      margin-bottom: 10px;
+    }
+    #cards-wrapper.state-styled .member-bio {
+      font-size: 12px;
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    #cards-wrapper.state-styled .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    #cards-wrapper.state-styled .skill-tag {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    #cards-wrapper.state-styled .card-back { display: none; }
+    #cards-wrapper.state-styled .flip-hint { display: none; }
+
+    /* --------  STATE 3: CSS+JS（フリップカード） --------  */
+    #cards-wrapper.state-interactive {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media(max-width:640px){
+      #cards-wrapper.state-interactive { grid-template-columns: 1fr; }
+    }
+    #cards-wrapper.state-interactive .member-card {
+      perspective: 1000px;
+      cursor: pointer;
+      height: 280px;
+    }
+    #cards-wrapper.state-interactive .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+      border-radius: 12px;
+    }
+    #cards-wrapper.state-interactive .member-card.flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+    #cards-wrapper.state-interactive .card-front,
+    #cards-wrapper.state-interactive .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #cards-wrapper.state-interactive .card-front {
+      background: #fff;
+    }
+    #cards-wrapper.state-interactive .card-back {
+      background: linear-gradient(135deg, #1a2e4a, #2c5282);
+      color: #fff;
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #cards-wrapper.state-interactive .card-back h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #bee3f8;
+    }
+    #cards-wrapper.state-interactive .card-back p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #e2e8f0;
+    }
+    #cards-wrapper.state-interactive .card-back .back-quote {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    #cards-wrapper.state-interactive .card-avatar {
+      width: 100%;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    #cards-wrapper.state-interactive .card-body-inner {
+      padding: 14px;
+    }
+    #cards-wrapper.state-interactive .member-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a2e4a;
+      margin-bottom: 2px;
+    }
+    #cards-wrapper.state-interactive .member-role {
+      font-size: 12px;
+      color: #718096;
+      margin-bottom: 8px;
+    }
+    #cards-wrapper.state-interactive .skill-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    #cards-wrapper.state-interactive .skill-tag {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    #cards-wrapper.state-interactive .flip-hint {
+      display: block;
+      font-size: 11px;
+      color: #a0aec0;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* アバター色 */
+    .avatar-navy   { background: linear-gradient(135deg, #1a2e4a, #3182ce); }
+    .avatar-teal   { background: linear-gradient(135deg, #276749, #38a169); }
+    .avatar-purple { background: linear-gradient(135deg, #553c9a, #805ad5); }
+
+    /* コードハイライトボックス */
+    .code-peek {
+      max-width: 900px;
+      margin: 0 auto 32px;
+      padding: 0 16px;
+    }
+    .code-peek pre {
+      background: #1a202c;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    .code-peek .code-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #718096;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .kw  { color: #63b3ed; }
+    .str { color: #68d391; }
+    .cm  { color: #718096; }
+    .tag { color: #fc8181; }
+    .at  { color: #fbd38d; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="chapter-label">Chapter 02</div>
+  <h1>HTMLの三層構造を体験しよう</h1>
+  <p>骨格（HTML）→ 皮膚（CSS）→ 動き（JavaScript）— ボタンで切り替えて確認</p>
+</header>
+
+<!-- トグルボタン -->
+<div class="toggle-bar">
+  <button class="toggle-btn active" id="btn1" onclick="setState(1)">
+    1. HTML（骨格）のみ
+  </button>
+  <button class="toggle-btn" id="btn2" onclick="setState(2)">
+    2. HTML + CSS（骨格＋皮膚）
+  </button>
+  <button class="toggle-btn" id="btn3" onclick="setState(3)">
+    3. HTML + CSS + JS（完全版）
+  </button>
+</div>
+
+<!-- 状態の説明 -->
+<div class="state-indicator">
+  <div class="state-box s1" id="desc1">
+    <div class="icon">🦴</div>
+    <div class="text-content">
+      <div class="title">状態 1 — HTML（骨格）のみ</div>
+      <p>
+        ブラウザが持つデフォルトスタイルだけが適用されています。
+        見た目は地味ですが、<strong>コンテンツの意味構造（セマンティクス）はすでに完成</strong>しています。
+        &lt;h3&gt;は見出し、&lt;p&gt;は段落——HTMLタグは「意味」を定義します。
+      </p>
+    </div>
+  </div>
+  <div class="state-box s2" id="desc2" style="display:none;">
+    <div class="icon">🎨</div>
+    <div class="text-content">
+      <div class="title">状態 2 — HTML + CSS（骨格＋皮膚）</div>
+      <p>
+        CSSを追加すると、同じHTMLが一気にビジュアル化されます。
+        <strong>色・レイアウト・フォントはすべてCSSが担当</strong>。
+        HTMLには一切手を加えていません。これが「役割分担」の力です。
+      </p>
+    </div>
+  </div>
+  <div class="state-box s3" id="desc3" style="display:none;">
+    <div class="icon">⚡</div>
+    <div class="text-content">
+      <div class="title">状態 3 — HTML + CSS + JS（完全版）</div>
+      <p>
+        JavaScriptが加わり、カードが<strong>クリックでフリップ（裏返し）</strong>するようになりました。
+        HTMLは骨格・CSSは見た目・JSは振る舞い——三つが揃って初めてリッチなWebページが完成します。
+        <strong>カードをクリックしてみましょう。</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- カード展示エリア -->
+<div class="demo-area">
+  <div id="cards-wrapper" class="state-bare">
+
+    <!-- メンバー1 -->
+    <div class="member-card" onclick="flipCard(this)">
+      <div class="flip-inner">
+        <div class="card-front">
+          <div class="card-avatar avatar-navy">👨‍💼</div>
+          <div class="card-body-inner">
+            <h3>田中 誠一</h3>
+            <p class="member-role">プロジェクトマネージャー</p>
+            <p class="member-bio">大手製造業向けのDXプロジェクトを10年以上牽引。チームの橋渡し役として活躍中。</p>
+            <div class="skill-tags">
+              <span class="skill-tag">PM</span>
+              <span class="skill-tag">DX推進</span>
+              <span class="skill-tag">ステークホルダー管理</span>
+            </div>
+            <span class="flip-hint">← クリックして裏面を見る →</span>
+          </div>
+        </div>
+        <div class="card-back">
+          <div class="back-quote">💬</div>
+          <h4>田中 誠一のひとこと</h4>
+          <p>「報告書をHTMLにしたら、上司からの質問が半分になりました。見える化は最強のコミュニケーション。」</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- メンバー2 -->
+    <div class="member-card" onclick="flipCard(this)">
+      <div class="flip-inner">
+        <div class="card-front">
+          <div class="card-avatar avatar-teal">👩‍💻</div>
+          <div class="card-body-inner">
+            <h3>鈴木 あかり</h3>
+            <p class="member-role">フロントエンド開発者</p>
+            <p class="member-bio">社内ツールのHTML化を推進。「難しいコードは書かない」をモットーに、誰でも使えるUI設計が得意。</p>
+            <div class="skill-tags">
+              <span class="skill-tag">HTML/CSS</span>
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">UI設計</span>
+            </div>
+            <span class="flip-hint">← クリックして裏面を見る →</span>
+          </div>
+        </div>
+        <div class="card-back">
+          <div class="back-quote">💬</div>
+          <h4>鈴木 あかりのひとこと</h4>
+          <p>「CSSをマスターした日、Excelのセル結合が嫌いになりました（笑）。レイアウトはCSSに任せましょう。」</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- メンバー3 -->
+    <div class="member-card" onclick="flipCard(this)">
+      <div class="flip-inner">
+        <div class="card-front">
+          <div class="card-avatar avatar-purple">👨‍🏫</div>
+          <div class="card-body-inner">
+            <h3>山本 健太郎</h3>
+            <p class="member-role">社内研修トレーナー</p>
+            <p class="member-bio">非エンジニア向けのHTML研修を担当。受講者300名超のカリキュラムを設計・実施。</p>
+            <div class="skill-tags">
+              <span class="skill-tag">研修設計</span>
+              <span class="skill-tag">ドキュメント</span>
+              <span class="skill-tag">教育DX</span>
+            </div>
+            <span class="flip-hint">← クリックして裏面を見る →</span>
+          </div>
+        </div>
+        <div class="card-back">
+          <div class="back-quote">💬</div>
+          <h4>山本 健太郎のひとこと</h4>
+          <p>「HTMLを教えると、受講者の顔がパッと明るくなる瞬間があります。『これ、自分でも作れる！』という気づきの瞬間です。」</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#cards-wrapper -->
+</div>
+
+<!-- コードをちら見せ -->
+<div class="code-peek" id="code-peek-area">
+  <div class="code-title" id="code-title">▼ 今効いているコード（抜粋）</div>
+  <pre id="code-display"></pre>
+</div>
+
+<footer>
+  サンプルコード — 書籍「生成AI時代は、なんでもHTML！」Chapter 02
+</footer>
+
+<script>
+  const codeSnippets = {
+    1: `<span class="cm">&lt;!-- HTMLだけ。タグで「意味」を定義する --&gt;</span>
+<span class="tag">&lt;div</span> <span class="at">class</span>=<span class="str">"member-card"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>田中 誠一<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;p</span> <span class="at">class</span>=<span class="str">"member-role"</span><span class="tag">&gt;</span>プロジェクトマネージャー<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;p</span> <span class="at">class</span>=<span class="str">"member-bio"</span><span class="tag">&gt;</span>大手製造業向けのDXプロジェクトを...<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- CSSなし → ブラウザのデフォルトスタイルだけ適用 --&gt;</span>`,
+
+    2: `<span class="cm">/* CSSでビジュアルを定義する */</span>
+<span class="kw">.member-card</span> {
+  <span class="at">background</span>: <span class="str">#fff</span>;
+  <span class="at">border-radius</span>: <span class="str">12px</span>;
+  <span class="at">box-shadow</span>: <span class="str">0 2px 8px rgba(0,0,0,0.08)</span>;
+  <span class="at">overflow</span>: <span class="str">hidden</span>;
+}
+<span class="kw">.skill-tag</span> {
+  <span class="at">background</span>: <span class="str">#ebf8ff</span>;
+  <span class="at">color</span>: <span class="str">#2b6cb0</span>;
+  <span class="at">border-radius</span>: <span class="str">12px</span>;
+  <span class="at">padding</span>: <span class="str">3px 8px</span>;
+}
+<span class="cm">/* HTMLは一文字も変えていない */</span>`,
+
+    3: `<span class="cm">// JavaScriptで「動き」を追加する</span>
+<span class="kw">function</span> flipCard(card) {
+  <span class="cm">// state-interactive のときだけフリップ動作</span>
+  <span class="kw">if</span> (currentState === <span class="str">3</span>) {
+    card.classList.toggle(<span class="str">'flipped'</span>);
+  }
+}
+
+<span class="cm">/* CSSで回転アニメーションを定義済み */</span>
+<span class="kw">.flip-inner</span> {
+  <span class="at">transition</span>: <span class="str">transform 0.6s cubic-bezier(0.4,0,0.2,1)</span>;
+}
+<span class="kw">.member-card.flipped .flip-inner</span> {
+  <span class="at">transform</span>: <span class="str">rotateY(180deg)</span>;
+}`
+  };
+
+  let currentState = 1;
+
+  function setState(n) {
+    currentState = n;
+
+    // ボタンのアクティブ状態
+    [1,2,3].forEach(i => {
+      document.getElementById('btn'+i).classList.toggle('active', i===n);
+    });
+
+    // 説明文の表示切り替え
+    [1,2,3].forEach(i => {
+      document.getElementById('desc'+i).style.display = (i===n) ? 'flex' : 'none';
+    });
+
+    // フリップ解除
+    document.querySelectorAll('.member-card').forEach(c => c.classList.remove('flipped'));
+
+    // カードのクラス切り替え
+    const wrapper = document.getElementById('cards-wrapper');
+    wrapper.className = n===1 ? 'state-bare' : n===2 ? 'state-styled' : 'state-interactive';
+
+    // コード表示
+    document.getElementById('code-display').innerHTML = codeSnippets[n];
+  }
+
+  function flipCard(card) {
+    if (currentState === 3) {
+      card.classList.toggle('flipped');
+    }
+  }
+
+  // 初期コード表示
+  document.getElementById('code-display').innerHTML = codeSnippets[1];
+</script>
+
+</body>
+</html>

@@ -1,0 +1,833 @@
+<!--
+================================================================================
+このページを生成したAIへのプロンプト例:
+
+「社内稟議プロセスのフロー図をSVGで作成してください。
+ステップは「申請」「部門長承認」「経理確認」「役員決裁」「完了」で、
+承認ルートと差戻しルートを色分け（緑/赤）してください。
+ページロード時にノードが順番にフェードインするアニメーションを付け、
+ホバー時に各ステップの説明ポップアップを表示してください。
+また「ステップを順番に見る」ボタンでハイライトが順番に移動するデモモードも実装してください。
+ビジネスライクなデザインで、日本語UIにしてください。」
+================================================================================
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社内稟議プロセス フロー図</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Meiryo", "游ゴシック", "Yu Gothic", sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header .icon { font-size: 28px; }
+    header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.05em; }
+    header p { font-size: 13px; color: #a0b0c8; margin-top: 4px; }
+
+    .container {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e8eaf0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .badge {
+      font-size: 11px;
+      background: #e8f0fe;
+      color: #1967d2;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 600;
+    }
+
+    /* コントロールバー */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: #1967d2;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1558b0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(25,103,210,0.3); }
+    .btn-secondary {
+      background: #f1f3f4;
+      color: #3c4043;
+      border: 1px solid #dadce0;
+    }
+    .btn-secondary:hover { background: #e8eaed; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    .step-counter {
+      font-size: 13px;
+      color: #5f6368;
+      margin-left: auto;
+    }
+    .step-counter span {
+      font-weight: 700;
+      color: #1967d2;
+    }
+
+    /* 凡例 */
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #5f6368;
+    }
+    .legend-color {
+      width: 24px;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* SVGコンテナ */
+    .svg-container {
+      position: relative;
+      overflow: visible;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ポップアップ */
+    .popup {
+      position: absolute;
+      background: #1a1a2e;
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      line-height: 1.6;
+      max-width: 240px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .popup::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      width: 12px;
+      height: 12px;
+      background: #1a1a2e;
+      transform: rotate(45deg);
+    }
+    .popup.visible { opacity: 1; }
+    .popup-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #8ab4f8;
+      font-size: 13px;
+    }
+    .popup ul { padding-left: 14px; }
+    .popup li { margin-bottom: 3px; }
+
+    /* プロンプト説明ボックス */
+    .prompt-box {
+      background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+      border: 1px solid #c5d0f0;
+      border-left: 4px solid #1967d2;
+      border-radius: 8px;
+      padding: 20px 24px;
+    }
+    .prompt-box h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1967d2;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .prompt-code {
+      background: #fff;
+      border: 1px solid #dde3f0;
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #3c4043;
+      white-space: pre-wrap;
+      font-family: "Consolas", "Courier New", monospace;
+    }
+
+    /* ステータスバー */
+    .status-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .status-chip {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .chip-waiting { background: #f1f3f4; color: #5f6368; }
+    .chip-active { background: #e8f0fe; color: #1967d2; }
+    .chip-approved { background: #e6f4ea; color: #137333; }
+    .chip-returned { background: #fce8e6; color: #c5221f; }
+
+    /* アニメーション定義 */
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes pulse {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(25,103,210,0.6)); }
+      50% { filter: drop-shadow(0 0 16px rgba(25,103,210,0.9)); }
+    }
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -20; }
+    }
+
+    .node-group {
+      opacity: 0;
+      animation: fadeInScale 0.4s ease forwards;
+    }
+    .node-group.n0 { animation-delay: 0.1s; }
+    .node-group.n1 { animation-delay: 0.4s; }
+    .node-group.n2 { animation-delay: 0.7s; }
+    .node-group.n3 { animation-delay: 1.0s; }
+    .node-group.n4 { animation-delay: 1.3s; }
+    .node-group.n5 { animation-delay: 1.6s; }
+    .node-group.n6 { animation-delay: 1.9s; }
+
+    .edge-group {
+      opacity: 0;
+      animation: fadeInScale 0.3s ease forwards;
+    }
+    .e0 { animation-delay: 0.25s; }
+    .e1 { animation-delay: 0.55s; }
+    .e2 { animation-delay: 0.85s; }
+    .e3 { animation-delay: 1.15s; }
+    .e4 { animation-delay: 1.45s; }
+    .e5 { animation-delay: 1.75s; }
+
+    .highlighted rect, .highlighted ellipse, .highlighted polygon {
+      filter: drop-shadow(0 0 10px rgba(25,103,210,0.8));
+    }
+    .highlighted {
+      animation: pulse 1.2s ease-in-out infinite !important;
+    }
+
+    .flow-arrow {
+      stroke-dasharray: 10 4;
+      animation: dashFlow 0.6s linear infinite;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="icon">📋</div>
+  <div>
+    <h1>社内稟議プロセス フロー図</h1>
+    <p>SVGアニメーションによる業務プロセス可視化デモ — 第6章サンプル</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- フロー図カード -->
+  <div class="card">
+    <div class="card-title">
+      稟議申請フロー
+      <span class="badge">SVG + Animation</span>
+    </div>
+
+    <!-- コントロール -->
+    <div class="controls">
+      <button class="btn btn-primary" id="btnDemo" onclick="startDemo()">
+        ▶ ステップを順番に見る
+      </button>
+      <button class="btn btn-secondary" id="btnStop" onclick="stopDemo()" disabled>
+        ■ 停止
+      </button>
+      <button class="btn btn-secondary" onclick="resetHighlight()">
+        ↺ リセット
+      </button>
+      <span class="step-counter" id="stepCounter">ステップ: <span>-</span> / 5</span>
+    </div>
+
+    <!-- 凡例 -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background:#1967d2"></div>
+        通常フロー
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#137333"></div>
+        承認ルート
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#c5221f"></div>
+        差戻しルート
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#e37400"></div>
+        条件分岐
+      </div>
+    </div>
+
+    <!-- SVGフロー図 -->
+    <div class="svg-container" id="svgContainer">
+      <svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" id="flowSvg">
+        <defs>
+          <!-- 矢印マーカー (通常) -->
+          <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#1967d2"/>
+          </marker>
+          <!-- 矢印マーカー (承認) -->
+          <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#137333"/>
+          </marker>
+          <!-- 矢印マーカー (差戻し) -->
+          <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#c5221f"/>
+          </marker>
+          <!-- グラデーション (ノード背景) -->
+          <linearGradient id="grad-start" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#e8f0fe;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#d2e3fc;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="grad-end" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#e6f4ea;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ceead6;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="grad-diamond" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#fff8e1;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#feefc3;stop-opacity:1" />
+          </linearGradient>
+          <filter id="shadow">
+            <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.15)"/>
+          </filter>
+        </defs>
+
+        <!-- ========== エッジ (矢印) ========== -->
+
+        <!-- 申請 → 部門長承認 -->
+        <g class="edge-group e0">
+          <line x1="130" y1="100" x2="130" y2="165"
+                stroke="#1967d2" stroke-width="2.5"
+                marker-end="url(#arrow-blue)"/>
+          <text x="140" y="138" font-size="11" fill="#5f6368">申請</text>
+        </g>
+
+        <!-- 部門長承認 → 分岐1 -->
+        <g class="edge-group e1">
+          <line x1="130" y1="225" x2="130" y2="285"
+                stroke="#1967d2" stroke-width="2.5"
+                marker-end="url(#arrow-blue)"/>
+        </g>
+
+        <!-- 分岐1 → 経理確認 (承認) -->
+        <g class="edge-group e2">
+          <line x1="162" y1="315" x2="300" y2="315"
+                stroke="#137333" stroke-width="2.5"
+                marker-end="url(#arrow-green)"/>
+          <text x="195" y="308" font-size="11" fill="#137333" font-weight="600">承認</text>
+        </g>
+
+        <!-- 分岐1 → 差戻し (部門長) -->
+        <g class="edge-group e2">
+          <path d="M 98 315 Q 30 315 30 200 Q 30 100 98 100"
+                stroke="#c5221f" stroke-width="2" fill="none"
+                marker-end="url(#arrow-red)" stroke-dasharray="6,3"/>
+          <text x="10" y="220" font-size="11" fill="#c5221f" font-weight="600" transform="rotate(-90, 10, 220)">差戻し</text>
+        </g>
+
+        <!-- 経理確認 → 分岐2 -->
+        <g class="edge-group e3">
+          <line x1="430" y1="315" x2="500" y2="315"
+                stroke="#1967d2" stroke-width="2.5"
+                marker-end="url(#arrow-blue)"/>
+        </g>
+
+        <!-- 分岐2 → 役員決裁 (承認) -->
+        <g class="edge-group e4">
+          <line x1="532" y1="283" x2="532" y2="225"
+                stroke="#137333" stroke-width="2.5"
+                marker-end="url(#arrow-green)"/>
+          <text x="542" y="260" font-size="11" fill="#137333" font-weight="600">承認</text>
+        </g>
+
+        <!-- 分岐2 → 差戻し (経理) -->
+        <g class="edge-group e4">
+          <path d="M 532 347 Q 532 400 365 400 Q 200 400 200 350"
+                stroke="#c5221f" stroke-width="2" fill="none"
+                marker-end="url(#arrow-red)" stroke-dasharray="6,3"/>
+          <text x="350" y="420" font-size="11" fill="#c5221f" font-weight="600">差戻し</text>
+        </g>
+
+        <!-- 役員決裁 → 分岐3 -->
+        <g class="edge-group e5">
+          <line x1="532" y1="165" x2="532" y2="100"
+                stroke="#1967d2" stroke-width="2.5"
+                marker-end="url(#arrow-blue)"/>
+        </g>
+
+        <!-- 分岐3 → 完了 (承認) -->
+        <g class="edge-group e5">
+          <line x1="564" y1="70" x2="700" y2="70"
+                stroke="#137333" stroke-width="2.5"
+                marker-end="url(#arrow-green)"/>
+          <text x="615" y="62" font-size="11" fill="#137333" font-weight="600">承認</text>
+        </g>
+
+        <!-- 分岐3 → 差戻し (役員) -->
+        <g class="edge-group e5">
+          <path d="M 500 70 Q 440 70 440 200 Q 440 315 468 315"
+                stroke="#c5221f" stroke-width="2" fill="none"
+                marker-end="url(#arrow-red)" stroke-dasharray="6,3"/>
+          <text x="420" y="200" font-size="11" fill="#c5221f" font-weight="600" transform="rotate(-90, 420, 200)">差戻し</text>
+        </g>
+
+        <!-- ========== ノード ========== -->
+
+        <!-- ノード0: 申請 (楕円) スタート -->
+        <g class="node-group n0" id="node-0"
+           onmouseenter="showPopup(event, 0)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <ellipse cx="130" cy="68" rx="75" ry="30"
+                   fill="#1a1a2e" filter="url(#shadow)"/>
+          <text x="130" y="73" text-anchor="middle" font-size="14"
+                font-weight="700" fill="#fff" font-family="Meiryo, sans-serif">申請</text>
+        </g>
+
+        <!-- ノード1: 部門長承認 (四角) -->
+        <g class="node-group n1" id="node-1"
+           onmouseenter="showPopup(event, 1)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <rect x="50" y="165" width="160" height="60" rx="8"
+                fill="url(#grad-start)" stroke="#1967d2" stroke-width="2"
+                filter="url(#shadow)"/>
+          <text x="130" y="191" text-anchor="middle" font-size="13"
+                font-weight="700" fill="#1a1a2e" font-family="Meiryo, sans-serif">部門長</text>
+          <text x="130" y="210" text-anchor="middle" font-size="13"
+                font-weight="700" fill="#1a1a2e" font-family="Meiryo, sans-serif">承認</text>
+        </g>
+
+        <!-- ノード2: 分岐1 (菱形) -->
+        <g class="node-group n2" id="node-2"
+           onmouseenter="showPopup(event, 2)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <polygon points="130,285 162,315 130,345 98,315"
+                   fill="url(#grad-diamond)" stroke="#e37400" stroke-width="2"
+                   filter="url(#shadow)"/>
+          <text x="130" y="313" text-anchor="middle" font-size="10"
+                font-weight="700" fill="#5f4000" font-family="Meiryo, sans-serif">承認?</text>
+        </g>
+
+        <!-- ノード3: 経理確認 (四角) -->
+        <g class="node-group n3" id="node-3"
+           onmouseenter="showPopup(event, 3)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <rect x="300" y="285" width="130" height="60" rx="8"
+                fill="url(#grad-start)" stroke="#1967d2" stroke-width="2"
+                filter="url(#shadow)"/>
+          <text x="365" y="311" text-anchor="middle" font-size="13"
+                font-weight="700" fill="#1a1a2e" font-family="Meiryo, sans-serif">経理</text>
+          <text x="365" y="330" text-anchor="middle" font-size="13"
+                font-weight="700" fill="#1a1a2e" font-family="Meiryo, sans-serif">確認</text>
+        </g>
+
+        <!-- ノード4: 分岐2 (菱形) -->
+        <g class="node-group n4" id="node-4"
+           onmouseenter="showPopup(event, 4)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <polygon points="532,283 564,315 532,347 500,315"
+                   fill="url(#grad-diamond)" stroke="#e37400" stroke-width="2"
+                   filter="url(#shadow)"/>
+          <text x="532" y="313" text-anchor="middle" font-size="10"
+                font-weight="700" fill="#5f4000" font-family="Meiryo, sans-serif">承認?</text>
+        </g>
+
+        <!-- ノード5: 役員決裁 (四角) -->
+        <g class="node-group n5" id="node-5"
+           onmouseenter="showPopup(event, 5)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <rect x="452" y="100" width="160" height="65" rx="8"
+                fill="url(#grad-start)" stroke="#1967d2" stroke-width="2"
+                filter="url(#shadow)"/>
+          <text x="532" y="126" text-anchor="middle" font-size="13"
+                font-weight="700" fill="#1a1a2e" font-family="Meiryo, sans-serif">役員</text>
+          <text x="532" y="148" text-anchor="middle" font-size="13"
+                font-weight="700" fill="#1a1a2e" font-family="Meiryo, sans-serif">決裁</text>
+        </g>
+
+        <!-- ノード6: 分岐3 (菱形) -->
+        <g class="node-group n6" id="node-6"
+           onmouseenter="showPopup(event, 6)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <polygon points="532,40 564,70 532,100 500,70"
+                   fill="url(#grad-diamond)" stroke="#e37400" stroke-width="2"
+                   filter="url(#shadow)"/>
+          <text x="532" y="68" text-anchor="middle" font-size="10"
+                font-weight="700" fill="#5f4000" font-family="Meiryo, sans-serif">決裁?</text>
+        </g>
+
+        <!-- ノード7: 完了 (楕円) エンド -->
+        <g class="node-group n6" id="node-7"
+           onmouseenter="showPopup(event, 7)"
+           onmouseleave="hidePopup()"
+           style="cursor:pointer">
+          <ellipse cx="780" cy="70" rx="75" ry="30"
+                   fill="url(#grad-end)" stroke="#137333" stroke-width="2.5"
+                   filter="url(#shadow)"/>
+          <text x="780" y="66" text-anchor="middle" font-size="14"
+                font-weight="700" fill="#0d652d" font-family="Meiryo, sans-serif">✓</text>
+          <text x="780" y="82" text-anchor="middle" font-size="12"
+                font-weight="700" fill="#137333" font-family="Meiryo, sans-serif">稟議完了</text>
+        </g>
+
+        <!-- ステップラベル (右端) -->
+        <g font-size="11" fill="#9aa0a6" font-family="Meiryo, sans-serif">
+          <text x="870" y="73">STEP 5</text>
+          <text x="870" y="200">STEP 2</text>
+          <text x="870" y="320">STEP 3</text>
+        </g>
+
+      </svg>
+
+      <!-- ポップアップ -->
+      <div class="popup" id="popup">
+        <div class="popup-title" id="popupTitle"></div>
+        <ul id="popupBody"></ul>
+      </div>
+    </div>
+
+    <!-- ステータスチップ -->
+    <div class="status-bar">
+      <span class="status-chip chip-waiting" id="chip-申請">📝 申請</span>
+      <span class="status-chip chip-waiting" id="chip-部門長">👤 部門長承認</span>
+      <span class="status-chip chip-waiting" id="chip-経理">💰 経理確認</span>
+      <span class="status-chip chip-waiting" id="chip-役員">⭐ 役員決裁</span>
+      <span class="status-chip chip-waiting" id="chip-完了">✅ 完了</span>
+    </div>
+
+  </div>
+
+  <!-- AIプロンプト説明ボックス -->
+  <div class="card">
+    <div class="card-title">
+      💡 このフロー図はAIへの以下の指示で生成しました
+    </div>
+    <div class="prompt-box">
+      <h3>📝 AIへのプロンプト例</h3>
+      <pre class="prompt-code">社内稟議プロセスのフロー図をSVGとHTMLで作成してください。
+
+■ フローのステップ:
+  申請 → 部門長承認 → 経理確認 → 役員決裁 → 稟議完了
+
+■ 条件分岐:
+  各承認ステップで「承認」「差戻し」の2ルートを設ける
+  差戻し時は申請者または前ステップに戻るパスを描く
+
+■ デザイン要件:
+  - ノード: 開始/終了は楕円、処理は四角（角丸）、分岐は菱形
+  - 色分け: 承認ルート=緑、差戻しルート=赤（破線）、通常フロー=青
+  - ページロード時に各ノードが0.3秒ずつ遅延してフェードイン
+
+■ インタラクション:
+  - ホバー時に確認事項のポップアップを表示
+  - 「ステップを順番に見る」ボタンでハイライトが順番に移動
+
+■ 技術要件: 外部ライブラリ不要、純粋なHTML+CSS+JS</pre>
+    </div>
+  </div>
+
+  <!-- 解説カード -->
+  <div class="card">
+    <div class="card-title">🔧 実装ポイント解説</div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+      <div style="background:#f8f9ff; border-radius:8px; padding:16px; border-left:3px solid #1967d2;">
+        <div style="font-weight:700; font-size:13px; color:#1967d2; margin-bottom:8px;">SVGノード描画</div>
+        <div style="font-size:12px; color:#5f6368; line-height:1.6;">
+          楕円は <code>&lt;ellipse&gt;</code>、四角は <code>&lt;rect rx&gt;</code>、菱形は <code>&lt;polygon points&gt;</code> で描画。<code>linearGradient</code> で背景グラデーションを設定。
+        </div>
+      </div>
+      <div style="background:#f8f9ff; border-radius:8px; padding:16px; border-left:3px solid #137333;">
+        <div style="font-weight:700; font-size:13px; color:#137333; margin-bottom:8px;">フェードインアニメーション</div>
+        <div style="font-size:12px; color:#5f6368; line-height:1.6;">
+          CSSの <code>@keyframes fadeInScale</code> と <code>animation-delay</code> でノードごとに0.3秒ずつ遅延させてフェードイン。
+        </div>
+      </div>
+      <div style="background:#f8f9ff; border-radius:8px; padding:16px; border-left:3px solid #e37400;">
+        <div style="font-weight:700; font-size:13px; color:#e37400; margin-bottom:8px;">ホバーポップアップ</div>
+        <div style="font-size:12px; color:#5f6368; line-height:1.6;">
+          SVG要素に <code>onmouseenter/onmouseleave</code> を設定し、絶対配置のポップアップDivを表示/非表示切替。
+        </div>
+      </div>
+      <div style="background:#f8f9ff; border-radius:8px; padding:16px; border-left:3px solid #c5221f;">
+        <div style="font-weight:700; font-size:13px; color:#c5221f; margin-bottom:8px;">デモモード</div>
+        <div style="font-size:12px; color:#5f6368; line-height:1.6;">
+          <code>setInterval</code> でステップを1秒ごとに進め、<code>classList.add/remove</code> でCSSハイライトクラスを付け替え。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ポップアップデータ -->
+<script>
+const popupData = [
+  {
+    title: "🟢 申請（スタート）",
+    items: [
+      "稟議書フォームへ必要事項を記入",
+      "添付書類（見積書・仕様書等）を準備",
+      "申請金額・目的を明確に記載",
+      "部門予算との整合性を確認"
+    ]
+  },
+  {
+    title: "👤 部門長承認",
+    items: [
+      "業務目的の妥当性を審査",
+      "部門予算内であることを確認",
+      "費用対効果の評価",
+      "差戻し時は修正コメントを記入"
+    ]
+  },
+  {
+    title: "🔀 分岐：部門長判断",
+    items: [
+      "承認 → 経理確認へ進む",
+      "差戻し → 申請者へ修正依頼",
+      "判断期限：受領後3営業日以内"
+    ]
+  },
+  {
+    title: "💰 経理確認",
+    items: [
+      "勘定科目・計上期の確認",
+      "領収書・請求書の形式チェック",
+      "消費税・外税処理の確認",
+      "支払いスケジュールの調整"
+    ]
+  },
+  {
+    title: "🔀 分岐：経理判断",
+    items: [
+      "承認 → 役員決裁へ進む",
+      "差戻し → 経理修正のため申請者へ",
+      "50万円以上は役員決裁必須"
+    ]
+  },
+  {
+    title: "⭐ 役員決裁",
+    items: [
+      "経営戦略との整合性チェック",
+      "金額の最終承認（稟議規程による）",
+      "代替案・リスクの評価",
+      "差戻し時は決裁会議で再審議"
+    ]
+  },
+  {
+    title: "🔀 分岐：役員判断",
+    items: [
+      "承認 → 稟議完了・発注可能",
+      "差戻し → 経理/部門長へ再検討依頼",
+      "判断期限：週次役員会議で処理"
+    ]
+  },
+  {
+    title: "✅ 稟議完了",
+    items: [
+      "承認番号を発行・記録に保存",
+      "申請者へ承認通知を送付",
+      "発注・契約手続きを開始可能",
+      "稟議書は5年間保管義務"
+    ]
+  }
+];
+
+// デモモード変数
+let demoInterval = null;
+let currentStep = -1;
+
+const demoSteps = [
+  { nodeId: 'node-0', chipId: 'chip-申請', status: 'active' },
+  { nodeId: 'node-1', chipId: 'chip-部門長', status: 'active' },
+  { nodeId: 'node-3', chipId: 'chip-経理', status: 'active' },
+  { nodeId: 'node-5', chipId: 'chip-役員', status: 'active' },
+  { nodeId: 'node-7', chipId: 'chip-完了', status: 'approved' }
+];
+
+function showPopup(event, nodeIndex) {
+  const popup = document.getElementById('popup');
+  const data = popupData[nodeIndex];
+  if (!data) return;
+
+  document.getElementById('popupTitle').textContent = data.title;
+  const body = document.getElementById('popupBody');
+  body.innerHTML = data.items.map(item => `<li>${item}</li>`).join('');
+
+  const container = document.getElementById('svgContainer');
+  const rect = container.getBoundingClientRect();
+  const svgRect = event.currentTarget.getBoundingClientRect();
+
+  let left = svgRect.left - rect.left + 20;
+  let top = svgRect.bottom - rect.top + 10;
+
+  // 右端補正
+  if (left + 250 > rect.width) left = left - 270;
+  if (left < 0) left = 0;
+
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  popup.classList.add('visible');
+}
+
+function hidePopup() {
+  document.getElementById('popup').classList.remove('visible');
+}
+
+function highlightStep(stepIndex) {
+  // 全ハイライトをリセット
+  document.querySelectorAll('[id^="node-"]').forEach(el => {
+    el.classList.remove('highlighted');
+  });
+  document.querySelectorAll('.status-chip').forEach(el => {
+    el.className = 'status-chip chip-waiting';
+  });
+
+  if (stepIndex < 0) return;
+
+  const step = demoSteps[stepIndex];
+  const node = document.getElementById(step.nodeId);
+  if (node) node.classList.add('highlighted');
+
+  const chip = document.getElementById(step.chipId);
+  if (chip) {
+    chip.className = `status-chip chip-${step.status}`;
+  }
+
+  // 完了済みステップを承認色に
+  for (let i = 0; i < stepIndex; i++) {
+    const prevChip = document.getElementById(demoSteps[i].chipId);
+    if (prevChip) prevChip.className = 'status-chip chip-approved';
+  }
+
+  // カウンター更新
+  document.querySelector('#stepCounter span').textContent = stepIndex + 1;
+}
+
+function startDemo() {
+  stopDemo();
+  currentStep = 0;
+  document.getElementById('btnDemo').disabled = true;
+  document.getElementById('btnStop').disabled = false;
+
+  highlightStep(currentStep);
+
+  demoInterval = setInterval(() => {
+    currentStep++;
+    if (currentStep >= demoSteps.length) {
+      stopDemo();
+      return;
+    }
+    highlightStep(currentStep);
+  }, 1500);
+}
+
+function stopDemo() {
+  if (demoInterval) {
+    clearInterval(demoInterval);
+    demoInterval = null;
+  }
+  document.getElementById('btnDemo').disabled = false;
+  document.getElementById('btnStop').disabled = true;
+}
+
+function resetHighlight() {
+  stopDemo();
+  currentStep = -1;
+  document.querySelectorAll('[id^="node-"]').forEach(el => el.classList.remove('highlighted'));
+  document.querySelectorAll('.status-chip').forEach(el => {
+    el.className = 'status-chip chip-waiting';
+  });
+  document.querySelector('#stepCounter span').textContent = '-';
+}
+</script>
+
+</body>
+</html>

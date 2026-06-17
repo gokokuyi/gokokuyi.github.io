@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!--
+==================================================
+このページを生成したAIへのプロンプト例:
+「HTMLのCanvas APIを使ってスネークゲームを作ってください。
+矢印キーとスワイプ操作に対応し、スコアを表示してください。
+10点ごとにスピードが上がる仕様にしてください。
+ゲームオーバー時にリスタートボタンを表示し、
+シンプルなドット絵スタイルのデザインにしてください。」
+==================================================
+-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スネークゲーム</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, monospace;
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00ff88;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 24px;
+      letter-spacing: 0.2em;
+      margin-bottom: 6px;
+      text-shadow: 0 0 14px #00ff88;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #446644;
+      margin-bottom: 14px;
+      letter-spacing: 0.05em;
+    }
+
+    /* スコア・レベル表示 */
+    .hud {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+    }
+
+    .hud-item span {
+      color: #00ff88;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .hud-item { color: #446644; }
+
+    /* Canvasラッパー */
+    .canvas-wrap {
+      position: relative;
+      border: 2px solid #00ff88;
+      box-shadow: 0 0 30px rgba(0,255,136,0.3), inset 0 0 10px rgba(0,255,136,0.05);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      background: #0d0d0d;
+    }
+
+    /* オーバーレイ（タイトル・ゲームオーバー） */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .overlay.hidden { display: none; }
+
+    .overlay-title {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 20px #00ff88;
+    }
+
+    .overlay-sub {
+      font-size: 13px;
+      color: #557755;
+      letter-spacing: 0.05em;
+    }
+
+    .overlay-score {
+      font-size: 18px;
+      margin-top: 4px;
+    }
+
+    .btn-start {
+      margin-top: 8px;
+      background: transparent;
+      border: 2px solid #00ff88;
+      color: #00ff88;
+      padding: 10px 32px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      letter-spacing: 0.15em;
+      transition: background 0.2s, box-shadow 0.2s;
+      text-shadow: 0 0 8px #00ff88;
+      box-shadow: 0 0 10px rgba(0,255,136,0.3);
+    }
+
+    .btn-start:hover {
+      background: rgba(0,255,136,0.1);
+      box-shadow: 0 0 20px rgba(0,255,136,0.5);
+    }
+
+    /* スマホ用方向ボタン */
+    .dpad {
+      display: none;
+      margin-top: 16px;
+      grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+      grid-template-columns: repeat(3, 52px);
+      grid-template-rows: repeat(3, 52px);
+      gap: 4px;
+    }
+
+    @media (max-width: 600px) { .dpad { display: grid; } }
+
+    .dpad-btn {
+      background: rgba(0,255,136,0.08);
+      border: 1px solid rgba(0,255,136,0.4);
+      color: #00ff88;
+      font-size: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background 0.1s;
+    }
+
+    .dpad-btn:active { background: rgba(0,255,136,0.25); }
+    .dpad-btn.up    { grid-area: up; }
+    .dpad-btn.down  { grid-area: down; }
+    .dpad-btn.left  { grid-area: left; }
+    .dpad-btn.right { grid-area: right; }
+  </style>
+</head>
+<body>
+
+<h1>SNAKE</h1>
+<p class="hint">矢印キーで操作 | 10点ごとにスピードアップ</p>
+
+<div class="hud">
+  <div class="hud-item">SCORE &nbsp;<span id="score">0</span></div>
+  <div class="hud-item">BEST &nbsp;<span id="best">0</span></div>
+  <div class="hud-item">LEVEL &nbsp;<span id="level">1</span></div>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="canvas" width="360" height="360"></canvas>
+  <div class="overlay" id="overlay">
+    <div class="overlay-title" id="overlay-title">SNAKE</div>
+    <div class="overlay-sub" id="overlay-sub">スタートボタンを押してください</div>
+    <div class="overlay-score" id="overlay-score"></div>
+    <button class="btn-start" id="btn-start">START</button>
+  </div>
+</div>
+
+<!-- スマホ用方向パッド -->
+<div class="dpad">
+  <button class="dpad-btn up"    data-dir="UP">▲</button>
+  <button class="dpad-btn left"  data-dir="LEFT">◀</button>
+  <button class="dpad-btn right" data-dir="RIGHT">▶</button>
+  <button class="dpad-btn down"  data-dir="DOWN">▼</button>
+</div>
+
+<script>
+  const CELL = 20;                  // セルのピクセルサイズ
+  const COLS = 18;                  // 列数
+  const ROWS = 18;                  // 行数
+  const BASE_SPEED = 200;           // 初期インターバル(ms)
+  const SPEED_STEP = 15;            // 1レベルごとの短縮量(ms)
+  const MIN_SPEED  = 60;            // 最高速
+
+  const canvas = document.getElementById('canvas');
+  const ctx    = canvas.getContext('2d');
+
+  // Canvasサイズをセル数に合わせる
+  canvas.width  = COLS * CELL;
+  canvas.height = ROWS * CELL;
+
+  let snake, dir, nextDir, food, score, bestScore, level, gameLoop, running;
+
+  bestScore = parseInt(localStorage.getItem('snake_best') || '0', 10);
+  document.getElementById('best').textContent = bestScore;
+
+  // ---- 描画 ----
+  function draw() {
+    // 背景
+    ctx.fillStyle = '#0d0d0d';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // グリッドドット（薄く）
+    ctx.fillStyle = 'rgba(0,255,136,0.04)';
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        ctx.fillRect(c * CELL + CELL/2 - 1, r * CELL + CELL/2 - 1, 2, 2);
+      }
+    }
+
+    // 蛇
+    snake.forEach((seg, i) => {
+      const alpha = 1 - (i / snake.length) * 0.5;
+      ctx.fillStyle = i === 0
+        ? `rgba(0,255,136,${alpha})`
+        : `rgba(0,200,100,${alpha})`;
+      const pad = i === 0 ? 1 : 3;
+      ctx.fillRect(seg.x * CELL + pad, seg.y * CELL + pad, CELL - pad*2, CELL - pad*2);
+
+      // 頭の目
+      if (i === 0) {
+        ctx.fillStyle = '#0d0d0d';
+        const ex = dir === 'RIGHT' ? 12 : dir === 'LEFT' ? 4 : 8;
+        const ey = dir === 'DOWN'  ? 12 : dir === 'UP'   ? 4 : 6;
+        ctx.fillRect(seg.x * CELL + ex - 1, seg.y * CELL + ey - 1, 3, 3);
+      }
+    });
+
+    // エサ（点滅なし、シンプルに）
+    ctx.fillStyle = '#ff4444';
+    ctx.shadowColor = '#ff4444';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(
+      food.x * CELL + CELL/2,
+      food.y * CELL + CELL/2,
+      CELL/2 - 3, 0, Math.PI * 2
+    );
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // ---- ゲームロジック ----
+  function placeFood() {
+    do {
+      food = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+    } while (snake.some(s => s.x === food.x && s.y === food.y));
+  }
+
+  function getSpeed() {
+    return Math.max(MIN_SPEED, BASE_SPEED - (level - 1) * SPEED_STEP);
+  }
+
+  function startGame() {
+    snake   = [{ x: Math.floor(COLS/2), y: Math.floor(ROWS/2) }];
+    dir     = 'RIGHT';
+    nextDir = 'RIGHT';
+    score   = 0;
+    level   = 1;
+    running = true;
+    placeFood();
+    updateHUD();
+    document.getElementById('overlay').classList.add('hidden');
+    clearInterval(gameLoop);
+    gameLoop = setInterval(tick, getSpeed());
+    draw();
+  }
+
+  function tick() {
+    dir = nextDir;
+    const head = { x: snake[0].x, y: snake[0].y };
+
+    if (dir === 'RIGHT') head.x++;
+    if (dir === 'LEFT')  head.x--;
+    if (dir === 'UP')    head.y--;
+    if (dir === 'DOWN')  head.y++;
+
+    // 壁判定
+    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
+      endGame(); return;
+    }
+    // 自己衝突
+    if (snake.some(s => s.x === head.x && s.y === head.y)) {
+      endGame(); return;
+    }
+
+    snake.unshift(head);
+
+    if (head.x === food.x && head.y === food.y) {
+      score++;
+      const newLevel = Math.floor(score / 10) + 1;
+      if (newLevel !== level) {
+        level = newLevel;
+        clearInterval(gameLoop);
+        gameLoop = setInterval(tick, getSpeed());
+      }
+      updateHUD();
+      placeFood();
+    } else {
+      snake.pop();
+    }
+
+    draw();
+  }
+
+  function endGame() {
+    clearInterval(gameLoop);
+    running = false;
+    if (score > bestScore) {
+      bestScore = score;
+      localStorage.setItem('snake_best', bestScore);
+      document.getElementById('best').textContent = bestScore;
+    }
+    const overlay = document.getElementById('overlay');
+    document.getElementById('overlay-title').textContent = 'GAME OVER';
+    document.getElementById('overlay-sub').textContent   = 'スコア';
+    document.getElementById('overlay-score').textContent = score;
+    document.getElementById('btn-start').textContent     = 'RETRY';
+    overlay.classList.remove('hidden');
+  }
+
+  function updateHUD() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('level').textContent = level;
+  }
+
+  // ---- キーボード操作 ----
+  const DIR_MAP = {
+    ArrowUp:    'UP',
+    ArrowDown:  'DOWN',
+    ArrowLeft:  'LEFT',
+    ArrowRight: 'RIGHT',
+  };
+  const OPPOSITE = { UP:'DOWN', DOWN:'UP', LEFT:'RIGHT', RIGHT:'LEFT' };
+
+  document.addEventListener('keydown', e => {
+    const d = DIR_MAP[e.key];
+    if (d && running) {
+      e.preventDefault();
+      if (d !== OPPOSITE[dir]) nextDir = d;
+    }
+  });
+
+  // ---- スマホDパッド ----
+  document.querySelectorAll('.dpad-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset.dir;
+      if (d && running && d !== OPPOSITE[dir]) nextDir = d;
+    });
+  });
+
+  // ---- タッチスワイプ ----
+  let touchStartX = 0, touchStartY = 0;
+  canvas.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  canvas.addEventListener('touchend', e => {
+    if (!running) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+
+    let swipeDir;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      swipeDir = dx > 0 ? 'RIGHT' : 'LEFT';
+    } else {
+      swipeDir = dy > 0 ? 'DOWN' : 'UP';
+    }
+    if (swipeDir !== OPPOSITE[dir]) nextDir = swipeDir;
+  }, { passive: true });
+
+  // ---- スタートボタン ----
+  document.getElementById('btn-start').addEventListener('click', startGame);
+
+  // 初期描画（タイトル画面の背景）
+  ctx.fillStyle = '#0d0d0d';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+</script>
+</body>
+</html>

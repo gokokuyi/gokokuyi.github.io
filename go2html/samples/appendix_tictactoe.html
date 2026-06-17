@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!--
+==================================================
+このページを生成したAIへのプロンプト例:
+「HTMLとJavaScriptで○×ゲーム（三目並べ）を作ってください。
+プレイヤーは○、CPUは×でランダムに打ちます。
+3×3グリッドをCSS Gridで実装し、勝敗・引き分けを判定して
+メッセージを表示してください。「もう一度」ボタンでリセットできるようにしてください。
+シンプルで見やすいデザインにしてください。」
+==================================================
+-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>○×ゲーム（三目並べ）</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    .game-container {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      width: min(420px, 95vw);
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #a0b0c8;
+      margin-bottom: 28px;
+    }
+
+    /* スコアボード */
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .score-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 10px 22px;
+      min-width: 90px;
+    }
+
+    .score-label {
+      font-size: 11px;
+      color: #a0b0c8;
+      margin-bottom: 4px;
+    }
+
+    .score-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .score-item.player .score-value { color: #64b5f6; }
+    .score-item.cpu   .score-value { color: #ef9a9a; }
+    .score-item.draw  .score-value { color: #fff176; }
+
+    /* ステータス表示 */
+    .status-bar {
+      font-size: 16px;
+      height: 26px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .status-bar.win-player { color: #64b5f6; }
+    .status-bar.win-cpu    { color: #ef9a9a; }
+    .status-bar.draw       { color: #fff176; }
+
+    /* ゲームボード */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0 auto 28px;
+      max-width: 300px;
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      font-size: 52px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+      user-select: none;
+    }
+
+    .cell:hover:not(.taken) {
+      background: rgba(255,255,255,0.18);
+      transform: scale(1.04);
+    }
+
+    .cell.taken {
+      cursor: default;
+    }
+
+    .cell.circle {
+      color: #64b5f6;
+      text-shadow: 0 0 16px rgba(100,181,246,0.7);
+    }
+
+    .cell.cross {
+      color: #ef9a9a;
+      text-shadow: 0 0 16px rgba(239,154,154,0.7);
+    }
+
+    .cell.winning {
+      background: rgba(255,215,0,0.18);
+      border-color: #ffd700;
+      animation: pulse 0.6s ease infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1);    box-shadow: 0 0 0 rgba(255,215,0,0); }
+      to   { transform: scale(1.06); box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+    }
+
+    /* ボタン */
+    .btn-restart {
+      background: linear-gradient(135deg, #1565c0, #42a5f5);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 36px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-restart:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    .btn-restart:active {
+      transform: translateY(1px);
+    }
+
+    .turn-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #a0b0c8;
+      margin-bottom: 20px;
+    }
+
+    .turn-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #a0b0c8;
+      transition: background 0.3s;
+    }
+    .turn-dot.active { background: #64b5f6; box-shadow: 0 0 8px #64b5f6; }
+  </style>
+</head>
+<body>
+
+<div class="game-container">
+  <h1>○×ゲーム</h1>
+  <p class="subtitle">あなた（○）vs CPU（×）</p>
+
+  <div class="scoreboard">
+    <div class="score-item player">
+      <div class="score-label">あなた（○）</div>
+      <div class="score-value" id="score-player">0</div>
+    </div>
+    <div class="score-item draw">
+      <div class="score-label">引き分け</div>
+      <div class="score-value" id="score-draw">0</div>
+    </div>
+    <div class="score-item cpu">
+      <div class="score-label">CPU（×）</div>
+      <div class="score-value" id="score-cpu">0</div>
+    </div>
+  </div>
+
+  <div class="turn-indicator">
+    <div class="turn-dot active" id="dot-player"></div>
+    <span id="turn-text">あなたの番です</span>
+    <div class="turn-dot" id="dot-cpu"></div>
+  </div>
+
+  <div class="status-bar" id="status">&nbsp;</div>
+
+  <div class="board" id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+
+  <button class="btn-restart" id="btn-restart">もう一度</button>
+</div>
+
+<script>
+  const WINNING_LINES = [
+    [0,1,2],[3,4,5],[6,7,8],   // 横
+    [0,3,6],[1,4,7],[2,5,8],   // 縦
+    [0,4,8],[2,4,6]            // 斜め
+  ];
+
+  let board = Array(9).fill(null);   // null | 'O' | 'X'
+  let gameOver = false;
+  let playerTurn = true;
+
+  let scores = { player: 0, cpu: 0, draw: 0 };
+
+  const cells      = document.querySelectorAll('.cell');
+  const statusEl   = document.getElementById('status');
+  const turnText   = document.getElementById('turn-text');
+  const dotPlayer  = document.getElementById('dot-player');
+  const dotCPU     = document.getElementById('dot-cpu');
+
+  function updateTurnIndicator(isPlayer) {
+    if (isPlayer) {
+      dotPlayer.classList.add('active');
+      dotCPU.classList.remove('active');
+      turnText.textContent = 'あなたの番です';
+    } else {
+      dotCPU.classList.add('active');
+      dotPlayer.classList.remove('active');
+      turnText.textContent = 'CPUが考えています…';
+    }
+  }
+
+  function checkWinner(b) {
+    for (const [a, c, d] of WINNING_LINES) {
+      if (b[a] && b[a] === b[c] && b[a] === b[d]) {
+        return { winner: b[a], line: [a, c, d] };
+      }
+    }
+    if (b.every(v => v !== null)) return { winner: 'draw' };
+    return null;
+  }
+
+  function highlightLine(line) {
+    line.forEach(i => cells[i].classList.add('winning'));
+  }
+
+  function renderCell(index) {
+    const cell = cells[index];
+    if (board[index] === 'O') {
+      cell.textContent = '○';
+      cell.classList.add('circle', 'taken');
+    } else if (board[index] === 'X') {
+      cell.textContent = '×';
+      cell.classList.add('cross', 'taken');
+    }
+  }
+
+  function handleResult(result) {
+    gameOver = true;
+    statusEl.classList.remove('win-player', 'win-cpu', 'draw');
+    turnText.textContent = 'ゲーム終了';
+    dotPlayer.classList.remove('active');
+    dotCPU.classList.remove('active');
+
+    if (result.winner === 'O') {
+      statusEl.textContent = 'あなたの勝ち！🎉';
+      statusEl.classList.add('win-player');
+      scores.player++;
+      highlightLine(result.line);
+    } else if (result.winner === 'X') {
+      statusEl.textContent = 'CPUの勝ち！😢';
+      statusEl.classList.add('win-cpu');
+      scores.cpu++;
+      highlightLine(result.line);
+    } else {
+      statusEl.textContent = '引き分け！🤝';
+      statusEl.classList.add('draw');
+      scores.draw++;
+    }
+
+    document.getElementById('score-player').textContent = scores.player;
+    document.getElementById('score-cpu').textContent    = scores.cpu;
+    document.getElementById('score-draw').textContent   = scores.draw;
+  }
+
+  function cpuMove() {
+    const empty = board.map((v,i) => v === null ? i : null).filter(v => v !== null);
+    if (empty.length === 0) return;
+
+    // CPUは少し「賢く」: 勝てるマスがあれば打つ、プレイヤーをブロック、それ以外はランダム
+    // 1. CPUが勝てるか確認
+    for (const idx of empty) {
+      board[idx] = 'X';
+      if (checkWinner(board)?.winner === 'X') { applyMove(idx); return; }
+      board[idx] = null;
+    }
+    // 2. プレイヤーの勝ちをブロック
+    for (const idx of empty) {
+      board[idx] = 'O';
+      if (checkWinner(board)?.winner === 'O') { board[idx] = null; applyMove(idx); return; }
+      board[idx] = null;
+    }
+    // 3. 中央を取る
+    if (board[4] === null) { applyMove(4); return; }
+    // 4. ランダム
+    const pick = empty[Math.floor(Math.random() * empty.length)];
+    applyMove(pick);
+  }
+
+  function applyMove(index) {
+    const mark = playerTurn ? 'O' : 'X';
+    board[index] = mark;
+    renderCell(index);
+
+    const result = checkWinner(board);
+    if (result) {
+      handleResult(result);
+      return;
+    }
+
+    playerTurn = !playerTurn;
+    updateTurnIndicator(playerTurn);
+
+    if (!playerTurn) {
+      setTimeout(() => {
+        cpuMove();
+      }, 500);
+    }
+  }
+
+  cells.forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (gameOver || !playerTurn) return;
+      const idx = parseInt(cell.dataset.index, 10);
+      if (board[idx] !== null) return;
+      applyMove(idx);
+    });
+  });
+
+  document.getElementById('btn-restart').addEventListener('click', () => {
+    board = Array(9).fill(null);
+    gameOver = false;
+    playerTurn = true;
+    cells.forEach(cell => {
+      cell.textContent = '';
+      cell.className = 'cell';
+    });
+    statusEl.textContent = ' ';
+    statusEl.className = 'status-bar';
+    updateTurnIndicator(true);
+  });
+
+  // 初期表示
+  updateTurnIndicator(true);
+</script>
+</body>
+</html>

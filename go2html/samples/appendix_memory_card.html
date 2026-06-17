@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!--
+==================================================
+このページを生成したAIへのプロンプト例:
+「HTMLとJavaScriptで神経衰弱ゲームを作ってください。
+4×4グリッド（16枚・8ペア）で絵柄は絵文字（🍎🍊🍋🍇🍓🍑🍒🥝）を使います。
+カードのフリップはCSS 3D transformで実装してください。
+めくった回数のカウンターとタイマーを表示し、
+マッチしたカードは残り、外れたカードは裏返るようにしてください。
+全ペア揃ったらクリア画面を表示してください。」
+==================================================
+-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>神経衰弱 – メモリーカードゲーム</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .game-wrap {
+      width: min(520px, 100%);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #90caf9;
+      margin-bottom: 20px;
+    }
+
+    /* ステータスバー */
+    .status-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 8px 20px;
+      min-width: 110px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #90caf9;
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* カードグリッド */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    /* カードの3Dフリップ構造 */
+    .card {
+      aspect-ratio: 1;
+      perspective: 600px;
+      cursor: pointer;
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+      border-radius: 12px;
+    }
+
+    .card.flipped .card-inner,
+    .card.matched .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 裏面（？マーク） */
+    .card-back {
+      background: linear-gradient(135deg, #1565c0, #42a5f5);
+      border: 2px solid rgba(255,255,255,0.2);
+      font-size: 28px;
+      color: rgba(255,255,255,0.7);
+      font-weight: bold;
+    }
+
+    .card-back::after {
+      content: '?';
+    }
+
+    /* 表面（絵文字） */
+    .card-front {
+      background: rgba(255,255,255,0.95);
+      font-size: 40px;
+      transform: rotateY(180deg);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    /* マッチ済み */
+    .card.matched .card-inner {
+      box-shadow: 0 0 18px rgba(76,175,80,0.7);
+    }
+
+    .card.matched .card-front {
+      background: #e8f5e9;
+      border-color: #4caf50;
+    }
+
+    /* ミスフラッシュ */
+    @keyframes miss-flash {
+      0%,100% { box-shadow: none; }
+      50%      { box-shadow: 0 0 20px rgba(239,83,80,0.9); }
+    }
+
+    .card.miss .card-inner {
+      animation: miss-flash 0.4s ease;
+    }
+
+    /* クリア画面 */
+    .clear-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clear-screen.show {
+      display: flex;
+    }
+
+    .clear-box {
+      background: linear-gradient(135deg, #1a237e, #283593);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 48px 60px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      animation: pop-in 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+
+    @keyframes pop-in {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .clear-emoji { font-size: 56px; margin-bottom: 12px; }
+    .clear-title { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+    .clear-stats { font-size: 15px; color: #90caf9; margin-bottom: 28px; line-height: 1.8; }
+
+    .btn {
+      background: linear-gradient(135deg, #1565c0, #42a5f5);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 36px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.05em;
+    }
+
+    .btn:hover  { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(1px); }
+  </style>
+</head>
+<body>
+
+<div class="game-wrap">
+  <h1>神経衰弱</h1>
+  <p class="subtitle">同じ絵文字のペアを揃えよう！ 4×4グリッド・8ペア</p>
+
+  <div class="status-row">
+    <div class="stat-box">
+      <div class="stat-label">めくった回数</div>
+      <div class="stat-value" id="flip-count">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">ペア数</div>
+      <div class="stat-value" id="pair-count">0 / 8</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">タイム</div>
+      <div class="stat-value" id="timer">0:00</div>
+    </div>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <button class="btn" id="btn-restart">もう一度</button>
+</div>
+
+<!-- クリア画面 -->
+<div class="clear-screen" id="clear-screen">
+  <div class="clear-box">
+    <div class="clear-emoji">🎊</div>
+    <div class="clear-title">クリア！</div>
+    <div class="clear-stats" id="clear-stats"></div>
+    <button class="btn" id="btn-play-again">もう一度プレイ</button>
+  </div>
+</div>
+
+<script>
+  const EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🍑','🍒','🥝'];
+
+  let flippedCards  = [];
+  let matchedPairs  = 0;
+  let flipCount     = 0;
+  let locked        = false;
+  let timerInterval = null;
+  let seconds       = 0;
+  let gameStarted   = false;
+
+  function formatTime(s) {
+    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function startTimer() {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+      seconds++;
+      document.getElementById('timer').textContent = formatTime(seconds);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  function buildBoard() {
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    const deck = shuffle([...EMOJIS, ...EMOJIS]);
+
+    deck.forEach((emoji, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.emoji = emoji;
+      card.dataset.index = i;
+      card.innerHTML = `
+        <div class="card-inner">
+          <div class="card-back"></div>
+          <div class="card-front">${emoji}</div>
+        </div>`;
+      card.addEventListener('click', onCardClick);
+      board.appendChild(card);
+    });
+  }
+
+  function onCardClick(e) {
+    const card = e.currentTarget;
+    if (locked) return;
+    if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+    if (!gameStarted) {
+      gameStarted = true;
+      startTimer();
+    }
+
+    card.classList.add('flipped');
+    flipCount++;
+    document.getElementById('flip-count').textContent = flipCount;
+    flippedCards.push(card);
+
+    if (flippedCards.length === 2) {
+      locked = true;
+      checkMatch();
+    }
+  }
+
+  function checkMatch() {
+    const [a, b] = flippedCards;
+    if (a.dataset.emoji === b.dataset.emoji) {
+      // マッチ
+      setTimeout(() => {
+        a.classList.add('matched');
+        b.classList.add('matched');
+        a.classList.remove('flipped');
+        b.classList.remove('flipped');
+        matchedPairs++;
+        document.getElementById('pair-count').textContent = `${matchedPairs} / 8`;
+        flippedCards = [];
+        locked = false;
+        if (matchedPairs === 8) showClear();
+      }, 300);
+    } else {
+      // ミス
+      a.classList.add('miss');
+      b.classList.add('miss');
+      setTimeout(() => {
+        a.classList.remove('flipped', 'miss');
+        b.classList.remove('flipped', 'miss');
+        flippedCards = [];
+        locked = false;
+      }, 900);
+    }
+  }
+
+  function showClear() {
+    stopTimer();
+    const screen = document.getElementById('clear-screen');
+    document.getElementById('clear-stats').innerHTML =
+      `めくった回数：<strong>${flipCount}回</strong><br>クリアタイム：<strong>${formatTime(seconds)}</strong>`;
+    screen.classList.add('show');
+  }
+
+  function resetGame() {
+    stopTimer();
+    flippedCards  = [];
+    matchedPairs  = 0;
+    flipCount     = 0;
+    locked        = false;
+    seconds       = 0;
+    gameStarted   = false;
+    document.getElementById('flip-count').textContent = '0';
+    document.getElementById('pair-count').textContent = '0 / 8';
+    document.getElementById('timer').textContent = '0:00';
+    document.getElementById('clear-screen').classList.remove('show');
+    buildBoard();
+  }
+
+  document.getElementById('btn-restart').addEventListener('click', resetGame);
+  document.getElementById('btn-play-again').addEventListener('click', resetGame);
+
+  // 初期表示
+  buildBoard();
+</script>
+</body>
+</html>
