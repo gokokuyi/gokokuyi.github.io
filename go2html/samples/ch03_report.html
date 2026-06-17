@@ -383,6 +383,41 @@
       .header-inner { flex-direction: column; align-items: flex-start; }
       .header-right { text-align: left; }
     }
+
+    @media (max-width: 768px) {
+      .header-inner { padding: 20px 16px; }
+      .content-wrapper { padding: 20px 16px 32px; }
+      .search-input { width: 100%; }
+      .table-toolbar { flex-direction: column; gap: 8px; align-items: flex-start; }
+      .data-table { font-size: 11px; }
+      .data-table th, .data-table td { padding: 8px 6px; }
+    }
+
+    @media (max-width: 480px) {
+      .data-table thead { display: none; }
+      .data-table tbody tr {
+        display: block;
+        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 12px;
+        padding: 8px 4px;
+      }
+      .data-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .data-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #4a5568;
+        margin-right: 8px;
+        white-space: nowrap;
+      }
+      .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .chart-card { padding: 16px; }
+      .remarks-textarea { min-height: 100px; }
+    }
   </style>
 </head>
 <body>

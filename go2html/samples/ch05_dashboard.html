@@ -451,6 +451,22 @@ Chart.jsを使った折れ線グラフ（6ヶ月売上推移）とドーナツ�
       font-size: 12px;
       color: var(--text-muted);
     }
+
+    @media (max-width: 768px) {
+      .header { padding: 0 16px; }
+      .main { padding: 20px 16px 40px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .data-table { font-size: 11px; }
+      .data-table th, .data-table td { padding: 8px 6px; }
+      .toolbar { flex-wrap: wrap; gap: 8px; }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .chart-container { height: 200px !important; }
+      .header-meta { display: none; }
+      .data-table { font-size: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -602,7 +618,7 @@ const tableData = [
   { rank:2, dept:'SMB営業部',             sales:11.2, ratio:23, customers:8,  satisfaction:4.2, growth:+6.1  },
   { rank:3, dept:'パートナー事業部',       sales: 9.6, ratio:20, customers:3,  satisfaction:4.4, growth:+3.8  },
   { rank:4, dept:'クラウドソリューション部',sales: 6.8, ratio:14, customers:2,  satisfaction:4.3, growth:+18.5 },
-  { rank:5, dept:'カスタマーサクセス部',   sales: 2.2, ratio: 5, customers:1,  satisfaction:4.6, growth:−2.1  },
+  { rank:5, dept:'カスタマーサクセス部',   sales: 2.2, ratio: 5, customers:1,  satisfaction:4.6, growth:-2.1  },
 ];
 
 const lineData = {

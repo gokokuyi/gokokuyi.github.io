@@ -536,6 +536,29 @@
       background: var(--accent);
       transform: scale(1.3);
     }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .slide { padding: 40px 20px; }
+      #slide2, #slide4, #slide5 { padding: 40px 20px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .challenge-list { max-width: 100%; }
+      .challenge-item { gap: 14px; padding: 14px 16px; }
+      .slide1-title { font-size: clamp(24px, 4vw, 40px); }
+    }
+
+    @media (max-width: 480px) {
+      .slide { padding: 24px 12px; }
+      #slide2, #slide4, #slide5 { padding: 24px 12px; }
+      .kpi-grid { grid-template-columns: 1fr; gap: 12px; }
+      .kpi-card { padding: 16px; }
+      .timeline-steps { flex-direction: column; gap: 20px; align-items: center; }
+      .timeline-line { display: none; }
+      .slide-title { font-size: clamp(18px, 4vw, 26px); }
+      #controls { height: auto; flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
+      .btn { padding: 6px 12px; font-size: 12px; }
+      .dots { margin: 0; }
+    }
   </style>
 </head>
 <body>
