@@ -1,0 +1,2189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      user-scalable=no,
+      viewport-fit=cover">
+
+<title>USHIN ESCAPE</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#cceeff;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  touch-action:none;
+}
+
+canvas{
+  display:block;
+  position:fixed;
+  inset:0;
+}
+
+/* ==============================
+   START SCREEN
+============================== */
+
+#start{
+  position:fixed;
+  inset:0;
+  z-index:100;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:auto;
+
+  background:
+    radial-gradient(circle at 50% 25%,
+      #bceaff,
+      #e9ddff 38%,
+      #ffd9e6 68%,
+      #ffe9b9);
+}
+
+.startInner{
+  width:min(520px,92vw);
+  text-align:center;
+  padding:
+    max(25px,env(safe-area-inset-top))
+    20px
+    max(30px,env(safe-area-inset-bottom));
+}
+
+.avatar{
+  width:125px;
+  height:125px;
+  margin:0 auto 25px;
+
+  border-radius:50%;
+  border:4px solid #63e7ff;
+
+  background-image:url("./ushin.jpg");
+  background-size:cover;
+  background-position:center;
+
+  box-shadow:
+    0 12px 35px #6bdfff66,
+    0 0 0 7px #ffffff55;
+}
+
+h1{
+  margin:0;
+
+  font-size:clamp(48px,14vw,82px);
+  line-height:.95;
+  font-weight:1000;
+  letter-spacing:.05em;
+
+  color:white;
+
+  text-shadow:
+    0 8px 0 #ff74ad,
+    0 15px 35px #ff7aaa66;
+}
+
+.subtitle{
+  margin-top:22px;
+
+  color:#7666ef;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.35em;
+}
+
+.story{
+  margin:35px auto 30px;
+  padding:22px 20px;
+
+  max-width:450px;
+
+  border-radius:28px;
+
+  background:#ffffffaa;
+  backdrop-filter:blur(15px);
+
+  color:#56536a;
+
+  line-height:1.8;
+  font-size:15px;
+}
+
+#begin{
+  position:relative;
+
+  border:0;
+  outline:none;
+
+  min-width:300px;
+  padding:20px 35px;
+
+  border-radius:50px;
+
+  background:#7161ff;
+  color:white;
+
+  font-size:20px;
+  font-weight:1000;
+  letter-spacing:.12em;
+
+  box-shadow:
+    0 10px 0 #5144c8,
+    0 18px 35px #6254ff55;
+
+  cursor:pointer;
+}
+
+#begin:active{
+  transform:translateY(6px);
+  box-shadow:
+    0 4px 0 #5144c8,
+    0 10px 20px #6254ff44;
+}
+
+.controlsHelp{
+  margin-top:28px;
+
+  color:#686379;
+  font-size:13px;
+  line-height:1.7;
+}
+
+/* ==============================
+   HUD
+============================== */
+
+#hud{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+  display:none;
+}
+
+.topbar{
+  position:absolute;
+
+  top:max(15px,env(safe-area-inset-top));
+  left:15px;
+  right:15px;
+
+  display:flex;
+  justify-content:space-between;
+}
+
+.logo{
+  padding:9px 13px;
+
+  background:#ffffffcc;
+  border-radius:15px;
+
+  color:#5d54c9;
+  font-weight:1000;
+  font-size:12px;
+
+  box-shadow:0 8px 25px #0002;
+}
+
+.timer{
+  padding:9px 13px;
+
+  background:#ffffffcc;
+  border-radius:15px;
+
+  color:#ff5288;
+  font-weight:1000;
+
+  box-shadow:0 8px 25px #0002;
+}
+
+#objective{
+  position:absolute;
+
+  top:max(65px,calc(env(safe-area-inset-top) + 50px));
+  left:15px;
+
+  max-width:75%;
+
+  padding:10px 14px;
+
+  border-radius:14px;
+
+  background:#ffffffc9;
+
+  color:#4d5268;
+
+  font-size:12px;
+  line-height:1.45;
+
+  box-shadow:0 8px 20px #0002;
+}
+
+.cross{
+  position:absolute;
+  left:50%;
+  top:50%;
+
+  width:18px;
+  height:18px;
+
+  transform:translate(-50%,-50%);
+}
+
+.cross:before,
+.cross:after{
+  content:"";
+  position:absolute;
+  background:white;
+
+  box-shadow:0 0 8px #4acfff;
+}
+
+.cross:before{
+  width:18px;
+  height:2px;
+  top:8px;
+}
+
+.cross:after{
+  height:18px;
+  width:2px;
+  left:8px;
+}
+
+#message{
+  position:absolute;
+
+  top:22%;
+  left:50%;
+
+  transform:translateX(-50%) translateY(-10px);
+
+  padding:12px 18px;
+
+  border-radius:20px;
+
+  background:#ffffffdd;
+
+  color:#6559d9;
+
+  font-weight:900;
+  font-size:14px;
+
+  opacity:0;
+
+  transition:.25s;
+}
+
+#message.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* ==============================
+   INVENTORY
+============================== */
+
+.inventory{
+  position:absolute;
+
+  top:max(115px,calc(env(safe-area-inset-top) + 100px));
+  right:15px;
+
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.slot{
+  width:52px;
+  height:52px;
+
+  display:grid;
+  place-items:center;
+
+  text-align:center;
+
+  border-radius:16px;
+
+  background:#ffffffaa;
+
+  border:2px solid #ffffff;
+
+  color:#9d9aad;
+
+  font-size:9px;
+  font-weight:800;
+
+  box-shadow:0 6px 20px #0001;
+}
+
+.slot.have{
+  color:#735600;
+  background:#fff1a5;
+
+  box-shadow:
+    0 0 0 3px #fff6,
+    0 8px 25px #ffcf4c55;
+}
+
+/* ==============================
+   MOBILE CONTROLS
+============================== */
+
+#mobileControls{
+  position:fixed;
+  inset:0;
+
+  z-index:30;
+
+  pointer-events:none;
+  display:none;
+}
+
+#joystick{
+  position:absolute;
+
+  left:max(22px,env(safe-area-inset-left));
+  bottom:max(28px,env(safe-area-inset-bottom));
+
+  width:125px;
+  height:125px;
+
+  border-radius:50%;
+
+  background:#ffffff38;
+
+  border:2px solid #ffffff88;
+
+  backdrop-filter:blur(8px);
+
+  pointer-events:auto;
+  touch-action:none;
+}
+
+#knob{
+  position:absolute;
+
+  width:55px;
+  height:55px;
+
+  left:35px;
+  top:35px;
+
+  border-radius:50%;
+
+  background:#ffffffdd;
+
+  box-shadow:0 5px 18px #0003;
+
+  pointer-events:none;
+}
+
+#action{
+  position:absolute;
+
+  right:max(25px,env(safe-area-inset-right));
+  bottom:max(35px,env(safe-area-inset-bottom));
+
+  width:100px;
+  height:100px;
+
+  border:0;
+  border-radius:50%;
+
+  background:#ff6aa2;
+
+  color:white;
+
+  font-weight:1000;
+  font-size:15px;
+
+  box-shadow:
+    0 8px 0 #c84778,
+    0 12px 30px #ff589955;
+
+  pointer-events:auto;
+  touch-action:manipulation;
+}
+
+#action:active{
+  transform:translateY(5px);
+  box-shadow:
+    0 3px 0 #c84778,
+    0 8px 18px #ff589944;
+}
+
+#interactPrompt{
+  position:absolute;
+
+  left:50%;
+  bottom:24%;
+
+  transform:translateX(-50%);
+
+  padding:11px 16px;
+
+  border-radius:18px;
+
+  background:#ffffffdd;
+
+  color:#5f54d5;
+
+  font-weight:900;
+  font-size:12px;
+
+  opacity:0;
+
+  transition:.15s;
+}
+
+#interactPrompt.show{
+  opacity:1;
+}
+
+/* landscape phones */
+
+@media (orientation:landscape) and (max-height:600px){
+
+  #joystick{
+    width:105px;
+    height:105px;
+  }
+
+  #knob{
+    width:48px;
+    height:48px;
+    left:28px;
+    top:28px;
+  }
+
+  #action{
+    width:85px;
+    height:85px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ==============================
+     START
+============================== -->
+
+<div id="start">
+
+  <div class="startInner">
+
+    <div class="avatar"></div>
+
+    <h1>
+      USHIN<br>
+      ESCAPE
+    </h1>
+
+    <div class="subtitle">
+      CUTE ESCAPE // MOBILE EDITION
+    </div>
+
+    <div class="story">
+      醒来时，你已经被困在「第13观察室」。<br>
+      小小探险家必须在 <b>13分钟</b> 内找到三件道具，
+      解开秘密基地的门禁，然后逃出去。
+    </div>
+
+    <button id="begin">
+      START ADVENTURE
+    </button>
+
+    <div class="controlsHelp">
+      📱 手机：左侧摇杆移动<br>
+      👉 右侧屏幕拖动转视角<br>
+      ⭐ ACTION 调查 / 拾取 / 开门
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ==============================
+     HUD
+============================== -->
+
+<div id="hud">
+
+  <div class="topbar">
+
+    <div class="logo">
+      USHIN // ROOM 13
+    </div>
+
+    <div id="timer" class="timer">
+      13:00
+    </div>
+
+  </div>
+
+  <div id="objective">
+    OBJECTIVE 01 — 找到黄色 ACCESS CARD。
+  </div>
+
+  <div class="cross"></div>
+
+  <div id="message"></div>
+
+  <div class="inventory">
+
+    <div id="slot1" class="slot">
+      CARD
+    </div>
+
+    <div id="slot2" class="slot">
+      CODE
+    </div>
+
+    <div id="slot3" class="slot">
+      CELL
+    </div>
+
+  </div>
+
+  <div id="interactPrompt">
+    ACTION
+  </div>
+
+</div>
+
+
+<!-- ==============================
+     MOBILE CONTROLS
+============================== -->
+
+<div id="mobileControls">
+
+  <div id="joystick">
+    <div id="knob"></div>
+  </div>
+
+  <button id="action">
+    ACTION
+  </button>
+
+</div>
+
+
+<script type="importmap">
+{
+  "imports":{
+    "three":
+    "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+  }
+}
+</script>
+
+
+<script type="module">
+
+import * as THREE from "three";
+
+
+/* ==============================
+   DOM
+============================== */
+
+const startScreen =
+  document.getElementById("start");
+
+const beginButton =
+  document.getElementById("begin");
+
+const hud =
+  document.getElementById("hud");
+
+const mobileControls =
+  document.getElementById("mobileControls");
+
+const objective =
+  document.getElementById("objective");
+
+const timerElement =
+  document.getElementById("timer");
+
+const messageElement =
+  document.getElementById("message");
+
+const interactPrompt =
+  document.getElementById("interactPrompt");
+
+
+/* ==============================
+   GAME STATE
+============================== */
+
+let gameStarted = false;
+let gameEnded = false;
+
+let yaw = 0;
+let pitch = -0.08;
+
+let timeLeft = 13 * 60;
+
+let currentTarget = null;
+
+const inventory = {
+
+  card:false,
+  code:false,
+  cell:false
+
+};
+
+
+/* ==============================
+   THREE
+============================== */
+
+const scene = new THREE.Scene();
+
+scene.background =
+  new THREE.Color(0xbfe9ff);
+
+scene.fog =
+  new THREE.FogExp2(
+    0xd9efff,
+    0.018
+  );
+
+
+const camera =
+  new THREE.PerspectiveCamera(
+    68,
+    innerWidth / innerHeight,
+    0.05,
+    100
+  );
+
+camera.position.set(
+  0,
+  2.05,
+  6
+);
+
+
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true
+  });
+
+renderer.setPixelRatio(
+  Math.min(
+    devicePixelRatio,
+    1.7
+  )
+);
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+  THREE.PCFSoftShadowMap;
+
+renderer.toneMapping =
+  THREE.ACESFilmicToneMapping;
+
+renderer.toneMappingExposure = 1.1;
+
+document.body.prepend(
+  renderer.domElement
+);
+
+
+/* ==============================
+   LIGHTS
+============================== */
+
+scene.add(
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x8ccf9c,
+    1.4
+  )
+);
+
+
+const roomLight =
+  new THREE.PointLight(
+    0xffffff,
+    40,
+    18
+  );
+
+roomLight.position.set(
+  0,
+  5,
+  1
+);
+
+roomLight.castShadow = true;
+
+scene.add(roomLight);
+
+
+const pinkLight =
+  new THREE.PointLight(
+    0xff77aa,
+    18,
+    10
+  );
+
+pinkLight.position.set(
+  -4,
+  2.5,
+  -4
+);
+
+scene.add(pinkLight);
+
+
+const blueLight =
+  new THREE.PointLight(
+    0x66ddff,
+    18,
+    10
+  );
+
+blueLight.position.set(
+  4,
+  2.5,
+  3
+);
+
+scene.add(blueLight);
+
+
+/* ==============================
+   HELPERS
+============================== */
+
+function material(color){
+
+  return new THREE.MeshStandardMaterial({
+
+    color,
+    roughness:0.75,
+    metalness:0.05
+
+  });
+
+}
+
+
+function createBox(
+  name,
+  position,
+  size,
+  color
+){
+
+  const mesh =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        ...size
+      ),
+
+      material(color)
+
+    );
+
+  mesh.name = name;
+
+  mesh.position.set(
+    ...position
+  );
+
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
+  scene.add(mesh);
+
+  return mesh;
+
+}
+
+
+/* ==============================
+   ROOM
+============================== */
+
+createBox(
+  "floor",
+  [0,-0.1,0],
+  [14,0.2,18],
+  0x91d7a6
+);
+
+createBox(
+  "ceiling",
+  [0,5.5,0],
+  [14,0.15,18],
+  0xfff1c7
+);
+
+createBox(
+  "leftWall",
+  [-7,2.7,0],
+  [0.25,5.6,18],
+  0xffd5e6
+);
+
+createBox(
+  "rightWall",
+  [7,2.7,0],
+  [0.25,5.6,18],
+  0xcfe8ff
+);
+
+createBox(
+  "frontWall",
+  [0,2.7,-9],
+  [14,5.6,0.25],
+  0xffe4a8
+);
+
+createBox(
+  "backWall",
+  [0,2.7,9],
+  [14,5.6,0.25],
+  0xd9c9ff
+);
+
+
+/* floor decoration */
+
+for(
+  let z=-8;
+  z<9;
+  z+=2
+){
+
+  createBox(
+    "floorLine",
+    [0,0.015,z],
+    [13.5,0.015,0.04],
+    0xffffff
+  );
+
+}
+
+
+/* ==============================
+   DESK
+============================== */
+
+createBox(
+  "desk",
+  [3.8,1,-2],
+  [3.2,0.18,1.5],
+  0x6d77a8
+);
+
+createBox(
+  "deskLeg",
+  [2.6,0.45,-2],
+  [0.15,1,0.15],
+  0x424968
+);
+
+createBox(
+  "deskLeg",
+  [5,0.45,-2],
+  [0.15,1,0.15],
+  0x424968
+);
+
+
+/* ==============================
+   TERMINAL
+============================== */
+
+const terminal =
+  createBox(
+    "terminal",
+    [3.8,1.75,-2.25],
+    [1.4,1,0.12],
+    0x4acde8
+  );
+
+terminal.userData.type =
+  "terminal";
+
+terminal.material.emissive =
+  new THREE.Color(
+    0x135b6b
+  );
+
+
+/* ==============================
+   ACCESS CARD
+============================== */
+
+const accessCard =
+  createBox(
+    "accessCard",
+    [-4.6,0.65,1.8],
+    [0.8,0.06,0.5],
+    0xffd54f
+  );
+
+accessCard.userData.type =
+  "card";
+
+accessCard.material.emissive =
+  new THREE.Color(
+    0x5f4800
+  );
+
+
+/* ==============================
+   POWER CELL
+============================== */
+
+const powerCell =
+  createBox(
+    "powerCell",
+    [4.8,0.7,5.7],
+    [0.5,0.9,0.5],
+    0x75ff9a
+  );
+
+powerCell.userData.type =
+  "cell";
+
+powerCell.material.emissive =
+  new THREE.Color(
+    0x12652b
+  );
+
+
+createBox(
+  "crate",
+  [4.8,0.3,5.7],
+  [1.6,0.6,1.6],
+  0xffb570
+);
+
+
+/* ==============================
+   EXIT DOOR
+============================== */
+
+createBox(
+  "doorFrame",
+  [0,2.3,-8.75],
+  [3.7,4.7,0.3],
+  0x675f91
+);
+
+
+const door =
+  createBox(
+    "door",
+    [0,2.15,-8.58],
+    [3.1,4.2,0.22],
+    0xff6b91
+  );
+
+door.userData.type =
+  "door";
+
+door.material.emissive =
+  new THREE.Color(
+    0x64132b
+  );
+
+
+/* ==============================
+   CUTE USHIN CHARACTER
+============================== */
+
+const character =
+  new THREE.Group();
+
+character.position.set(
+  -3.8,
+  0,
+  -5.8
+);
+
+scene.add(character);
+
+
+const skin =
+  material(0xf1b087);
+
+const black =
+  material(0x222638);
+
+
+/* big head */
+
+const head =
+  new THREE.Mesh(
+
+    new THREE.SphereGeometry(
+      0.55,
+      32,
+      24
+    ),
+
+    skin
+
+  );
+
+head.scale.set(
+  1,
+  1.08,
+  0.95
+);
+
+head.position.y = 1.8;
+
+character.add(head);
+
+
+/* body */
+
+const body =
+  new THREE.Mesh(
+
+    new THREE.CapsuleGeometry(
+      0.43,
+      0.55,
+      8,
+      20
+    ),
+
+    black
+
+  );
+
+body.position.y = 0.95;
+
+character.add(body);
+
+
+/* eyes */
+
+const eyeMaterial =
+  material(0x181820);
+
+
+[-0.18,0.18].forEach(x=>{
+
+  const eye =
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        0.065,
+        16,
+        12
+      ),
+
+      eyeMaterial
+
+    );
+
+  eye.position.set(
+    x,
+    1.86,
+    0.49
+  );
+
+  character.add(eye);
+
+});
+
+
+/* eye highlights */
+
+[-0.18,0.18].forEach(x=>{
+
+  const shine =
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        0.018,
+        10,
+        8
+      ),
+
+      material(0xffffff)
+
+    );
+
+  shine.position.set(
+    x-0.018,
+    1.885,
+    0.548
+  );
+
+  character.add(shine);
+
+});
+
+
+/* cheeks */
+
+const cheekMaterial =
+  material(0xff8ca5);
+
+
+[-0.27,0.27].forEach(x=>{
+
+  const cheek =
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        0.065,
+        12,
+        10
+      ),
+
+      cheekMaterial
+
+    );
+
+  cheek.scale.set(
+    1.5,
+    0.65,
+    0.3
+  );
+
+  cheek.position.set(
+    x,
+    1.69,
+    0.5
+  );
+
+  character.add(cheek);
+
+});
+
+
+/* spiky hair */
+
+const hairMaterial =
+  material(0x1c1715);
+
+
+for(
+  let i=0;
+  i<18;
+  i++
+){
+
+  const hair =
+    new THREE.Mesh(
+
+      new THREE.ConeGeometry(
+        0.11,
+        0.52,
+        8
+      ),
+
+      hairMaterial
+
+    );
+
+  const angle =
+    (i/18) *
+    Math.PI *
+    2;
+
+  hair.position.set(
+
+    Math.cos(angle)*0.37,
+
+    2.2 +
+    Math.sin(i*2.1)*0.04,
+
+    Math.sin(angle)*0.34
+
+  );
+
+  hair.rotation.z =
+    Math.cos(angle)*0.72;
+
+  hair.rotation.x =
+    Math.sin(angle)*0.72;
+
+  character.add(hair);
+
+}
+
+
+/* ==============================
+   RAYCASTER
+============================== */
+
+const raycaster =
+  new THREE.Raycaster();
+
+raycaster.far = 2.5;
+
+
+const interactables = [
+
+  accessCard,
+  terminal,
+  powerCell,
+  door
+
+];
+
+
+/* ==============================
+   MESSAGE
+============================== */
+
+let messageTimer;
+
+
+function showMessage(text){
+
+  messageElement.textContent =
+    text;
+
+  messageElement.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    messageTimer
+  );
+
+  messageTimer =
+    setTimeout(()=>{
+
+      messageElement
+        .classList
+        .remove("show");
+
+    },1800);
+
+}
+
+
+/* ==============================
+   OBJECTIVE
+============================== */
+
+function updateObjective(){
+
+  if(!inventory.card){
+
+    objective.textContent =
+      "OBJECTIVE 01 — 找到黄色 ACCESS CARD。";
+
+  }
+
+  else if(!inventory.code){
+
+    objective.textContent =
+      "OBJECTIVE 02 — 去蓝色终端读取门禁代码。";
+
+  }
+
+  else if(!inventory.cell){
+
+    objective.textContent =
+      "OBJECTIVE 03 — 找到绿色 POWER CELL。";
+
+  }
+
+  else{
+
+    objective.textContent =
+      "FINAL — 三件凭证齐全，前往粉色出口！";
+
+  }
+
+}
+
+
+/* ==============================
+   INTERACTION
+============================== */
+
+function interact(){
+
+  if(!currentTarget)
+    return;
+
+
+  const type =
+    currentTarget.userData.type;
+
+
+  /* CARD */
+
+  if(
+    type==="card" &&
+    !inventory.card
+  ){
+
+    inventory.card = true;
+
+    accessCard.visible = false;
+
+    const slot =
+      document.getElementById(
+        "slot1"
+      );
+
+    slot.classList.add(
+      "have"
+    );
+
+    slot.innerHTML =
+      "CARD<br>13-A";
+
+    showMessage(
+      "✨ ACCESS CARD GET!"
+    );
+
+    updateObjective();
+
+    return;
+  }
+
+
+  /* TERMINAL */
+
+  if(type==="terminal"){
+
+    if(!inventory.card){
+
+      showMessage(
+        "🔒 需要 ACCESS CARD"
+      );
+
+      return;
+    }
+
+
+    if(!inventory.code){
+
+      inventory.code = true;
+
+      const slot =
+        document.getElementById(
+          "slot2"
+        );
+
+      slot.classList.add(
+        "have"
+      );
+
+      slot.innerHTML =
+        "CODE<br>7319";
+
+      showMessage(
+        "💻 门禁代码：7319"
+      );
+
+      updateObjective();
+
+      return;
+    }
+
+
+    showMessage(
+      "CODE // 7319"
+    );
+
+    return;
+  }
+
+
+  /* CELL */
+
+  if(
+    type==="cell" &&
+    !inventory.cell
+  ){
+
+    inventory.cell = true;
+
+    powerCell.visible = false;
+
+    const slot =
+      document.getElementById(
+        "slot3"
+      );
+
+    slot.classList.add(
+      "have"
+    );
+
+    slot.innerHTML =
+      "CELL<br>OK";
+
+    showMessage(
+      "⚡ POWER CELL GET!"
+    );
+
+    updateObjective();
+
+    return;
+  }
+
+
+  /* DOOR */
+
+  if(type==="door"){
+
+    if(
+      inventory.card &&
+      inventory.code &&
+      inventory.cell
+    ){
+
+      gameEnded = true;
+
+      door.material.color.set(
+        0x6cff9d
+      );
+
+      door.material.emissive.set(
+        0x22aa55
+      );
+
+      showMessage(
+        "🌟 ESCAPE SUCCESS!"
+      );
+
+      objective.textContent =
+        "CLEAR!! USHIN ESCAPED ROOM 13 🎉";
+
+      setTimeout(()=>{
+
+        door.position.y =
+          -2.3;
+
+      },500);
+
+    }
+
+    else{
+
+      showMessage(
+        "🔒 还缺少道具！"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ==============================
+   START BUTTON
+============================== */
+
+beginButton.addEventListener(
+  "click",
+  startGame
+);
+
+beginButton.addEventListener(
+  "touchend",
+  function(event){
+
+    event.preventDefault();
+
+    startGame();
+
+  },
+  {passive:false}
+);
+
+
+function startGame(){
+
+  if(gameStarted)
+    return;
+
+  gameStarted = true;
+
+  startScreen.style.display =
+    "none";
+
+  hud.style.display =
+    "block";
+
+  mobileControls.style.display =
+    "block";
+
+  updateObjective();
+
+}
+
+
+/* ==============================
+   KEYBOARD
+============================== */
+
+const keys = {};
+
+
+window.addEventListener(
+  "keydown",
+  event=>{
+
+    keys[event.code] = true;
+
+    if(event.code==="KeyE")
+      interact();
+
+  }
+);
+
+
+window.addEventListener(
+  "keyup",
+  event=>{
+
+    keys[event.code] = false;
+
+  }
+);
+
+
+/* ==============================
+   MOBILE JOYSTICK
+============================== */
+
+const joystick =
+  document.getElementById(
+    "joystick"
+  );
+
+const knob =
+  document.getElementById(
+    "knob"
+  );
+
+
+let joystickValue = {
+  x:0,
+  y:0
+};
+
+
+function updateJoystick(
+  clientX,
+  clientY
+){
+
+  const rect =
+    joystick.getBoundingClientRect();
+
+  let dx =
+    clientX -
+    (
+      rect.left +
+      rect.width/2
+    );
+
+  let dy =
+    clientY -
+    (
+      rect.top +
+      rect.height/2
+    );
+
+
+  const maxDistance = 35;
+
+  const distance =
+    Math.min(
+      maxDistance,
+      Math.hypot(dx,dy)
+    );
+
+  const angle =
+    Math.atan2(
+      dy,
+      dx
+    );
+
+
+  dx =
+    Math.cos(angle) *
+    distance;
+
+  dy =
+    Math.sin(angle) *
+    distance;
+
+
+  joystickValue.x =
+    dx /
+    maxDistance;
+
+  joystickValue.y =
+    dy /
+    maxDistance;
+
+
+  knob.style.transform =
+    `translate(${dx}px,${dy}px)`;
+
+}
+
+
+joystick.addEventListener(
+  "pointerdown",
+  event=>{
+
+    joystick.setPointerCapture(
+      event.pointerId
+    );
+
+    updateJoystick(
+      event.clientX,
+      event.clientY
+    );
+
+  }
+);
+
+
+joystick.addEventListener(
+  "pointermove",
+  event=>{
+
+    if(
+      joystick.hasPointerCapture(
+        event.pointerId
+      )
+    ){
+
+      updateJoystick(
+        event.clientX,
+        event.clientY
+      );
+
+    }
+
+  }
+);
+
+
+function resetJoystick(){
+
+  joystickValue.x = 0;
+  joystickValue.y = 0;
+
+  knob.style.transform =
+    "translate(0px,0px)";
+
+}
+
+
+joystick.addEventListener(
+  "pointerup",
+  resetJoystick
+);
+
+joystick.addEventListener(
+  "pointercancel",
+  resetJoystick
+);
+
+
+/* ==============================
+   ACTION BUTTON
+============================== */
+
+document
+  .getElementById("action")
+  .addEventListener(
+    "pointerdown",
+    event=>{
+
+      event.preventDefault();
+
+      interact();
+
+    }
+  );
+
+
+/* ==============================
+   TOUCH LOOK
+============================== */
+
+let looking = false;
+
+let lastLookX = 0;
+let lastLookY = 0;
+
+
+renderer.domElement.addEventListener(
+  "pointerdown",
+  event=>{
+
+    /*
+      Right side of screen =
+      camera look.
+    */
+
+    if(
+      event.clientX <
+      innerWidth * 0.35
+    )
+      return;
+
+
+    looking = true;
+
+    lastLookX =
+      event.clientX;
+
+    lastLookY =
+      event.clientY;
+
+    renderer.domElement
+      .setPointerCapture(
+        event.pointerId
+      );
+
+  }
+);
+
+
+renderer.domElement.addEventListener(
+  "pointermove",
+  event=>{
+
+    if(!looking)
+      return;
+
+
+    const dx =
+      event.clientX -
+      lastLookX;
+
+    const dy =
+      event.clientY -
+      lastLookY;
+
+
+    yaw -=
+      dx * 0.006;
+
+    pitch -=
+      dy * 0.0045;
+
+
+    pitch =
+      Math.max(
+        -0.7,
+        Math.min(
+          0.55,
+          pitch
+        )
+      );
+
+
+    lastLookX =
+      event.clientX;
+
+    lastLookY =
+      event.clientY;
+
+  }
+);
+
+
+renderer.domElement.addEventListener(
+  "pointerup",
+  ()=>{
+
+    looking = false;
+
+  }
+);
+
+
+renderer.domElement.addEventListener(
+  "pointercancel",
+  ()=>{
+
+    looking = false;
+
+  }
+);
+
+
+/* ==============================
+   PC MOUSE LOOK
+============================== */
+
+renderer.domElement.addEventListener(
+  "click",
+  ()=>{
+
+    if(
+      gameStarted &&
+      matchMedia(
+        "(pointer:fine)"
+      ).matches
+    ){
+
+      renderer.domElement
+        .requestPointerLock();
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "mousemove",
+  event=>{
+
+    if(
+      document.pointerLockElement !==
+      renderer.domElement
+    )
+      return;
+
+
+    yaw -=
+      event.movementX *
+      0.0022;
+
+    pitch -=
+      event.movementY *
+      0.0018;
+
+
+    pitch =
+      Math.max(
+        -0.7,
+        Math.min(
+          0.55,
+          pitch
+        )
+      );
+
+  }
+);
+
+
+/* ==============================
+   LOOP
+============================== */
+
+let lastTime =
+  performance.now();
+
+
+function animate(now){
+
+  requestAnimationFrame(
+    animate
+  );
+
+
+  const delta =
+    Math.min(
+      0.04,
+      (now-lastTime)/1000
+    );
+
+  lastTime = now;
+
+
+  /* TIMER */
+
+  if(
+    gameStarted &&
+    !gameEnded
+  ){
+
+    timeLeft -= delta;
+
+    timeLeft =
+      Math.max(
+        0,
+        timeLeft
+      );
+
+
+    const minutes =
+      Math.floor(
+        timeLeft/60
+      );
+
+    const seconds =
+      Math.floor(
+        timeLeft%60
+      );
+
+
+    timerElement.textContent =
+      `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+
+
+    if(timeLeft<=0){
+
+      gameEnded = true;
+
+      objective.textContent =
+        "TIME OVER — ROOM 13 LOCKED";
+
+      showMessage(
+        "⏰ TIME OVER"
+      );
+
+    }
+
+  }
+
+
+  /* MOVEMENT */
+
+  if(
+    gameStarted &&
+    !gameEnded
+  ){
+
+    const forward =
+      (keys.KeyW ? 1 : 0) -
+      (keys.KeyS ? 1 : 0) -
+      joystickValue.y;
+
+
+    const right =
+      (keys.KeyD ? 1 : 0) -
+      (keys.KeyA ? 1 : 0) +
+      joystickValue.x;
+
+
+    const speed =
+      3.4 *
+      delta;
+
+
+    camera.position.x +=
+      (
+        Math.sin(yaw) *
+        forward +
+
+        Math.cos(yaw) *
+        right
+      ) *
+      speed;
+
+
+    camera.position.z +=
+      (
+        -Math.cos(yaw) *
+        forward +
+
+        Math.sin(yaw) *
+        right
+      ) *
+      speed;
+
+
+    /* room collision */
+
+    camera.position.x =
+      Math.max(
+        -6.35,
+        Math.min(
+          6.35,
+          camera.position.x
+        )
+      );
+
+
+    camera.position.z =
+      Math.max(
+        -8.1,
+        Math.min(
+          8.1,
+          camera.position.z
+        )
+      );
+
+
+    /* tiny walking bounce */
+
+    const movementAmount =
+      Math.abs(forward) +
+      Math.abs(right);
+
+
+    camera.position.y =
+      2.05 +
+      Math.sin(
+        now*0.009
+      ) *
+      movementAmount *
+      0.018;
+
+  }
+
+
+  /* CAMERA */
+
+  camera.rotation.order =
+    "YXZ";
+
+  camera.rotation.y =
+    yaw;
+
+  camera.rotation.x =
+    pitch;
+
+
+  /* INTERACTION RAY */
+
+  raycaster.setFromCamera(
+
+    new THREE.Vector2(
+      0,
+      0
+    ),
+
+    camera
+
+  );
+
+
+  const visibleObjects =
+    interactables.filter(
+      object=>object.visible
+    );
+
+
+  const hit =
+    raycaster
+      .intersectObjects(
+        visibleObjects,
+        false
+      )[0];
+
+
+  currentTarget =
+    hit
+      ? hit.object
+      : null;
+
+
+  if(currentTarget){
+
+    interactPrompt
+      .classList
+      .add("show");
+
+  }
+
+  else{
+
+    interactPrompt
+      .classList
+      .remove("show");
+
+  }
+
+
+  /* cute character idle */
+
+  character.rotation.y =
+    Math.sin(
+      now*0.0007
+    ) *
+    0.18;
+
+
+  character.position.y =
+    Math.sin(
+      now*0.002
+    ) *
+    0.025;
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+requestAnimationFrame(
+  animate
+);
+
+
+/* ==============================
+   RESIZE
+============================== */
+
+window.addEventListener(
+  "resize",
+  ()=>{
+
+    camera.aspect =
+      innerWidth /
+      innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>
